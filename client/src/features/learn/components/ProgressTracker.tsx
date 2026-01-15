@@ -1,0 +1,126 @@
+import React from 'react';
+import { useTheme } from '../../../providers/ThemeProvider';
+
+interface MilestoneItem {
+  wpm: number;
+  accuracy: number;
+  level: string;
+  badge: string;
+}
+
+const milestones: MilestoneItem[] = [
+  {
+    wpm: 0,
+    accuracy: 0,
+    level: 'Beginner',
+    badge: '🌱',
+  },
+  {
+    wpm: 30,
+    accuracy: 90,
+    level: 'Novice',
+    badge: '📚',
+  },
+  {
+    wpm: 50,
+    accuracy: 92,
+    level: 'Intermediate',
+    badge: '⭐',
+  },
+  {
+    wpm: 80,
+    accuracy: 95,
+    level: 'Advanced',
+    badge: '🚀',
+  },
+  {
+    wpm: 120,
+    accuracy: 97,
+    level: 'Expert',
+    badge: '🏆',
+  },
+];
+
+export default function ProgressTracker() {
+  const { theme } = useTheme();
+  const [userStats] = React.useState({
+    currentWpm: 45,
+    currentAccuracy: 91,
+  });
+
+  const currentMilestoneIndex = milestones.findIndex(
+    m => userStats.currentWpm >= m.wpm && userStats.currentAccuracy >= m.accuracy
+  );
+  const currentMilestone = milestones[Math.max(0, currentMilestoneIndex)];
+  const nextMilestone = milestones[Math.min(currentMilestoneIndex + 1, milestones.length - 1)];
+
+  return (
+    <div className={`rounded-lg shadow-lg p-6 transition-colors duration-300 ${
+      theme === 'dark'
+        ? 'bg-gray-800/40 backdrop-blur-md'
+        : 'bg-white border border-gray-300'
+    }`}>
+      <h3 className="text-2xl font-bold mb-6">Your Progress</h3>
+
+      {/* Current Stats */}
+      <div className="mb-6 p-4 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <p className="text-sm opacity-90">Current WPM</p>
+            <p className="text-3xl font-bold">{userStats.currentWpm}</p>
+          </div>
+          <div>
+            <p className="text-sm opacity-90">Accuracy</p>
+            <p className="text-3xl font-bold">{userStats.currentAccuracy}%</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Current Level */}
+      <div className="mb-6 text-center">
+        <p className={`text-sm mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+          Current Level
+        </p>
+        <p className="text-4xl mb-2">{currentMilestone.badge}</p>
+        <p className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+          {currentMilestone.level}
+        </p>
+      </div>
+
+      {/* Progress to Next Level */}
+      {currentMilestoneIndex < milestones.length - 1 && (
+        <div>
+          <p className={`text-sm mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            Progress to {nextMilestone.level}
+          </p>
+          <div className={`flex items-center justify-between mb-2 text-sm ${
+            theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+          }`}>
+            <span>{userStats.currentWpm} WPM</span>
+            <span>{nextMilestone.wpm} WPM</span>
+          </div>
+          <div className={`w-full h-3 rounded-full overflow-hidden ${
+            theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'
+          }`}>
+            <div
+              className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-300"
+              style={{
+                width: `${Math.min(
+                  (userStats.currentWpm / nextMilestone.wpm) * 100,
+                  100
+                )}%`,
+              }}
+            />
+          </div>
+        </div>
+      )}
+      {currentMilestoneIndex === milestones.length - 1 && (
+        <div className="text-center">
+          <p className="text-lg font-bold text-green-600 dark:text-green-400">
+            🎉 You've reached the highest level!
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}

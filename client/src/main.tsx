@@ -1,10 +1,12 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
 import { store } from './store';
 import SocketProvider from './providers/SocketProvider';
+import { ThemeProvider } from './providers/ThemeProvider';
 import { loadUser } from './features/auth/authSlice';
 import { fetchProfile } from './features/user/profileSlice';
 
@@ -21,9 +23,13 @@ if (token) {
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <SocketProvider>
-        <App />
-      </SocketProvider>
+      <BrowserRouter>
+        <ThemeProvider>
+          <SocketProvider>
+            <App />
+          </SocketProvider>
+        </ThemeProvider>
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>
 );

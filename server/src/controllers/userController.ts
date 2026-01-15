@@ -17,3 +17,26 @@ export async function getProfile(req: AuthRequest, res: Response) {
 
   return res.json({ user, bestWPM, averageAccuracy: avgAccuracy });
 }
+
+export async function updateAvatar(req: AuthRequest, res: Response) {
+  const userId = req.userId;
+  const { avatarId } = req.body;
+
+  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+  if (!avatarId) return res.status(400).json({ error: 'Avatar ID required' });
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { avatarId },
+      { new: true }
+    ).select('-passwordHash');
+
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    return res.json({ user, message: 'Avatar updated successfully' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Failed to update avatar' });
+  }
+}

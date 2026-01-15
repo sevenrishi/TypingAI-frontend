@@ -9,13 +9,15 @@ import ResultsModal from './ResultsModal';
 import { saveResult } from '../typingSlice';
 import { useTyping } from '../hooks/useTyping';
 import { loadText as loadTextAction } from '../typingSlice';
+import { useTheme } from '../../../providers/ThemeProvider';
 
 export default function TypingTest() {
   const dispatch = useAppDispatch();
+  const { theme } = useTheme();
   const aiText = useSelector((s: RootState) => s.ai.text);
   const { typed, text, status, stats, showResults, setShowResults, handleChange, handleReset, raceLocked, countdown } = useTyping();
 
-  const [topic, setTopic] = useState('Nature');
+  const [topic, setTopic] = useState('');
   const [length, setLength] = useState<'short'|'medium'|'long'>('short');
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -30,25 +32,72 @@ export default function TypingTest() {
   };
 
   return (
-    <div className="bg-gray-800/40 backdrop-blur-md p-6 rounded-lg shadow-lg">
+    <div className={`p-6 rounded-lg shadow-lg transition-colors duration-300 ${
+      theme === 'dark'
+        ? 'bg-gray-800/40 backdrop-blur-md'
+        : 'bg-white border border-gray-300'
+    }`}>
       <div className="flex flex-col gap-4">
         <div className="flex flex-wrap gap-3 items-center">
-          <input className="flex-1 min-w-[160px] p-2 rounded-md bg-gray-700 border border-gray-600" value={topic} onChange={e => setTopic(e.target.value)} placeholder="Topic" />
-          <select value={length} onChange={e => setLength(e.target.value as any)} className="p-2 rounded-md bg-gray-700 border border-gray-600">
+          <input 
+            className={`flex-1 min-w-[160px] p-2 rounded-md border transition-colors duration-200 ${
+              theme === 'dark'
+                ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
+                : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
+            }`}
+            value={topic}
+            onChange={e => setTopic(e.target.value)}
+            placeholder="Enter a topic to generate your typing script using AI"
+          />
+          <select 
+            value={length}
+            onChange={e => setLength(e.target.value as any)}
+            className={`p-2 rounded-md border transition-colors duration-200 ${
+              theme === 'dark'
+                ? 'bg-gray-700 border-gray-600 text-white'
+                : 'bg-gray-50 border-gray-300 text-gray-900'
+            }`}
+          >
             <option value="short">Short</option>
             <option value="medium">Medium</option>
             <option value="long">Long</option>
           </select>
-          <button onClick={handleStart} className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-md shadow">Generate</button>
-          <button onClick={() => handleReset()} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded-md">Reset</button>
+          <button 
+            onClick={handleStart}
+            className={`px-4 py-2 rounded-md shadow transition-colors duration-200 ${
+              theme === 'dark'
+                ? 'bg-indigo-500 hover:bg-indigo-600 text-white'
+                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+            }`}
+          >
+            Generate
+          </button>
+          <button 
+            onClick={() => handleReset()}
+            className={`px-4 py-2 rounded-md transition-colors duration-200 ${
+              theme === 'dark'
+                ? 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+                : 'bg-gray-300 hover:bg-gray-400 text-gray-900'
+            }`}
+          >
+            Reset
+          </button>
         </div>
 
-        <div className="rounded-md overflow-hidden border border-gray-700 bg-gradient-to-b from-gray-900 to-gray-800 p-4 h-48">
+        <div className={`rounded-md overflow-hidden border p-4 h-48 transition-colors duration-300 ${
+          theme === 'dark'
+            ? 'border-gray-700 bg-gradient-to-b from-gray-900 to-gray-800'
+            : 'border-gray-300 bg-gray-50'
+        }`}>
           <TextDisplay text={text} typed={typed} />
         </div>
 
         {raceLocked && typeof countdown === 'number' && (
-          <div className="text-center text-sm text-yellow-400">Race starts in {countdown}s</div>
+          <div className={`text-center text-sm ${
+            theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'
+          }`}>
+            Race starts in {countdown}s
+          </div>
         )}
 
         <input
@@ -57,7 +106,11 @@ export default function TypingTest() {
           onChange={e => handleChange(e.target.value)}
           onPaste={e => e.preventDefault()}
           onCopy={e => e.preventDefault()}
-          className="w-full p-3 rounded-md border border-gray-600 bg-gray-800 text-white placeholder-gray-400"
+          className={`w-full p-3 rounded-md border transition-colors duration-200 ${
+            theme === 'dark'
+              ? 'border-gray-600 bg-gray-800 text-white placeholder-gray-400'
+              : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+          }`}
           placeholder={raceLocked ? 'Waiting for race to start...' : 'Start typing here...'}
         />
 

@@ -3,10 +3,14 @@ import api from '../../api/axios';
 
 type User = { id: string; displayName?: string; email?: string } | null;
 
-export const login = createAsyncThunk('auth/login', async (payload: { email: string; password: string }) => {
-  const { data } = await api.post('/auth/login', payload);
-  if (data?.token) localStorage.setItem('token', data.token);
-  return data;
+export const login = createAsyncThunk('auth/login', async (payload: { email: string; password: string }, { rejectWithValue }) => {
+  try {
+    const { data } = await api.post('/auth/login', payload);
+    if (data?.token) localStorage.setItem('token', data.token);
+    return data;
+  } catch (err: any) {
+    return rejectWithValue(err.response?.data || { error: 'Email or password is wrong' });
+  }
 });
 
 export const register = createAsyncThunk('auth/register', async (payload: { email?: string; password: string; displayName?: string }) => {
