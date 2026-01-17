@@ -106,12 +106,17 @@ export default function TypingTest() {
           onChange={e => handleChange(e.target.value)}
           onPaste={e => e.preventDefault()}
           onCopy={e => e.preventDefault()}
+          disabled={status === 'finished'}
           className={`w-full p-3 rounded-md border transition-colors duration-200 ${
-            theme === 'dark'
+            status === 'finished'
+              ? theme === 'dark'
+                ? 'border-gray-600 bg-gray-700 text-gray-400 placeholder-gray-500 cursor-not-allowed'
+                : 'border-gray-300 bg-gray-100 text-gray-500 placeholder-gray-400 cursor-not-allowed'
+              : theme === 'dark'
               ? 'border-gray-600 bg-gray-800 text-white placeholder-gray-400'
               : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
           }`}
-          placeholder={raceLocked ? 'Waiting for race to start...' : 'Start typing here...'}
+          placeholder={raceLocked ? 'Waiting for race to start...' : status === 'finished' ? 'Test completed!' : 'Start typing here...'}
         />
 
         <StatsPanel wpm={stats.wpm} cpm={stats.cpm} accuracy={stats.accuracy} errors={stats.errors} elapsed={stats.elapsed} />

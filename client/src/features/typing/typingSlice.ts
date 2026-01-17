@@ -29,6 +29,9 @@ const slice = createSlice({
       state.status = 'running';
     },
     updateTyped(state, action: PayloadAction<string>) {
+      // Don't accept new input after finished
+      if (state.status === 'finished') return;
+      
       state.typed = action.payload;
       // update errors by comparing characters
       let e = 0;
@@ -42,7 +45,11 @@ const slice = createSlice({
       }
     },
     tick(state) {
-      if (state.startTime && state.status === 'running') state.elapsed = Date.now() - state.startTime;
+      // Only update elapsed when actively running
+      if (state.startTime && state.status === 'running') {
+        state.elapsed = Date.now() - state.startTime;
+      }
+      // Do nothing if finished - elapsed is already frozen
     },
     reset(state) {
       Object.assign(state, initialState);
