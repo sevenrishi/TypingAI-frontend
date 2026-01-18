@@ -101,7 +101,10 @@ export default function ResultsPage({ wpm, cpm, accuracy, errors, duration, text
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={performanceData}>
                 <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#374151' : '#e5e7eb'} />
-                <XAxis stroke={theme === 'dark' ? '#9ca3af' : '#6b7280'} />
+                <XAxis 
+                  dataKey="name"
+                  stroke={theme === 'dark' ? '#9ca3af' : '#6b7280'} 
+                />
                 <YAxis stroke={theme === 'dark' ? '#9ca3af' : '#6b7280'} />
                 <Tooltip 
                   contentStyle={{
@@ -110,8 +113,10 @@ export default function ResultsPage({ wpm, cpm, accuracy, errors, duration, text
                     color: theme === 'dark' ? '#f3f4f6' : '#111827'
                   }}
                 />
-                <Legend />
-                <Bar dataKey="value" fill="#6366f1" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="value" radius={[8, 8, 0, 0]}>
+                  <Cell fill="#6366f1" />
+                  <Cell fill="#a855f7" />
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
