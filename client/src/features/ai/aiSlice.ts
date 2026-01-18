@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '../../api/axios';
 
 export const generateText = createAsyncThunk(
   'ai/generateText',
   async (payload: { topic: string; length: 'short' | 'medium' | 'long'; difficulty?: string }) => {
-    const { data } = await axios.post('/api/ai/generate', payload);
+    const { data } = await api.post('/ai/generate', payload);
     return data.text as string;
   }
 );

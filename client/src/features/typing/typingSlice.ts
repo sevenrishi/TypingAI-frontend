@@ -51,13 +51,20 @@ const slice = createSlice({
       }
       // Do nothing if finished - elapsed is already frozen
     },
+    finishTest(state) {
+      // Mark test as finished when time runs out, but preserve all data for results
+      if (state.status !== 'finished') {
+        state.status = 'finished';
+        state.elapsed = state.startTime ? Date.now() - state.startTime : 0;
+      }
+    },
     reset(state) {
       Object.assign(state, initialState);
     }
   }
 });
 
-export const { loadText, startIfNeeded, updateTyped, tick, reset } = slice.actions;
+export const { loadText, startIfNeeded, updateTyped, tick, finishTest, reset } = slice.actions;
 export default slice.reducer;
 
 export const saveResult = createAsyncThunk('typing/saveResult', async (payload: { wpm: number; cpm: number; accuracy: number; errors: number; duration: number; text: string; room?: string }) => {

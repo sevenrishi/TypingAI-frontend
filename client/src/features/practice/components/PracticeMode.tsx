@@ -2,10 +2,11 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import { selectTime, setScriptMode, setCustomScript, selectDefaultScript, startPractice, tick, reset } from '../practiceSlice';
-import { loadText as loadTextAction } from '../../typing/typingSlice';
+import { loadText as loadTextAction, finishTest, reset as resetTypingAction } from '../../typing/typingSlice';
 import { useTyping } from '../../typing/hooks/useTyping';
 import TextDisplay from '../../typing/components/TextDisplay';
 import StatsPanel from '../../typing/components/StatsPanel';
+import ResultsPage from './ResultsPage';
 import { useTheme } from '../../../providers/ThemeProvider';
 import { generateText } from '../../ai/aiSlice';
 
@@ -80,6 +81,7 @@ export default function PracticeMode() {
   useEffect(() => {
     if (aiText && practice.scriptMode === 'generate') {
       dispatch(loadTextAction(aiText));
+      dispatch(selectDefaultScript()); // Mark script as selected
     }
   }, [aiText, practice.scriptMode, dispatch]);
 
@@ -91,7 +93,7 @@ export default function PracticeMode() {
       }, 250);
     } else if (practice.timeRemaining <= 0 && practice.started) {
       if (timerRef.current) clearInterval(timerRef.current);
-      resetTyping();
+      dispatch(finishTest());
     }
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -148,6 +150,7 @@ export default function PracticeMode() {
   const handleResetPractice = () => {
     if (timerRef.current) clearInterval(timerRef.current);
     dispatch(reset());
+    dispatch(resetTypingAction());
     setTopic('');
     setShowGenerateUI(false);
     setError('');
@@ -343,6 +346,22 @@ export default function PracticeMode() {
     );
   }
 
+  // Step 4: Practice Active or Results
+  if (practice.timeRemaining <= 0 && practice.started) {
+    return (
+      <ResultsPage
+        wpm={stats.wpm}
+        cpm={stats.cpm}
+        accuracy={stats.accuracy}
+        errors={stats.errors}
+        duration={practice.selectedTime! - practice.timeRemaining}
+        text={text}
+        typed={typed}
+        onClose={handleResetPractice}
+      />
+    );
+  }
+
   // Step 4: Practice Active
   return (
     <div className={`p-6 rounded-lg shadow-lg transition-colors duration-300 ${
@@ -400,7 +419,7 @@ export default function PracticeMode() {
             ? 'border-gray-600 bg-gray-800 text-white placeholder-gray-400'
             : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
         }`}
-        placeholder={practice.timeRemaining <= 0 ? 'Time is up!' : 'Start typing...'}
+        placeholder="Start typing..."
         autoFocus
       />
 
@@ -412,60 +431,16 @@ export default function PracticeMode() {
         elapsed={stats.elapsed}
       />
 
-      {practice.timeRemaining <= 0 && (
-        <div className={`p-4 rounded-lg mt-4 ${
+      <button
+        onClick={handleResetPractice}
+        className={`w-full px-6 py-3 rounded-md font-semibold transition-colors duration-200 mt-4 ${
           theme === 'dark'
-            ? 'bg-green-900/30 border border-green-700'
-            : 'bg-green-100 border border-green-400'
-        }`}>
-          <h3 className={`text-lg font-bold mb-3 ${
-            theme === 'dark' ? 'text-green-300' : 'text-green-800'
-          }`}>
-            Practice Complete!
-          </h3>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className={`p-3 rounded ${
-              theme === 'dark'
-                ? 'bg-gray-700 text-gray-100'
-                : 'bg-gray-100 text-gray-900'
-            }`}>
-              <div className="text-sm opacity-75">Words Per Minute</div>
-              <div className="text-3xl font-bold">{Math.round(stats.wpm)}</div>
-            </div>
-            <div className={`p-3 rounded ${
-              theme === 'dark'
-                ? 'bg-gray-700 text-gray-100'
-                : 'bg-gray-100 text-gray-900'
-            }`}>
-              <div className="text-sm opacity-75">Characters Per Minute</div>
-              <div className="text-3xl font-bold">{Math.round(stats.cpm)}</div>
-            </div>
-          </div>
-          <button
-            onClick={handleResetPractice}
-            className={`w-full px-6 py-3 rounded-md font-semibold transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-            }`}
-          >
-            Practice Again
-          </button>
-        </div>
-      )}
-
-      {practice.timeRemaining > 0 && (
-        <button
-          onClick={handleResetPractice}
-          className={`w-full px-6 py-3 rounded-md font-semibold transition-colors duration-200 ${
-            theme === 'dark'
-              ? 'bg-gray-700 hover:bg-gray-600 text-gray-200'
-              : 'bg-gray-300 hover:bg-gray-400 text-gray-900'
-          }`}
-        >
-          Exit Practice
-        </button>
-      )}
+            ? 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+            : 'bg-gray-300 hover:bg-gray-400 text-gray-900'
+        }`}
+      >
+        Exit Practice
+      </button>
     </div>
   );
 }
