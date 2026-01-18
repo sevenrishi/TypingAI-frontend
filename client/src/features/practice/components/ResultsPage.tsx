@@ -108,10 +108,17 @@ export default function ResultsPage({ wpm, cpm, accuracy, errors, duration, text
                 <YAxis stroke={theme === 'dark' ? '#9ca3af' : '#6b7280'} />
                 <Tooltip 
                   contentStyle={{
-                    backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
-                    border: `1px solid ${theme === 'dark' ? '#374151' : '#e5e7eb'}`,
-                    color: theme === 'dark' ? '#f3f4f6' : '#111827'
+                    backgroundColor: 'transparent',
+                    border: 'none',
                   }}
+                  content={({ payload }: any) => {
+                    if (payload && payload.length > 0) {
+                      const data = payload[0].payload;
+                      return <div style={{ color: theme === 'dark' ? '#f3f4f6' : '#111827' }}>{data.name}: {payload[0].value}</div>;
+                    }
+                    return null;
+                  }}
+                  cursor={false}
                 />
                 <Bar dataKey="value" radius={[8, 8, 0, 0]}>
                   <Cell fill="#6366f1" />
