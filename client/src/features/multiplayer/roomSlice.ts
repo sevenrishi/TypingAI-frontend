@@ -13,10 +13,11 @@ const slice = createSlice({
       state.host = null;
       state.raceStart = null;
     },
-    setRoomState(state, action: PayloadAction<{ players: PlayerState[]; host?: string | null; raceStart?: number | null }>) {
+    setRoomState(state, action: PayloadAction<{ players: PlayerState[]; host?: string | null; raceStart?: number | null; text?: string }>) {
       state.players = action.payload.players;
       if (action.payload.host !== undefined) state.host = action.payload.host || null;
       if (action.payload.raceStart !== undefined) state.raceStart = action.payload.raceStart || null;
+      if (action.payload.text !== undefined) state.text = action.payload.text || '';
     },
     leaveRoom(state) {
       state.roomId = null;

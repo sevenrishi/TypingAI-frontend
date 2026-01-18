@@ -3,6 +3,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import TypingPage from './pages/TypingPage';
 import BattlegroundPage from './pages/BattlegroundPage';
+import PracticePage from './pages/PracticePage';
 import LearnPage from './pages/LearnPage';
 import UserProfilePage from './pages/UserProfilePage';
 import ProfilePage from './features/user/components/ProfilePage';
@@ -51,11 +52,17 @@ export default function App() {
                 ? 'hover:bg-gray-700 text-gray-100'
                 : 'hover:bg-gray-200 text-gray-900'
             }`}>Home</Link>
+            <Link to="/practice" className={`px-3 py-1 rounded transition-colors duration-200 ${
+              theme === 'dark'
+                ? 'hover:bg-gray-700 text-gray-100'
+                : 'hover:bg-gray-200 text-gray-900'
+            }`}>Practice</Link>
             <Link to="/typing" className={`px-3 py-1 rounded transition-colors duration-200 ${
               theme === 'dark'
                 ? 'hover:bg-gray-700 text-gray-100'
                 : 'hover:bg-gray-200 text-gray-900'
             }`}>Typing Test</Link>
+            
             <Link to="/learn" className={`px-3 py-1 rounded transition-colors duration-200 ${
               theme === 'dark'
                 ? 'hover:bg-gray-700 text-gray-100'
@@ -136,6 +143,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/typing" element={<TypingPage />} />
+            <Route path="/practice" element={<PracticePage />} />
             <Route path="/learn" element={<LearnPage />} />
             <Route path="/battleground" element={<BattlegroundPage />} />
             <Route path="/profile" element={<UserProfilePage />} />

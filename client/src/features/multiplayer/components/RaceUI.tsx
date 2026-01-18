@@ -1,9 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useSocket } from '../hooks/useSocket';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import { setRoom, setRoomState } from '../roomSlice';
 import { generateText } from '../../ai/aiSlice';
+import { loadText as loadTextAction } from '../../typing/typingSlice';
 import { useTheme } from '../../../providers/ThemeProvider';
 
 function genCode() {
@@ -21,25 +22,58 @@ export default function RaceUI() {
   const onRoomState = useCallback((state: any) => {
     // convert players map to array for UI
     const players = Object.entries(state.players).map(([id, p]: any, i: number) => ({ id, name: p.name, progress: p.progress, wpm: p.wpm, accuracy: p.accuracy, ready: p.ready }));
-    dispatch(setRoomState({ players, host: state.host, raceStart: state.raceStart }));
+    dispatch(setRoomState({ players, host: state.host, raceStart: state.raceStart, text: state.text }));
+    // Load the shared text into typing state so all players race on same text
+    if (state.text) {
+      dispatch(loadTextAction(state.text));
+    }
   }, [dispatch]);
 
   const { createRoom, joinRoom, socket } = useSocket(onRoomState);
 
+  // When joining a room, load the shared text
+  useEffect(() => {
+    if (room.text) {
+      dispatch(loadTextAction(room.text));
+    }
+  }, [room.text, dispatch]);
+
+  // Update room text when aiText changes (after generation)
+  useEffect(() => {
+    if (aiText && room.roomId && !room.text) {
+      dispatch(setRoom({ roomId: room.roomId, text: aiText }));
+      dispatch(loadTextAction(aiText));
+    }
+  }, [aiText, room.roomId, room.text, dispatch]);
+
   const handleCreate = async () => {
     const roomCode = genCode();
-    // ensure text exists
-    if (!aiText) await dispatch(generateText({ topic: 'General', length: 'short' }));
-    const textToUse = aiText || '';
+    let textToUse = aiText;
+    
+    // ensure text exists - if not, generate it
+    if (!textToUse) {
+      await dispatch(generateText({ topic: 'General', length: 'short' }));
+      // After dispatch, aiText should be updated via redux selector
+      textToUse = aiText;
+    }
+    
+    if (!textToUse) {
+      alert('Failed to generate text');
+      return;
+    }
+    
     createRoom(roomCode, textToUse, name);
     dispatch(setRoom({ roomId: roomCode, text: textToUse }));
     setCode(roomCode);
   };
 
   const handleJoin = () => {
-    if (!code) return;
+    if (!code) {
+      alert('Please enter a room code');
+      return;
+    }
     joinRoom(code, name);
-    dispatch(setRoom({ roomId: code, text: '' }));
+    // Room text will be loaded via onRoomState callback
   };
 
   const [ready, setReady] = useState(false);
@@ -122,10 +156,19 @@ export default function RaceUI() {
           </button>
           <button
             onClick={() => {
-              if (!room.roomId) return;
+              if (!room.roomId) {
+                alert('Create or join a room first');
+                return;
+              }
               const currentSocketId = socket?.id;
-              if (!currentSocketId) return;
-              if (room.host && room.host !== currentSocketId) return alert('Only the host can start the race');
+              if (!currentSocketId) {
+                alert('Socket connection not ready');
+                return;
+              }
+              if (room.host && room.host !== currentSocketId) {
+                alert('Only the host can start the race');
+                return;
+              }
               socket?.emit('race:start', { room: room.roomId });
             }}
             className={`px-3 py-2 rounded-md transition-colors duration-200 ${
