@@ -29,6 +29,9 @@ const slice = createSlice({
       state.status = 'running';
     },
     updateTyped(state, action: PayloadAction<string>) {
+      // Don't accept new input after finished
+      if (state.status === 'finished') return;
+      
       state.typed = action.payload;
       // update errors by comparing characters
       let e = 0;
@@ -42,7 +45,18 @@ const slice = createSlice({
       }
     },
     tick(state) {
-      if (state.startTime && state.status === 'running') state.elapsed = Date.now() - state.startTime;
+      // Only update elapsed when actively running
+      if (state.startTime && state.status === 'running') {
+        state.elapsed = Date.now() - state.startTime;
+      }
+      // Do nothing if finished - elapsed is already frozen
+    },
+    finishTest(state) {
+      // Mark test as finished when time runs out, but preserve all data for results
+      if (state.status !== 'finished') {
+        state.status = 'finished';
+        state.elapsed = state.startTime ? Date.now() - state.startTime : 0;
+      }
     },
     reset(state) {
       Object.assign(state, initialState);
@@ -50,7 +64,7 @@ const slice = createSlice({
   }
 });
 
-export const { loadText, startIfNeeded, updateTyped, tick, reset } = slice.actions;
+export const { loadText, startIfNeeded, updateTyped, tick, finishTest, reset } = slice.actions;
 export default slice.reducer;
 
 export const saveResult = createAsyncThunk('typing/saveResult', async (payload: { wpm: number; cpm: number; accuracy: number; errors: number; duration: number; text: string; room?: string }) => {

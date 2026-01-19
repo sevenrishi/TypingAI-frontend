@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useMemo, useState } from 'react';
+import { useEffect, useCallback, useMemo, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
@@ -16,6 +16,9 @@ export function useTyping() {
   const [raceLocked, setRaceLocked] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [startAt, setStartAt] = useState<number | null>(null);
+  
+  // Use ref to freeze elapsed time when test finishes
+  const frozenElapsedRef = useRef<number | null>(null);
 
   useEffect(() => {
     // when joining a room, lock until race:start
@@ -49,17 +52,53 @@ export function useTyping() {
     return () => { socket.off('race:start', onStart); };
   }, [socket]);
 
+  // Use ref to track current status for interval callback
+  const statusRef = useRef<string>(typing.status);
+  const timerIdRef = useRef<NodeJS.Timeout | null>(null);
+  
   useEffect(() => {
-    let t: any;
-    if (typing.status === 'running') t = setInterval(() => dispatch(tick()), 250);
-    return () => clearInterval(t);
+    statusRef.current = typing.status;
+  }, [typing.status]);
+
+  useEffect(() => {
+    // Clear any existing interval
+    if (timerIdRef.current) {
+      clearInterval(timerIdRef.current);
+      timerIdRef.current = null;
+    }
+
+    if (typing.status === 'running') {
+      timerIdRef.current = setInterval(() => {
+        // Guard: only dispatch tick if still running
+        if (statusRef.current === 'running' && timerIdRef.current) {
+          dispatch(tick());
+        }
+      }, 250);
+    }
+    
+    // Clean up interval when status changes or component unmounts
+    return () => {
+      if (timerIdRef.current !== null) {
+        clearInterval(timerIdRef.current);
+        timerIdRef.current = null;
+      }
+    };
   }, [typing.status, dispatch]);
 
   useEffect(() => {
-    if (typing.status === 'finished') setShowResults(true);
-  }, [typing.status]);
+    if (typing.status === 'finished') {
+      // Capture and freeze elapsed time
+      frozenElapsedRef.current = typing.elapsed;
+      setShowResults(true);
+    } else if (typing.status === 'idle') {
+      // Reset when test resets
+      frozenElapsedRef.current = null;
+    }
+  }, [typing.status, typing.elapsed]);
 
   const handleChange = useCallback((value: string) => {
+    // Don't process input if test is already finished
+    if (typing.status === 'finished') return;
     if (raceLocked) return; // ignore input until race starts
     if (!typing.startTime && value.length > 0) dispatch(startIfNeeded());
     // prevent paste by slicing to expected length
@@ -84,11 +123,16 @@ export function useTyping() {
 
 
   const stats = useMemo(() => {
-    const wpm = calcWPM(Math.max(0, typing.typed.length - typing.errors), typing.elapsed);
-    const cpm = calcCPM(typing.typed.length, typing.elapsed);
+    // Use frozen elapsed time if test is finished, otherwise use current elapsed
+    const elapsedTime = typing.status === 'finished' && frozenElapsedRef.current !== null 
+      ? frozenElapsedRef.current 
+      : typing.elapsed;
+    
+    const wpm = calcWPM(Math.max(0, typing.typed.length - typing.errors), elapsedTime);
+    const cpm = calcCPM(typing.typed.length, elapsedTime);
     const accuracy = calcAccuracy(typing.typed.length, typing.errors);
-    return { wpm, cpm, accuracy, errors: typing.errors, elapsed: typing.elapsed };
-  }, [typing]);
+    return { wpm, cpm, accuracy, errors: typing.errors, elapsed: elapsedTime };
+  }, [typing.status === 'finished' ? frozenElapsedRef.current : typing.elapsed, typing.typed.length, typing.errors, typing.status]);
 
   return {
     typed: typing.typed,
