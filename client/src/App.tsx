@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import TypingPage from './pages/TypingPage';
@@ -9,6 +9,7 @@ import UserProfilePage from './pages/UserProfilePage';
 import ProfilePage from './features/user/components/ProfilePage';
 import SignIn from './features/auth/components/SignIn';
 import SignUp from './features/auth/components/SignUp';
+import TypingLoader from './components/TypingLoader';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from './store';
 import { logout } from './features/auth/authSlice';
@@ -19,11 +20,21 @@ export default function App() {
   const [showProfile, setShowProfile] = useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const auth = useSelector((s: RootState) => s.auth);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    // Show loader for 2.5 seconds on app startup
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div>
+      <TypingLoader isLoading={isLoading} duration={2500} />
       <div className={`min-h-screen transition-colors duration-300 ${
         theme === 'dark' 
           ? 'bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100' 
