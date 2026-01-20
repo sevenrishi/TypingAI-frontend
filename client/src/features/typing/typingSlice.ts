@@ -32,14 +32,16 @@ const slice = createSlice({
       // Don't accept new input after finished
       if (state.status === 'finished') return;
       
-      state.typed = action.payload;
-      // update errors by comparing characters
+      // Ensure typed is never longer than the target text
+      state.typed = action.payload.slice(0, state.text.length);
+      // update errors by comparing characters up to typed length
       let e = 0;
       for (let i = 0; i < state.typed.length; i++) {
         if (state.typed[i] !== state.text[i]) e++;
       }
       state.errors = e;
-      if (state.typed === state.text) {
+      // Consider the test finished when the user has filled the entire text
+      if (state.typed.length >= state.text.length && state.text.length > 0) {
         state.status = 'finished';
         state.elapsed = state.startTime ? Date.now() - state.startTime : 0;
       }

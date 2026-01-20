@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store';
-import { selectTime, setScriptMode, setCustomScript, selectDefaultScript, startPractice, tick, reset } from '../practiceSlice';
+import { selectTime, setScriptMode, setCustomScript, selectDefaultScript, startPractice, endPractice, tick, reset } from '../practiceSlice';
 import { loadText as loadTextAction, finishTest, reset as resetTypingAction } from '../../typing/typingSlice';
 import { useTyping } from '../../typing/hooks/useTyping';
 import TextDisplay from '../../typing/components/TextDisplay';
@@ -99,6 +99,15 @@ export default function PracticeMode() {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [practice.started, practice.timeRemaining, dispatch]);
+
+  // If typing finishes early, force the practice session to end so results show immediately
+  const typingStatus = useSelector((s: RootState) => s.typing.status);
+  useEffect(() => {
+    if (typingStatus === 'finished' && practice.started && practice.timeRemaining > 0) {
+      // set timeRemaining to 0 which will trigger the results view and clear interval above
+      dispatch(endPractice());
+    }
+  }, [typingStatus, practice.started, practice.timeRemaining, dispatch]);
 
   const handleSelectTime = (timeMs: number) => {
     dispatch(selectTime(timeMs));

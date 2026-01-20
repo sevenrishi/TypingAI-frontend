@@ -2,7 +2,7 @@ import { useEffect, useCallback, useMemo, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { startIfNeeded, updateTyped, tick, reset as resetTyping } from '../typingSlice';
+import { startIfNeeded, updateTyped, tick, finishTest, reset as resetTyping } from '../typingSlice';
 import { calcWPM, calcCPM, calcAccuracy } from '../../../utils/metrics';
 import { useSocket } from '../../multiplayer/hooks/useSocket';
 
@@ -85,13 +85,31 @@ export function useTyping() {
     };
   }, [typing.status, dispatch]);
 
+  // Defensive: if typed text equals target text (from store) ensure test is finished
+  useEffect(() => {
+    if (!typing.text) return;
+    if (typing.status === 'finished') return;
+    // If stored typed equals target, finish immediately
+    if (typing.typed === typing.text) {
+      dispatch(finishTest());
+      frozenElapsedRef.current = typing.startTime ? Date.now() - typing.startTime : 0;
+      setShowResults(true);
+      if (timerIdRef.current) {
+        clearInterval(timerIdRef.current);
+        timerIdRef.current = null;
+      }
+    }
+  }, [typing.typed, typing.text, typing.status, typing.startTime, dispatch]);
+
   useEffect(() => {
     if (typing.status === 'finished') {
       // Capture and freeze elapsed time
+      console.debug('[useTyping] status finished', { elapsed: typing.elapsed, typed: typing.typed, text: typing.text });
       frozenElapsedRef.current = typing.elapsed;
       setShowResults(true);
     } else if (typing.status === 'idle') {
       // Reset when test resets
+      console.debug('[useTyping] status idle');
       frozenElapsedRef.current = null;
     }
   }, [typing.status, typing.elapsed]);
@@ -102,7 +120,33 @@ export function useTyping() {
     if (raceLocked) return; // ignore input until race starts
     if (!typing.startTime && value.length > 0) dispatch(startIfNeeded());
     // prevent paste by slicing to expected length
-    dispatch(updateTyped(value.slice(0, typing.text.length)));
+    const sliced = value.slice(0, typing.text.length);
+
+    // Debugging: log lengths and values to help track why input may overflow
+    console.debug('[useTyping] handleChange', {
+      incoming: value,
+      incomingLength: value.length,
+      textLength: typing.text.length,
+      slicedLength: sliced.length,
+      currentTypedLength: typing.typed.length,
+      status: typing.status,
+    });
+
+    dispatch(updateTyped(sliced));
+    // If user has completed the full text, ensure we finish immediately
+    if (sliced === typing.text) {
+      // dispatch finish to mark test finished and freeze elapsed
+      console.debug('[useTyping] user completed text by equality check');
+      dispatch(finishTest());
+      // freeze elapsed locally in case reducer timing is slightly delayed
+      frozenElapsedRef.current = typing.startTime ? Date.now() - typing.startTime : 0;
+      setShowResults(true);
+      // clear internal interval if running
+      if (timerIdRef.current) {
+        clearInterval(timerIdRef.current);
+        timerIdRef.current = null;
+      }
+    }
     // send progress to server if in a room
     try {
       if (roomId) {
@@ -114,7 +158,7 @@ export function useTyping() {
     } catch (err) {
       // ignore socket errors locally
     }
-  }, [dispatch, typing.startTime, typing.text.length]);
+  }, [dispatch, typing.startTime, typing.text.length, typing.text, raceLocked, typing.status]);
 
   const handleReset = useCallback(() => {
     dispatch(resetTyping());
