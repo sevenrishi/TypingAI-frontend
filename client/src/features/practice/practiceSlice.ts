@@ -42,6 +42,10 @@ const slice = createSlice({
     startPractice(state) {
       state.started = true;
     },
+    // Force end the practice early (e.g. when user finishes typing)
+    endPractice(state) {
+      state.timeRemaining = 0;
+    },
     tick(state) {
       if (state.timeRemaining > 0) {
         state.timeRemaining -= 250; // tick every 250ms
@@ -53,5 +57,5 @@ const slice = createSlice({
   },
 });
 
-export const { selectTime, setScriptMode, setCustomScript, selectDefaultScript, startPractice, tick, reset } = slice.actions;
+export const { selectTime, setScriptMode, setCustomScript, selectDefaultScript, startPractice, endPractice, tick, reset } = slice.actions;
 export default slice.reducer;
