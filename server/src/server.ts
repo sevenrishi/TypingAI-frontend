@@ -6,6 +6,7 @@ import aiRoutes from './routes/aiRoutes';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import resultRoutes from './routes/resultRoutes';
+import sessionRoutes from './routes/sessionRoutes';
 import { createServer } from 'http';
 import { Server as IOServer } from 'socket.io';
 import { attachRoomHandlers } from './sockets/rooms';
@@ -23,6 +24,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/results', resultRoutes);
+app.use('/api/sessions', sessionRoutes);
 
 const httpServer = createServer(app);
 const io = new IOServer(httpServer, { cors: { origin: '*' } });

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfilePage from '../features/user/components/ProfilePage';
+import UserHistory from '../components/UserHistory';
 
 export default function UserProfilePage() {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ export default function UserProfilePage() {
   return (
     <div className="space-y-8">
       <ProfilePage onClose={() => navigate('/')} />
+      <UserHistory />
     </div>
   );
 }

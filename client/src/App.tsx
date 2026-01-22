@@ -10,6 +10,7 @@ import ProfilePage from './features/user/components/ProfilePage';
 import SignIn from './features/auth/components/SignIn';
 import SignUp from './features/auth/components/SignUp';
 import TypingLoader from './components/TypingLoader';
+import ProtectedRoute from './components/ProtectedRoute';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from './store';
 import { logout } from './features/auth/authSlice';
@@ -153,11 +154,11 @@ export default function App() {
         <main className="p-6 max-w-6xl mx-auto">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/typing" element={<TypingPage />} />
-            <Route path="/practice" element={<PracticePage />} />
-            <Route path="/learn" element={<LearnPage />} />
-            <Route path="/battleground" element={<BattlegroundPage />} />
-            <Route path="/profile" element={<UserProfilePage />} />
+            <Route path="/typing" element={<ProtectedRoute element={<TypingPage />} onShowSignIn={() => setShowSignIn(true)} />} />
+            <Route path="/practice" element={<ProtectedRoute element={<PracticePage />} onShowSignIn={() => setShowSignIn(true)} />} />
+            <Route path="/learn" element={<ProtectedRoute element={<LearnPage />} onShowSignIn={() => setShowSignIn(true)} />} />
+            <Route path="/battleground" element={<ProtectedRoute element={<BattlegroundPage />} onShowSignIn={() => setShowSignIn(true)} />} />
+            <Route path="/profile" element={<ProtectedRoute element={<UserProfilePage />} onShowSignIn={() => setShowSignIn(true)} />} />
           </Routes>
         </main>
       </div>
