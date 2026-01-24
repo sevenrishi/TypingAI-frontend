@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import TypingPage from './pages/TypingPage';
@@ -9,6 +9,8 @@ import UserProfilePage from './pages/UserProfilePage';
 import ProfilePage from './features/user/components/ProfilePage';
 import SignIn from './features/auth/components/SignIn';
 import SignUp from './features/auth/components/SignUp';
+import TypingLoader from './components/TypingLoader';
+import ProtectedRoute from './components/ProtectedRoute';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from './store';
 import { logout } from './features/auth/authSlice';
@@ -19,11 +21,21 @@ export default function App() {
   const [showProfile, setShowProfile] = useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const auth = useSelector((s: RootState) => s.auth);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    // Show loader for 2.5 seconds on app startup
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div>
+      <TypingLoader isLoading={isLoading} duration={2500} />
       <div className={`min-h-screen transition-colors duration-300 ${
         theme === 'dark' 
           ? 'bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100' 
@@ -142,11 +154,11 @@ export default function App() {
         <main className="p-6 max-w-6xl mx-auto">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/typing" element={<TypingPage />} />
-            <Route path="/practice" element={<PracticePage />} />
-            <Route path="/learn" element={<LearnPage />} />
-            <Route path="/battleground" element={<BattlegroundPage />} />
-            <Route path="/profile" element={<UserProfilePage />} />
+            <Route path="/typing" element={<ProtectedRoute element={<TypingPage />} onShowSignIn={() => setShowSignIn(true)} />} />
+            <Route path="/practice" element={<ProtectedRoute element={<PracticePage />} onShowSignIn={() => setShowSignIn(true)} />} />
+            <Route path="/learn" element={<ProtectedRoute element={<LearnPage />} onShowSignIn={() => setShowSignIn(true)} />} />
+            <Route path="/battleground" element={<ProtectedRoute element={<BattlegroundPage />} onShowSignIn={() => setShowSignIn(true)} />} />
+            <Route path="/profile" element={<ProtectedRoute element={<UserProfilePage />} onShowSignIn={() => setShowSignIn(true)} />} />
           </Routes>
         </main>
       </div>
