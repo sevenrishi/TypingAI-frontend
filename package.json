@@ -1,19 +1,40 @@
 {
-  "name": "typing-ai",
+  "name": "typing-ai-client",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"npm run dev --workspace=client\" \"npm run dev --workspace=server\"",
-    "dev:client": "npm run dev --workspace=client",
-    "dev:server": "npm run dev --workspace=server",
-    "build": "npm run build --workspace=client && npm run build --workspace=server",
-    "install-all": "npm install && npm install --workspace=client && npm install --workspace=server"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "lint": "eslint 'src/**/*.{ts,tsx,js,jsx}' --ext .ts,.tsx,.js,.jsx",
+    "format": "prettier --write ."
   },
-  "workspaces": [
-    "client",
-    "server"
-  ],
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
+    "axios": "^1.5.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.1.1",
+    "react-router-dom": "^7.12.0",
+    "recharts": "^3.6.0",
+    "socket.io-client": "^4.8.1"
+  },
   "devDependencies": {
-    "concurrently": "^8.2.0"
+    "@types/react": "^18.2.28",
+    "@types/react-dom": "^18.2.11",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.4.14",
+    "eslint": "^8.50.0",
+    "jsdom": "^27.4.0",
+    "postcss": "^8.4.34",
+    "prettier": "^3.0.0",
+    "tailwindcss": "^3.4.5",
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0",
+    "vitest": "^1.0.0"
   }
 }
