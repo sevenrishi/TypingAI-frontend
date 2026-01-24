@@ -24,7 +24,7 @@ export const loadUser = createAsyncThunk('auth/loadUser', async () => {
   return data.user;
 });
 
-const initialState = { user: null as User, status: 'idle' as string, token: (localStorage.getItem('token') || null) };
+const initialState = { user: null as User, status: 'idle' as string, token: (localStorage.getItem('token') || null), isAuthChecked: false };
 
 const slice = createSlice({
   name: 'auth',
@@ -34,16 +34,21 @@ const slice = createSlice({
       state.user = null;
       state.token = null;
       localStorage.removeItem('token');
+    },
+    setAuthChecked(state, action) {
+      state.isAuthChecked = action.payload;
     }
   },
   extraReducers(builder) {
     builder
       .addCase(login.pending, state => { state.status = 'loading'; })
-      .addCase(login.fulfilled, (state, action: any) => { state.status = 'idle'; state.user = action.payload.user; state.token = action.payload.token; })
-      .addCase(register.fulfilled, (state, action: any) => { state.status = 'idle'; state.user = action.payload.user; state.token = action.payload.token; })
-      .addCase(loadUser.fulfilled, (state, action: any) => { state.user = action.payload; state.status = 'idle'; });
+      .addCase(login.fulfilled, (state, action: any) => { state.status = 'idle'; state.user = action.payload.user; state.token = action.payload.token; state.isAuthChecked = true; })
+      .addCase(register.fulfilled, (state, action: any) => { state.status = 'idle'; state.user = action.payload.user; state.token = action.payload.token; state.isAuthChecked = true; })
+      .addCase(loadUser.pending, state => { state.status = 'loading'; })
+      .addCase(loadUser.fulfilled, (state, action: any) => { state.user = action.payload; state.status = 'idle'; state.isAuthChecked = true; })
+      .addCase(loadUser.rejected, state => { state.status = 'idle'; state.isAuthChecked = true; });
   }
 });
 
-export const { logout } = slice.actions;
+export const { logout, setAuthChecked } = slice.actions;
 export default slice.reducer;
