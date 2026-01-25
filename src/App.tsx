@@ -6,7 +6,6 @@ import BattlegroundPage from './pages/BattlegroundPage';
 import PracticePage from './pages/PracticePage';
 import LearnPage from './pages/LearnPage';
 import UserProfilePage from './pages/UserProfilePage';
-import ProfilePage from './features/user/components/ProfilePage';
 import SignIn from './features/auth/components/SignIn';
 import SignUp from './features/auth/components/SignUp';
 import TypingLoader from './components/TypingLoader';
@@ -18,7 +17,6 @@ import { useTheme } from './providers/ThemeProvider';
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
-  const [showProfile, setShowProfile] = useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,7 +39,7 @@ export default function App() {
           ? 'bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100' 
           : 'bg-gradient-to-b from-white to-gray-50 text-gray-900'
       }`}>
-        <header className={`p-6 flex items-center justify-between max-w-6xl mx-auto border-b transition-colors duration-300 ${
+        <header className={`p-6 flex items-center justify-between container mx-auto border-b transition-colors duration-300 ${
           theme === 'dark' 
             ? 'border-gray-700' 
             : 'border-gray-200'
@@ -151,7 +149,7 @@ export default function App() {
           </div>
         </header>
 
-        <main className="p-6 max-w-6xl mx-auto">
+        <main className="p-6 container mx-auto">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/typing" element={<ProtectedRoute element={<TypingPage />} onShowSignIn={() => setShowSignIn(true)} />} />
@@ -162,7 +160,6 @@ export default function App() {
           </Routes>
         </main>
       </div>
-      {showProfile && <ProfilePage onClose={() => setShowProfile(false)} />}
       {showSignIn && <SignIn onClose={() => setShowSignIn(false)} onSwitch={() => { setShowSignIn(false); setShowSignUp(true); }} />}
       {showSignUp && <SignUp onClose={() => setShowSignUp(false)} onSwitch={() => { setShowSignUp(false); setShowSignIn(true); }} />}
     </div>

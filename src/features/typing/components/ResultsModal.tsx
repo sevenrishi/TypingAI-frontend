@@ -27,7 +27,7 @@ export default function ResultsModal({ visible, onClose, stats, onSave }:
         ? 'bg-black/40'
         : 'bg-black/20'
     }`}>
-      <div className={`p-8 rounded-lg w-full max-w-2xl shadow-2xl transition-colors duration-300 my-4 ${
+      <div className={`p-8 rounded-lg max-w-2xl mx-auto shadow-2xl transition-colors duration-300 my-4 ${
         theme === 'dark'
           ? 'bg-gray-800'
           : 'bg-white'

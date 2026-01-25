@@ -28,6 +28,10 @@ const slice = createSlice({
       if (!state.startTime) state.startTime = Date.now();
       state.status = 'running';
     },
+    setStartTime(state, action: PayloadAction<number>) {
+      state.startTime = action.payload;
+      state.status = 'running';
+    },
     updateTyped(state, action: PayloadAction<string>) {
       // Don't accept new input after finished
       if (state.status === 'finished') return;
@@ -66,7 +70,7 @@ const slice = createSlice({
   }
 });
 
-export const { loadText, startIfNeeded, updateTyped, tick, finishTest, reset } = slice.actions;
+export const { loadText, startIfNeeded, setStartTime, updateTyped, tick, finishTest, reset } = slice.actions;
 export default slice.reducer;
 
 export const saveResult = createAsyncThunk('typing/saveResult', async (payload: { wpm: number; cpm: number; accuracy: number; errors: number; duration: number; text: string; room?: string }) => {
