@@ -63,7 +63,7 @@ export default function HomePage() {
         </p>
         
         {/* CTA Keyboard Keys */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+        <div className="container mx-auto grid grid-cols-2 md:grid-cols-3 gap-4">
           <KeyButton label="START" href="/typing" icon="▶" />
           <KeyButton label="PRACTICE" href="/practice" icon="🎯" />
           <KeyButton label="RACE" href="/battleground" icon="🏁" />

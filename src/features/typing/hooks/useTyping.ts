@@ -2,7 +2,7 @@ import { useEffect, useCallback, useMemo, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
-import { startIfNeeded, updateTyped, tick, finishTest, reset as resetTyping } from '../typingSlice';
+import { startIfNeeded, setStartTime, updateTyped, tick, finishTest, reset as resetTyping } from '../typingSlice';
 import { calcWPM, calcCPM, calcAccuracy } from '../../../utils/metrics';
 import { useSocket } from '../../multiplayer/hooks/useSocket';
 
@@ -11,8 +11,7 @@ export function useTyping() {
   const typing = useSelector((s: RootState) => s.typing);
   const [showResults, setShowResults] = useState(false);
   const roomId = useSelector((s: RootState) => s.room.roomId);
-  const { sendProgress } = useSocket();
-  const { socket } = useSocket();
+  const { sendProgress, socket } = useSocket();
   const [raceLocked, setRaceLocked] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [startAt, setStartAt] = useState<number | null>(null);
@@ -28,8 +27,7 @@ export function useTyping() {
   useEffect(() => {
     if (!socket) return;
     const onStart = (payload: any) => {
-      const s = payload?.startAt || payload?.startAt === 0 ? payload.startAt : payload?.startAt;
-      const start = s || Date.now();
+      const start = (payload && typeof payload.startAt === 'number') ? payload.startAt : Date.now();
       setStartAt(start);
       setRaceLocked(true);
       // compute countdown and unlock at start
@@ -40,6 +38,13 @@ export function useTyping() {
         setCountdown(remain);
         if (Date.now() >= localStart) {
           setRaceLocked(false);
+          // Use server synced start time to set typing.startTime so elapsed is consistent
+          try {
+            dispatch(setStartTime(localStart));
+            console.debug('[useTyping] dispatched setStartTime', { localStart });
+          } catch (err) {
+            console.warn('[useTyping] failed to dispatch setStartTime', err);
+          }
           setCountdown(null);
           setStartAt(null);
           clearInterval(interval);

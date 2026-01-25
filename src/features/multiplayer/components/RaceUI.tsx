@@ -41,7 +41,7 @@ export default function RaceUI() {
   // Update room text when aiText changes (after generation)
   useEffect(() => {
     if (aiText && room.roomId && !room.text) {
-      dispatch(setRoom({ roomId: room.roomId, text: aiText }));
+      dispatch(setRoom({ roomId: room.roomId, text: aiText, isHost: room.isHost }));
       dispatch(loadTextAction(aiText));
     }
   }, [aiText, room.roomId, room.text, dispatch]);
@@ -52,18 +52,17 @@ export default function RaceUI() {
     
     // ensure text exists - if not, generate it
     if (!textToUse) {
-      await dispatch(generateText({ topic: 'General', length: 'short' }));
-      // After dispatch, aiText should be updated via redux selector
-      textToUse = aiText;
+      const res: any = await dispatch(generateText({ topic: 'General', length: 'short' }));
+      textToUse = res.payload || '';
     }
-    
+
     if (!textToUse) {
       alert('Failed to generate text');
       return;
     }
     
     createRoom(roomCode, textToUse, name);
-    dispatch(setRoom({ roomId: roomCode, text: textToUse }));
+    dispatch(setRoom({ roomId: roomCode, text: textToUse, isHost: true }));
     setCode(roomCode);
   };
 

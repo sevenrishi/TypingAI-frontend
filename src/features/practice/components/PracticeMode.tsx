@@ -8,7 +8,7 @@ import TextDisplay from '../../typing/components/TextDisplay';
 import StatsPanel from '../../typing/components/StatsPanel';
 import ResultsPage from './ResultsPage';
 import { useTheme } from '../../../providers/ThemeProvider';
-import { generateText } from '../../ai/aiSlice';
+import { generateText, clear } from '../../ai/aiSlice';
 
 const TIMER_OPTIONS = [
   { label: '1 min', value: 60000, length: 'short' as const },
@@ -77,13 +77,15 @@ export default function PracticeMode() {
     }
   }, [practice.scriptSelected, practice.scriptMode, practice.selectedTime, dispatch]);
 
-  // Load generated script
+  // Load generated script only when user has opened the generate UI
   useEffect(() => {
-    if (aiText && practice.scriptMode === 'generate') {
+    if (aiText && practice.scriptMode === 'generate' && showGenerateUI) {
       dispatch(loadTextAction(aiText));
       dispatch(selectDefaultScript()); // Mark script as selected
+      // hide generate UI after selecting the script
+      setShowGenerateUI(false);
     }
-  }, [aiText, practice.scriptMode, dispatch]);
+  }, [aiText, practice.scriptMode, showGenerateUI, dispatch]);
 
   // Handle timer countdown
   useEffect(() => {
@@ -120,6 +122,8 @@ export default function PracticeMode() {
   };
 
   const handleSelectGenerateScript = () => {
+    // clear any previously generated global AI text so the user starts fresh
+    dispatch(clear());
     dispatch(setScriptMode('generate'));
     setShowGenerateUI(true);
   };
@@ -163,6 +167,8 @@ export default function PracticeMode() {
     setTopic('');
     setShowGenerateUI(false);
     setError('');
+    // clear any generated AI text when leaving practice
+    dispatch(clear());
   };
 
   // Step 1: Timer Selection (Always shown first)

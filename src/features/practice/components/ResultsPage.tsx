@@ -55,7 +55,7 @@ export default function ResultsPage({ wpm, cpm, accuracy, errors, duration, text
 
   return (
     <div className={`min-h-screen ${bgColor} p-6`}>
-      <div className="max-w-6xl mx-auto">
+      <div className="container mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className={`text-4xl font-bold ${textColor} mb-2`}>Test Complete! 🎉</h1>
