@@ -7,7 +7,7 @@ import './index.css';
 import { store } from './store';
 import SocketProvider from './providers/SocketProvider';
 import { ThemeProvider } from './providers/ThemeProvider';
-import { loadUser } from './features/auth/authSlice';
+import { loadUser, setAuthChecked } from './features/auth/authSlice';
 import { fetchProfile } from './features/user/profileSlice';
 
 // on startup, if token exists, attempt to load user and profile
@@ -16,8 +16,12 @@ if (token) {
   store.dispatch(loadUser() as any).then(() => {
     store.dispatch(fetchProfile() as any);
   }).catch(() => {
-    // ignore
+    // Mark auth as checked even if loading fails
+    store.dispatch(setAuthChecked(true));
   });
+} else {
+  // No token, mark auth as checked immediately
+  store.dispatch(setAuthChecked(true));
 }
 
 createRoot(document.getElementById('root')!).render(
@@ -33,3 +37,4 @@ createRoot(document.getElementById('root')!).render(
     </Provider>
   </React.StrictMode>
 );
+
