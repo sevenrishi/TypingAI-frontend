@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useAppDispatch } from '../../../hooks/useAppDispatch';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
-import { generateText } from '../../ai/aiSlice';
+import { generateTestText } from '../../ai/aiTestSlice';
 import TextDisplay from './TextDisplay';
 import StatsPanel from './StatsPanel';
 import ResultsModal from './ResultsModal';
@@ -14,7 +14,7 @@ import { useTheme } from '../../../providers/ThemeProvider';
 export default function TypingTest() {
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
-  const aiText = useSelector((s: RootState) => s.ai.text);
+  const aiText = useSelector((s: RootState) => s.aiTest.text);
   const { typed, text, status, stats, showResults, setShowResults, handleChange, handleReset, raceLocked, countdown } = useTyping();
 
   const [topic, setTopic] = useState('');
@@ -34,7 +34,7 @@ export default function TypingTest() {
       return;
     }
     setError('');
-    await dispatch(generateText({ topic, length }));
+    await dispatch(generateTestText({ topic, length }));
     setTimeout(() => inputRef.current?.focus(), 100);
   };
 
