@@ -235,8 +235,8 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
             onClick={() => onSwitch && onSwitch()}
             className={`font-semibold ${
               theme === 'dark'
-                ? 'text-green-400 hover:text-green-300'
-                : 'text-green-600 hover:text-green-700'
+                ? 'text-indigo-400 hover:text-indigo-300'
+                : 'text-indigo-600 hover:text-indigo-700'
             }`}
           >
             Sign in

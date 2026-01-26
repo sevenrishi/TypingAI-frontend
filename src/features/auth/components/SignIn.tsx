@@ -128,7 +128,7 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
                   : 'text-indigo-600 hover:text-indigo-700'
               }`}
             >
-              Forgot?
+              Forgot Password?
             </button>
           </div>
           <input

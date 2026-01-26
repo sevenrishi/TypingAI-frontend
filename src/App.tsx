@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 import TypingPage from './pages/TypingPage';
 import BattlegroundPage from './pages/BattlegroundPage';
 import PracticePage from './pages/PracticePage';
@@ -153,6 +155,8 @@ export default function App() {
         <main className="p-6 container mx-auto">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
             <Route path="/typing" element={<ProtectedRoute element={<TypingPage />} onShowSignIn={() => setShowSignIn(true)} />} />
             <Route path="/practice" element={<ProtectedRoute element={<PracticePage />} onShowSignIn={() => setShowSignIn(true)} />} />
             <Route path="/learn" element={<ProtectedRoute element={<LearnPage />} onShowSignIn={() => setShowSignIn(true)} />} />
