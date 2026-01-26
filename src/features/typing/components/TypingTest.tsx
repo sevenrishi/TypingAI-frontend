@@ -5,26 +5,29 @@ import { RootState } from '../../../store';
 import { generateTestText } from '../../ai/aiTestSlice';
 import TextDisplay from './TextDisplay';
 import StatsPanel from './StatsPanel';
-import ResultsModal from './ResultsModal';
-import { saveResult } from '../typingSlice';
 import { useTyping } from '../hooks/useTyping';
-import { loadText as loadTextAction } from '../typingSlice';
+import { loadText as loadTextAction, reset as resetTypingAction } from '../typingSlice';
 import { useTheme } from '../../../providers/ThemeProvider';
+import ResultsPage from '../../practice/components/ResultsPage';
 
 export default function TypingTest() {
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
   const aiText = useSelector((s: RootState) => s.aiTest.text);
-  const { typed, text, status, stats, showResults, setShowResults, handleChange, handleReset, raceLocked, countdown } = useTyping();
+  const { typed, text, status, stats, handleChange, handleReset, raceLocked, countdown } = useTyping();
 
   const [topic, setTopic] = useState('');
   const [length, setLength] = useState<'short'|'medium'|'long'>('short');
   const [error, setError] = useState('');
+  const [startTime, setStartTime] = useState(0);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   // when AI text changes, load into typing slice
   React.useEffect(() => {
-    if (aiText) dispatch(loadTextAction(aiText));
+    if (aiText) {
+      dispatch(loadTextAction(aiText));
+      setStartTime(Date.now());
+    }
   }, [aiText, dispatch]);
 
   const handleStart = async () => {
@@ -37,6 +40,29 @@ export default function TypingTest() {
     await dispatch(generateTestText({ topic, length }));
     setTimeout(() => inputRef.current?.focus(), 100);
   };
+
+  const handleTestReset = () => {
+    setTopic('');
+    setStartTime(0);
+    dispatch(resetTypingAction());
+  };
+
+  // If test is finished, show results page
+  if (status === 'finished' && text.length > 0) {
+    const duration = Date.now() - startTime;
+    return (
+      <ResultsPage
+        wpm={stats.wpm}
+        cpm={stats.cpm}
+        accuracy={stats.accuracy}
+        errors={stats.errors}
+        duration={duration}
+        text={text}
+        typed={typed}
+        onClose={handleTestReset}
+      />
+    );
+  }
 
   return (
     <div className={`p-6 rounded-lg shadow-lg transition-colors duration-300 ${
@@ -143,17 +169,6 @@ export default function TypingTest() {
         />
 
         <StatsPanel wpm={stats.wpm} cpm={stats.cpm} accuracy={stats.accuracy} errors={stats.errors} elapsed={stats.elapsed} />
-
-        <ResultsModal visible={showResults} onClose={() => setShowResults(false)} stats={stats} onSave={() => {
-          (async () => {
-            try {
-              await dispatch(saveResult({ wpm: stats.wpm, cpm: stats.cpm, accuracy: stats.accuracy, errors: stats.errors, duration: stats.elapsed, text }));
-            } catch (err) {
-              console.error('save failed', err);
-            }
-            setShowResults(false);
-          })();
-        }} />
       </div>
     </div>
   );
