@@ -40,7 +40,7 @@ export default function ScriptReview({ text, isGenerating, onGenerate, onUseScri
               <button
                 onClick={() => onGenerate(topic, length)}
                 className={`px-4 py-2 rounded-md font-semibold ${isGenerating ? 'bg-gray-600 text-gray-200 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}>
-                {isGenerating ? 'Generating...' : 'Generate / Regenerate'}
+                {isGenerating ? 'Generating...' : 'Generate'}
               </button>
             </div>
           </div>

@@ -3,7 +3,7 @@ import { useSocket } from '../hooks/useSocket';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import { setRoom, setRoomState } from '../roomSlice';
-import { generateText } from '../../ai/aiSlice';
+import { generateMultiplayerText } from '../../ai/aiMultiplayerSlice';
 import { loadText as loadTextAction } from '../../typing/typingSlice';
 import { useTheme } from '../../../providers/ThemeProvider';
 
@@ -15,7 +15,7 @@ export default function RaceUI() {
   const dispatch = useDispatch();
   const { theme } = useTheme();
   const room = useSelector((s: RootState) => s.room);
-  const aiText = useSelector((s: RootState) => s.ai.text);
+  const aiText = useSelector((s: RootState) => s.aiMultiplayer.text);
   const [code, setCode] = useState('');
   const [name, setName] = useState('Player');
 
@@ -52,7 +52,7 @@ export default function RaceUI() {
     
     // ensure text exists - if not, generate it
     if (!textToUse) {
-      const res: any = await dispatch(generateText({ topic: 'General', length: 'short' }));
+      const res: any = await dispatch(generateMultiplayerText({ topic: 'General', length: 'short' }));
       textToUse = res.payload || '';
     }
 
