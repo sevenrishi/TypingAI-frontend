@@ -29,6 +29,7 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [emailError, setEmailError] = useState('');
   const [confirmError, setConfirmError] = useState('');
 
@@ -50,12 +51,12 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
     if (!displayName || !validateEmail(email) || !password || confirmPassword !== password) return;
     setLoading(true);
     setError(null);
+    setSuccess(null);
     try {
-      await dispatch(register({ email, password, displayName }) as any).unwrap();
-      await dispatch(loadUser() as any);
-      onClose();
+      const result = await dispatch(register({ email, password, displayName }) as any).unwrap();
+      setSuccess(result.message || 'Registration successful! Please check your email to activate your account.');
     } catch (err: any) {
-      setError(err?.message || 'Registration failed. Email may already exist.');
+      setError(err?.error || err?.message || 'Registration failed. Email may already exist.');
     } finally {
       setLoading(false);
     }
@@ -88,6 +89,16 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
               : 'bg-red-100 border-red-300 text-red-700'
           }`}>
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className={`mb-4 p-3 border rounded text-sm ${
+            theme === 'dark'
+              ? 'bg-green-500/20 border-green-500/50 text-green-300'
+              : 'bg-green-100 border-green-300 text-green-700'
+          }`}>
+            {success}
           </div>
         )}
 

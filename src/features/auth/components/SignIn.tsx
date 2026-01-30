@@ -36,7 +36,7 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
       onClose();
     } catch (err: any) {
       // Extract error message from API response
-      const errorMessage = err?.payload?.error || err?.message || 'Email or password is wrong';
+      const errorMessage = err?.error || err?.message || 'Email or password is wrong';
       setError(errorMessage);
     } finally {
       setLoading(false);

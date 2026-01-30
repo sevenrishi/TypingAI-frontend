@@ -9,6 +9,7 @@ import PracticePage from './pages/PracticePage';
 import LearnPage from './pages/LearnPage';
 import UserProfilePage from './pages/UserProfilePage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import ActivationPage from './pages/ActivationPage';
 import SignIn from './features/auth/components/SignIn';
 import SignUp from './features/auth/components/SignUp';
 import TypingLoader from './components/TypingLoader';
@@ -163,6 +164,7 @@ export default function App() {
             <Route path="/battleground" element={<ProtectedRoute element={<BattlegroundPage />} onShowSignIn={() => setShowSignIn(true)} />} />
             <Route path="/profile" element={<ProtectedRoute element={<UserProfilePage />} onShowSignIn={() => setShowSignIn(true)} />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/activate" element={<ActivationPage />} />
           </Routes>
         </main>
       </div>
