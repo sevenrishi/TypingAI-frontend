@@ -37,14 +37,15 @@ export default function App() {
       <div className={`min-h-screen transition-colors duration-300 ${
         theme === 'dark' 
           ? 'bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100' 
-          : 'bg-gradient-to-b from-white to-gray-50 text-gray-900'
+          : 'bg-gradient-to-b from-slate-50 via-white to-slate-100 text-slate-900'
       }`}>
-        <header className={`p-6 flex items-center justify-between container mx-auto border-b transition-colors duration-300 ${
+        <header className={`border-b transition-colors duration-300 ${
           theme === 'dark' 
             ? 'border-gray-700' 
             : 'border-gray-200'
         }`}>
-          <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <div className="app-shell py-6 flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md font-bold ${
               theme === 'dark'
                 ? 'bg-indigo-500 text-white'
@@ -56,7 +57,7 @@ export default function App() {
             </div>
           </Link>
 
-          <nav className="flex items-center gap-4">
+            <nav className="flex items-center gap-4">
             <Link to="/" className={`px-3 py-1 rounded transition-colors duration-200 ${
               theme === 'dark'
                 ? 'hover:bg-gray-700 text-gray-100'
@@ -83,9 +84,9 @@ export default function App() {
                 ? 'hover:bg-gray-700 text-gray-100'
                 : 'hover:bg-gray-200 text-gray-900'
             }`}>Typing Battleground</Link>
-          </nav>
+            </nav>
 
-          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3">
             {auth.user ? (
               <>
                 <Link to="/profile" className={`px-3 py-1 rounded transition-colors duration-200 ${
@@ -146,10 +147,11 @@ export default function App() {
                 )}
               </div>
             </button>
+            </div>
           </div>
         </header>
 
-        <main className="p-6 container mx-auto">
+        <main className="app-shell py-6">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/typing" element={<ProtectedRoute element={<TypingPage />} onShowSignIn={() => setShowSignIn(true)} />} />
