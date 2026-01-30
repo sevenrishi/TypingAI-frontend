@@ -29,7 +29,7 @@ export default function ResetPasswordPage() {
           email={resetEmail}
           onClose={() => navigate('/')}
           onSuccess={() => {
-            navigate('/');
+            navigate('/login');
           }}
         />
       )}

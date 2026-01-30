@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 import TypingPage from './pages/TypingPage';
 import BattlegroundPage from './pages/BattlegroundPage';
 import PracticePage from './pages/PracticePage';
 import LearnPage from './pages/LearnPage';
 import UserProfilePage from './pages/UserProfilePage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import ActivationPage from './pages/ActivationPage';
 import SignIn from './features/auth/components/SignIn';
 import SignUp from './features/auth/components/SignUp';
 import TypingLoader from './components/TypingLoader';
@@ -155,12 +158,15 @@ export default function App() {
         <main className="app-shell py-6">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
             <Route path="/typing" element={<ProtectedRoute element={<TypingPage />} onShowSignIn={() => setShowSignIn(true)} />} />
             <Route path="/practice" element={<ProtectedRoute element={<PracticePage />} onShowSignIn={() => setShowSignIn(true)} />} />
             <Route path="/learn" element={<ProtectedRoute element={<LearnPage />} onShowSignIn={() => setShowSignIn(true)} />} />
             <Route path="/battleground" element={<ProtectedRoute element={<BattlegroundPage />} onShowSignIn={() => setShowSignIn(true)} />} />
             <Route path="/profile" element={<ProtectedRoute element={<UserProfilePage />} onShowSignIn={() => setShowSignIn(true)} />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/activate" element={<ActivationPage />} />
           </Routes>
         </main>
       </div>
