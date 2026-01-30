@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { setRoom, setRoomState, setWorkflowStage, leaveRoom, markPlayerFinished } from '../features/multiplayer/roomSlice';
-import { generateText } from '../features/ai/aiSlice';
+import { generateMultiplayerText } from '../features/ai/aiMultiplayerSlice';
 import { loadText as loadTextAction } from '../features/typing/typingSlice';
 import { useSocket } from '../features/multiplayer/hooks/useSocket';
 
@@ -15,7 +15,7 @@ import ScriptReview from '../features/multiplayer/components/ScriptReview';
 import RaceProgress from '../features/multiplayer/components/RaceProgress';
 import RaceResults from '../features/multiplayer/components/RaceResults';
 import RaceCountdown from '../features/multiplayer/components/RaceCountdown';
-import TypingTest from '../features/typing/components/TypingTest';
+import TypingBattleground from '../features/typing/components/TypingBattleground';
 
 function genRoomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
@@ -24,7 +24,7 @@ function genRoomCode() {
 export default function BattlegroundPage() {
   const dispatch = useDispatch();
   const room = useSelector((s: RootState) => s.room);
-  const aiText = useSelector((s: RootState) => s.ai.text);
+  const aiText = useSelector((s: RootState) => s.aiMultiplayer.text);
   const typing = useSelector((s: RootState) => s.typing);
 
   const [playerName, setPlayerName] = useState('');
@@ -118,7 +118,7 @@ export default function BattlegroundPage() {
   const handleGenerateScript = async (topic: string, length: 'short' | 'medium' | 'long') => {
     setIsGenerating(true);
     try {
-      await dispatch(generateText({ topic: topic || 'General', length }));
+      await dispatch(generateMultiplayerText({ topic: topic || 'General', length }));
     } finally {
       setIsGenerating(false);
     }
@@ -229,7 +229,7 @@ export default function BattlegroundPage() {
         {room.raceStart && <RaceCountdown startAt={room.raceStart} />}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
-            <TypingTest />
+            <TypingBattleground />
           </div>
           <div className="lg:col-span-1">
             <RaceProgress

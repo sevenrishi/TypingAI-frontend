@@ -8,7 +8,7 @@ import TextDisplay from '../../typing/components/TextDisplay';
 import StatsPanel from '../../typing/components/StatsPanel';
 import ResultsPage from './ResultsPage';
 import { useTheme } from '../../../providers/ThemeProvider';
-import { generateText, clear } from '../../ai/aiSlice';
+import { generatePracticeText, clear } from '../../ai/aiPracticeSlice';
 
 const TIMER_OPTIONS = [
   { label: '1 min', value: 60000, length: 'short' as const },
@@ -57,7 +57,7 @@ export default function PracticeMode() {
   const dispatch = useDispatch();
   const { theme } = useTheme();
   const practice = useSelector((s: RootState) => s.practice);
-  const aiText = useSelector((s: RootState) => s.ai.text);
+  const aiText = useSelector((s: RootState) => s.aiPractice.text);
   const { typed, text, stats, handleChange, handleReset: resetTyping } = useTyping();
   
   const [showGenerateUI, setShowGenerateUI] = useState(false);
@@ -137,7 +137,7 @@ export default function PracticeMode() {
     setError('');
     const scriptConfig = SCRIPT_LIBRARY[practice.selectedTime as keyof typeof SCRIPT_LIBRARY];
     const length = scriptConfig?.length || 'long';
-    await dispatch(generateText({ topic, length }) as any);
+    await dispatch(generatePracticeText({ topic, length }) as any);
   };
 
   const handleStartPractice = () => {

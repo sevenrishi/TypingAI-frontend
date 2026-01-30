@@ -12,14 +12,14 @@ export default function HomePage() {
         px-8 py-4 rounded-lg font-bold text-center transition-all duration-200
         ${theme === 'dark' 
           ? 'bg-gradient-to-b from-gray-700 to-gray-800 border-2 border-cyan-400/50 text-cyan-300 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:border-cyan-300' 
-          : 'bg-gradient-to-b from-indigo-600 to-indigo-700 border-2 border-indigo-400 text-white shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:border-indigo-300'}
+          : 'bg-white border border-indigo-200 text-indigo-700 shadow-md shadow-indigo-200/40 hover:shadow-indigo-300/50 hover:border-indigo-300 hover:bg-indigo-50'}
         transform group-hover:-translate-y-1 active:translate-y-0
       `}>
         <div className="text-2xl mb-1">{icon}</div>
         <div className="text-sm">{label}</div>
         <div className={`
           absolute inset-0 rounded-lg transition-opacity opacity-0 group-hover:opacity-100
-          ${theme === 'dark' ? 'bg-cyan-400/10' : 'bg-indigo-300/10'}
+          ${theme === 'dark' ? 'bg-cyan-400/10' : 'bg-indigo-500/5'}
         `}></div>
       </div>
     </Link>
@@ -30,17 +30,17 @@ export default function HomePage() {
       relative p-6 rounded-lg transition-all duration-300 transform hover:-translate-y-1
       ${theme === 'dark'
         ? 'bg-gradient-to-br from-gray-700/50 to-gray-800/50 border-2 border-cyan-500/30 hover:border-cyan-400/70 shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/30'
-        : 'bg-gradient-to-br from-indigo-600/30 to-indigo-700/30 border-2 border-indigo-400/40 hover:border-indigo-300/80 shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40'}
+        : 'bg-white/80 border border-slate-200 hover:border-indigo-300/70 shadow-md shadow-slate-200/50 hover:shadow-indigo-200/50'}
     `}>
       <div className={`
         absolute top-2 right-2 w-3 h-3 rounded-full
-        ${theme === 'dark' ? 'bg-cyan-400' : 'bg-indigo-300'}
+        ${theme === 'dark' ? 'bg-cyan-400' : 'bg-indigo-400'}
       `}></div>
       <div className="text-4xl mb-3">{icon}</div>
-      <h3 className={`font-bold mb-2 text-lg ${theme === 'dark' ? 'text-cyan-200' : 'text-indigo-100'}`}>
+      <h3 className={`font-bold mb-2 text-lg ${theme === 'dark' ? 'text-cyan-200' : 'text-slate-800'}`}>
         {label}
       </h3>
-      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-indigo-200'}`}>
+      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-slate-600'}`}>
         {description}
       </p>
     </div>
@@ -53,12 +53,12 @@ export default function HomePage() {
         rounded-2xl shadow-2xl p-12 transition-all duration-300 text-center
         ${theme === 'dark'
           ? 'bg-gradient-to-b from-gray-800/60 via-gray-900/40 to-gray-800/60 border-2 border-cyan-500/40'
-          : 'bg-gradient-to-b from-indigo-700/40 via-indigo-600/30 to-indigo-700/40 border-2 border-indigo-400/50'}
+          : 'bg-gradient-to-b from-white via-slate-50 to-slate-100 border border-slate-200'}
       `}>
         <div className="mb-6">
           <AnimatedTypingTitle />
         </div>
-        <p className={`text-lg mb-10 tracking-wide ${theme === 'dark' ? 'text-gray-300' : 'text-indigo-100'}`}>
+        <p className={`text-lg mb-10 tracking-wide ${theme === 'dark' ? 'text-gray-300' : 'text-slate-600'}`}>
           Master your keyboard. Dominate your speed. Compete globally.
         </p>
         
@@ -75,7 +75,7 @@ export default function HomePage() {
 
       {/* Features as Keyboard Keys */}
       <div>
-        <h2 className={`text-4xl font-bold mb-8 text-center ${theme === 'dark' ? 'text-cyan-300' : 'text-indigo-200'}`}>
+        <h2 className={`text-4xl font-bold mb-8 text-center ${theme === 'dark' ? 'text-cyan-300' : 'text-indigo-600'}`}>
           FEATURES
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -102,9 +102,9 @@ export default function HomePage() {
         rounded-2xl shadow-xl p-10 transition-all duration-300
         ${theme === 'dark'
           ? 'bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-2 border-cyan-500/30'
-          : 'bg-gradient-to-br from-indigo-700/40 to-indigo-600/40 border-2 border-indigo-400/30'}
+          : 'bg-white/90 border border-slate-200'}
       `}>
-        <h3 className={`text-3xl font-bold mb-8 tracking-wider ${theme === 'dark' ? 'text-cyan-300' : 'text-indigo-100'}`}>
+        <h3 className={`text-3xl font-bold mb-8 tracking-wider ${theme === 'dark' ? 'text-cyan-300' : 'text-slate-800'}`}>
           WHY TYPING AI?
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -120,10 +120,10 @@ export default function HomePage() {
               flex items-center gap-4 p-4 rounded-lg transition-all duration-300
               ${theme === 'dark'
                 ? 'bg-gray-700/30 hover:bg-gray-700/50 border border-cyan-400/30'
-                : 'bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-300/40'}
+                : 'bg-slate-50 hover:bg-slate-100 border border-slate-200'}
             `}>
               <span className="text-3xl">{item.icon}</span>
-              <span className={`font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-indigo-100'}`}>
+              <span className={`font-semibold ${theme === 'dark' ? 'text-gray-200' : 'text-slate-700'}`}>
                 {item.text}
               </span>
             </div>
@@ -133,7 +133,7 @@ export default function HomePage() {
 
       {/* Call to Action */}
       <div className="text-center">
-        <p className={`text-lg font-semibold tracking-wide ${theme === 'dark' ? 'text-cyan-300' : 'text-indigo-200'}`}>
+        <p className={`text-lg font-semibold tracking-wide ${theme === 'dark' ? 'text-cyan-300' : 'text-slate-700'}`}>
           Ready to level up your typing game?
         </p>
         <Link to="/typing" className={`
@@ -141,7 +141,7 @@ export default function HomePage() {
           transition-all duration-300 transform hover:-translate-y-1
           ${theme === 'dark'
             ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-gray-900 shadow-lg shadow-cyan-500/50 hover:shadow-cyan-500/70'
-            : 'bg-gradient-to-r from-indigo-400 to-indigo-600 text-white shadow-lg shadow-indigo-500/50 hover:shadow-indigo-500/70'}
+            : 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-lg shadow-indigo-300/60 hover:shadow-indigo-400/70'}
         `}>
           PRESS START ▶
         </Link>
