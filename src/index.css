@@ -16,6 +16,19 @@ body {
   overflow-y: scroll;
 }
 
+@layer base {
+  button {
+    border-radius: 0.7rem;
+    box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.35);
+    transition: transform 150ms ease, box-shadow 150ms ease;
+  }
+
+  button:active {
+    transform: translateY(1px);
+    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.35);
+  }
+}
+
 .app-shell {
   max-width: 1280px;
   margin-inline: auto;

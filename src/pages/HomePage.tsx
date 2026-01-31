@@ -9,20 +9,34 @@ export default function HomePage() {
   const KeyButton = ({ label, href, icon }: { label: string; href: string; icon: string }) => (
     <Link to={href} className={`relative group`}>
       <div className={`
-        px-8 py-4 rounded-lg font-bold text-center transition-all duration-200
+        px-8 py-5 rounded-2xl font-bold text-center transition-all duration-200 border
         ${theme === 'dark' 
-          ? 'bg-gradient-to-b from-gray-700 to-gray-800 border-2 border-cyan-400/50 text-cyan-300 shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/40 hover:border-cyan-300' 
-          : 'bg-white border border-indigo-200 text-indigo-700 shadow-md shadow-indigo-200/40 hover:shadow-indigo-300/50 hover:border-indigo-300 hover:bg-indigo-50'}
-        transform group-hover:-translate-y-1 active:translate-y-0
+          ? 'bg-gradient-to-b from-gray-700 to-gray-900 border-gray-600 text-cyan-200 shadow-[inset_0_-2px_0_rgba(0,0,0,0.6),0_10px_25px_rgba(0,0,0,0.35)] hover:border-cyan-300/70 hover:shadow-cyan-500/25' 
+          : 'bg-gradient-to-b from-white to-slate-200 border-slate-300 text-indigo-700 shadow-[inset_0_-2px_0_rgba(0,0,0,0.12),0_10px_25px_rgba(99,102,241,0.15)] hover:border-indigo-300'}
+        transform group-hover:-translate-y-1 active:translate-y-0 active:shadow-inner
       `}>
         <div className="text-2xl mb-1">{icon}</div>
         <div className="text-sm">{label}</div>
         <div className={`
-          absolute inset-0 rounded-lg transition-opacity opacity-0 group-hover:opacity-100
+          absolute inset-0 rounded-2xl transition-opacity opacity-0 group-hover:opacity-100
           ${theme === 'dark' ? 'bg-cyan-400/10' : 'bg-indigo-500/5'}
         `}></div>
+        <div className={`absolute left-3 right-3 bottom-2 h-1.5 rounded-full ${
+          theme === 'dark' ? 'bg-gray-950/70' : 'bg-slate-300/80'
+        }`}></div>
       </div>
     </Link>
+  );
+
+  const KeyCap = ({ label, wide }: { label: string; wide?: boolean }) => (
+    <div className={`
+      ${wide ? 'col-span-2' : ''} px-3 py-2 rounded-lg text-xs font-bold tracking-widest text-center border
+      ${theme === 'dark'
+        ? 'bg-gradient-to-b from-gray-800 to-gray-900 border-gray-600 text-gray-200 shadow-[inset_0_-2px_0_rgba(0,0,0,0.6)]'
+        : 'bg-gradient-to-b from-white to-slate-200 border-slate-300 text-slate-700 shadow-[inset_0_-2px_0_rgba(0,0,0,0.12)]'}
+    `}>
+      {label}
+    </div>
   );
 
   const FeatureKey = ({ label, description, icon }: { label: string; description: string; icon: string }) => (
@@ -50,11 +64,15 @@ export default function HomePage() {
     <div className="space-y-16">
       {/* Hero Section - Keyboard themed */}
       <div className={`
-        rounded-2xl shadow-2xl p-12 transition-all duration-300 text-center
+        relative overflow-hidden rounded-3xl shadow-2xl p-12 transition-all duration-300 text-center mt-12
         ${theme === 'dark'
-          ? 'bg-gradient-to-b from-gray-800/60 via-gray-900/40 to-gray-800/60 border-2 border-cyan-500/40'
+          ? 'bg-gradient-to-b from-gray-900 via-gray-950 to-gray-900 border-2 border-cyan-500/40'
           : 'bg-gradient-to-b from-white via-slate-50 to-slate-100 border border-slate-200'}
       `}>
+        <div className={`absolute inset-0 pointer-events-none ${theme === 'dark' ? 'opacity-20' : 'opacity-10'}`}>
+          <div className="absolute -top-20 -left-20 w-80 h-80 rounded-full bg-cyan-500/30 blur-3xl" />
+          <div className="absolute -bottom-24 -right-24 w-80 h-80 rounded-full bg-indigo-500/30 blur-3xl" />
+        </div>
         <div className="mb-6">
           <AnimatedTypingTitle />
         </div>
@@ -64,12 +82,38 @@ export default function HomePage() {
         
         {/* CTA Keyboard Keys */}
         <div className="container mx-auto grid grid-cols-2 md:grid-cols-3 gap-4">
-          <KeyButton label="START" href="/typing" icon="▶" />
           <KeyButton label="PRACTICE" href="/practice" icon="🎯" />
-          <KeyButton label="RACE" href="/battleground" icon="🏁" />
           <KeyButton label="LEARN" href="/learn" icon="📚" />
-          <KeyButton label="STATS" href="/profile" icon="📈" />
           <KeyButton label="COMPETE" href="/battleground" icon="⚔️" />
+        </div>
+
+        {/* Decorative keyboard row */}
+        <div className="mt-10 grid grid-cols-12 gap-2 max-w-5xl mx-auto">
+          <KeyCap label="Q" />
+          <KeyCap label="W" />
+          <KeyCap label="E" />
+          <KeyCap label="R" />
+          <KeyCap label="T" />
+          <KeyCap label="Y" />
+          <KeyCap label="U" />
+          <KeyCap label="I" />
+          <KeyCap label="O" />
+          <KeyCap label="P" />
+          <KeyCap label="[" />
+          <KeyCap label="]" />
+          <KeyCap label="A" />
+          <KeyCap label="S" />
+          <KeyCap label="D" />
+          <KeyCap label="F" />
+          <KeyCap label="G" />
+          <KeyCap label="H" />
+          <KeyCap label="J" />
+          <KeyCap label="K" />
+          <KeyCap label="L" />
+          <KeyCap label=";" />
+          <KeyCap label="ENTER" wide />
+          <KeyCap label="SPACE" wide />
+          <KeyCap label="SHIFT" wide />
         </div>
       </div>
 
@@ -99,9 +143,9 @@ export default function HomePage() {
 
       {/* Stats Section - Key Press style */}
       <div className={`
-        rounded-2xl shadow-xl p-10 transition-all duration-300
+        rounded-3xl shadow-xl p-10 transition-all duration-300
         ${theme === 'dark'
-          ? 'bg-gradient-to-br from-gray-800/50 to-gray-900/50 border-2 border-cyan-500/30'
+          ? 'bg-gradient-to-br from-gray-900/70 to-gray-950/60 border-2 border-cyan-500/30'
           : 'bg-white/90 border border-slate-200'}
       `}>
         <h3 className={`text-3xl font-bold mb-8 tracking-wider ${theme === 'dark' ? 'text-cyan-300' : 'text-slate-800'}`}>

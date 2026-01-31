@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, NavLink } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -45,10 +45,10 @@ export default function App() {
       }`}>
         <header className={`border-b transition-colors duration-300 ${
           theme === 'dark' 
-            ? 'border-gray-700' 
-            : 'border-gray-200'
+            ? 'border-gray-700 bg-gray-900/70' 
+            : 'border-gray-200 bg-white/70'
         }`}>
-          <div className="app-shell py-6 flex items-center justify-between">
+          <div className="app-shell py-4 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md font-bold ${
               theme === 'dark'
@@ -61,60 +61,83 @@ export default function App() {
             </div>
           </Link>
 
-            <nav className="flex items-center gap-4">
-            <Link to="/" className={`px-3 py-1 rounded transition-colors duration-200 ${
+            <nav className={`flex items-center gap-3 px-3 py-2 rounded-xl border shadow-md ${
               theme === 'dark'
-                ? 'hover:bg-gray-700 text-gray-100'
-                : 'hover:bg-gray-200 text-gray-900'
-            }`}>Home</Link>
-            <Link to="/practice" className={`px-3 py-1 rounded transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'hover:bg-gray-700 text-gray-100'
-                : 'hover:bg-gray-200 text-gray-900'
-            }`}>Practice</Link>
-            <Link to="/typing" className={`px-3 py-1 rounded transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'hover:bg-gray-700 text-gray-100'
-                : 'hover:bg-gray-200 text-gray-900'
-            }`}>Typing Test</Link>
-            
-            <Link to="/learn" className={`px-3 py-1 rounded transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'hover:bg-gray-700 text-gray-100'
-                : 'hover:bg-gray-200 text-gray-900'
-            }`}>Learn</Link>
-            <Link to="/battleground" className={`px-3 py-1 rounded transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'hover:bg-gray-700 text-gray-100'
-                : 'hover:bg-gray-200 text-gray-900'
-            }`}>Typing Battleground</Link>
+                ? 'bg-gray-900/70 border-gray-700'
+                : 'bg-white/80 border-gray-200'
+            }`}>
+              <NavLink to="/" end className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-bold tracking-wider uppercase transition-all duration-200 border ${
+                isActive
+                  ? theme === 'dark'
+                    ? 'bg-indigo-500 text-white border-indigo-300 shadow-lg shadow-indigo-500/40 -translate-y-0.5'
+                    : 'bg-indigo-600 text-white border-indigo-300 shadow-lg shadow-indigo-300/50 -translate-y-0.5'
+                  : theme === 'dark'
+                  ? 'bg-gray-800 text-gray-200 border-gray-600 shadow-inner hover:bg-gray-700/70'
+                  : 'bg-gray-50 text-gray-800 border-gray-300 shadow-inner hover:bg-gray-100'
+              }`}>Home</NavLink>
+              <NavLink to="/practice" className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-bold tracking-wider uppercase transition-all duration-200 border ${
+                isActive
+                  ? theme === 'dark'
+                    ? 'bg-indigo-500 text-white border-indigo-300 shadow-lg shadow-indigo-500/40 -translate-y-0.5'
+                    : 'bg-indigo-600 text-white border-indigo-300 shadow-lg shadow-indigo-300/50 -translate-y-0.5'
+                  : theme === 'dark'
+                  ? 'bg-gray-800 text-gray-200 border-gray-600 shadow-inner hover:bg-gray-700/70'
+                  : 'bg-gray-50 text-gray-800 border-gray-300 shadow-inner hover:bg-gray-100'
+              }`}>Practice</NavLink>
+              <NavLink to="/typing" className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-bold tracking-wider uppercase transition-all duration-200 border ${
+                isActive
+                  ? theme === 'dark'
+                    ? 'bg-indigo-500 text-white border-indigo-300 shadow-lg shadow-indigo-500/40 -translate-y-0.5'
+                    : 'bg-indigo-600 text-white border-indigo-300 shadow-lg shadow-indigo-300/50 -translate-y-0.5'
+                  : theme === 'dark'
+                  ? 'bg-gray-800 text-gray-200 border-gray-600 shadow-inner hover:bg-gray-700/70'
+                  : 'bg-gray-50 text-gray-800 border-gray-300 shadow-inner hover:bg-gray-100'
+              }`}>Typing Test</NavLink>
+              <NavLink to="/learn" className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-bold tracking-wider uppercase transition-all duration-200 border ${
+                isActive
+                  ? theme === 'dark'
+                    ? 'bg-indigo-500 text-white border-indigo-300 shadow-lg shadow-indigo-500/40 -translate-y-0.5'
+                    : 'bg-indigo-600 text-white border-indigo-300 shadow-lg shadow-indigo-300/50 -translate-y-0.5'
+                  : theme === 'dark'
+                  ? 'bg-gray-800 text-gray-200 border-gray-600 shadow-inner hover:bg-gray-700/70'
+                  : 'bg-gray-50 text-gray-800 border-gray-300 shadow-inner hover:bg-gray-100'
+              }`}>Learn</NavLink>
+              <NavLink to="/battleground" className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-bold tracking-wider uppercase transition-all duration-200 border ${
+                isActive
+                  ? theme === 'dark'
+                    ? 'bg-indigo-500 text-white border-indigo-300 shadow-lg shadow-indigo-500/40 -translate-y-0.5'
+                    : 'bg-indigo-600 text-white border-indigo-300 shadow-lg shadow-indigo-300/50 -translate-y-0.5'
+                  : theme === 'dark'
+                  ? 'bg-gray-800 text-gray-200 border-gray-600 shadow-inner hover:bg-gray-700/70'
+                  : 'bg-gray-50 text-gray-800 border-gray-300 shadow-inner hover:bg-gray-100'
+              }`}>Battleground</NavLink>
             </nav>
 
             <div className="flex items-center gap-3">
             {auth.user ? (
               <>
-                <Link to="/profile" className={`px-3 py-1 rounded transition-colors duration-200 ${
+                <Link to="/profile" className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 border ${
                   theme === 'dark'
-                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-100'
-                    : 'bg-gray-300 hover:bg-gray-400 text-gray-900'
+                    ? 'bg-gray-800 text-gray-200 border-gray-600 shadow-inner hover:bg-gray-700/70'
+                    : 'bg-gray-50 text-gray-800 border-gray-300 shadow-inner hover:bg-gray-100'
                 }`}>Profile</Link>
-                <button onClick={() => dispatch(logout())} className={`px-3 py-1 rounded transition-colors duration-200 ${
+                <button onClick={() => dispatch(logout())} className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 border ${
                   theme === 'dark'
-                    ? 'bg-red-600 hover:bg-red-500'
-                    : 'bg-red-500 hover:bg-red-600 text-white'
+                    ? 'bg-red-700/80 text-white border-red-500 shadow-inner hover:bg-red-600'
+                    : 'bg-red-500 text-white border-red-300 shadow-inner hover:bg-red-600'
                 }`}>Sign Out</button>
               </>
             ) : (
               <>
-                <button onClick={() => setShowSignIn(true)} className={`px-3 py-1 rounded transition-colors duration-200 ${
+                <button onClick={() => setShowSignIn(true)} className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 border ${
                   theme === 'dark'
-                    ? 'bg-indigo-600 hover:bg-indigo-500'
-                    : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                    ? 'bg-indigo-600 text-white border-indigo-400 shadow-inner hover:bg-indigo-500'
+                    : 'bg-indigo-600 text-white border-indigo-300 shadow-inner hover:bg-indigo-700'
                 }`}>Sign In</button>
-                <button onClick={() => setShowSignUp(true)} className={`px-3 py-1 rounded transition-colors duration-200 ${
+                <button onClick={() => setShowSignUp(true)} className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 border ${
                   theme === 'dark'
-                    ? 'bg-green-600 hover:bg-green-500'
-                    : 'bg-green-600 hover:bg-green-700 text-white'
+                    ? 'bg-green-600 text-white border-green-400 shadow-inner hover:bg-green-500'
+                    : 'bg-green-600 text-white border-green-300 shadow-inner hover:bg-green-700'
                 }`}>Sign Up</button>
               </>
             )}
