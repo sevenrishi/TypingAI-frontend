@@ -18,7 +18,7 @@ function initSocket() {
   return sharedSocket;
 }
 
-export function useSocket(onRoomState?: (state: any) => void) {
+export function useSocket(onRoomState?: (state: any) => void, onRoomError?: (error: string) => void) {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
@@ -27,16 +27,21 @@ export function useSocket(onRoomState?: (state: any) => void) {
     if (onRoomState) {
       socket.on('room:state', onRoomState);
     }
-    socket.on('room:error', (e: any) => console.warn('room error', e));
+    const handleRoomError = (e: any) => {
+      console.warn('room error', e);
+      onRoomError?.(e?.error || 'Room error');
+    };
+    socket.on('room:error', handleRoomError);
 
     return () => {
       if (onRoomState) {
         socket.off('room:state', onRoomState);
       }
+      socket.off('room:error', handleRoomError);
       socketRef.current = null;
       // do not disconnect sharedSocket here to allow reuse across app
     };
-  }, [onRoomState]);
+  }, [onRoomState, onRoomError]);
 
   const createRoom = useCallback((room: string, text: string, name?: string) => {
     sharedSocket?.emit('room:create', { room, text, name });
@@ -62,11 +67,15 @@ export function useSocket(onRoomState?: (state: any) => void) {
     sharedSocket?.emit('race:start', { room });
   }, []);
 
+  const resetRace = useCallback((room: string) => {
+    sharedSocket?.emit('race:reset', { room });
+  }, []);
+
   const leaveRoom = useCallback((room: string) => {
     sharedSocket?.emit('room:leave', { room });
   }, []);
 
-  return { createRoom, joinRoom, sendProgress, setReady, startRace, leaveRoom, setRoomText, socket: sharedSocket };
+  return { createRoom, joinRoom, sendProgress, setReady, startRace, resetRace, leaveRoom, setRoomText, socket: sharedSocket };
 }
 
 
