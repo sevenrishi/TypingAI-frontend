@@ -4,11 +4,12 @@ import { useTheme } from '../../../providers/ThemeProvider';
 interface JoinRoomProps {
   playerName: string;
   isLoading: boolean;
+  error?: string | null;
   onJoin: (roomCode: string) => void;
   onBack: () => void;
 }
 
-export default function JoinRoom({ playerName, isLoading, onJoin, onBack }: JoinRoomProps) {
+export default function JoinRoom({ playerName, isLoading, error, onJoin, onBack }: JoinRoomProps) {
   const { theme } = useTheme();
   const [roomCode, setRoomCode] = useState('');
 
@@ -39,6 +40,15 @@ export default function JoinRoom({ playerName, isLoading, onJoin, onBack }: Join
         </p>
 
         <div className="space-y-4">
+          {error && (
+            <div className={`p-3 rounded-md text-sm font-medium text-center ${
+              theme === 'dark'
+                ? 'bg-red-900/40 text-red-200 border border-red-800'
+                : 'bg-red-50 text-red-700 border border-red-200'
+            }`}>
+              {error}
+            </div>
+          )}
           <input
             type="text"
             value={roomCode}
