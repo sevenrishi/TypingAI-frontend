@@ -48,11 +48,20 @@ const slice = createSlice({
       state.finishedPlayers = [];
       state.allPlayersFinished = false;
     },
-    setRoomState(state, action: PayloadAction<{ players: PlayerState[]; host?: string | null; raceStart?: number | null; text?: string }>) {
+    setRoomIdentity(state, action: PayloadAction<{ roomId: string; isHost: boolean }>) {
+      state.roomId = action.payload.roomId;
+      state.isHost = action.payload.isHost;
+    },
+    setRoomState(state, action: PayloadAction<{ players: PlayerState[]; host?: string | null; raceStart?: number | null; text?: string; finishedPlayers?: string[] }>) {
       state.players = action.payload.players;
       if (action.payload.host !== undefined) state.host = action.payload.host || null;
       if (action.payload.raceStart !== undefined) state.raceStart = action.payload.raceStart || null;
       if (action.payload.text !== undefined) state.text = action.payload.text || '';
+      if (action.payload.finishedPlayers !== undefined) state.finishedPlayers = action.payload.finishedPlayers;
+
+      const allFinished = state.players.length > 0
+        && state.players.every(p => state.finishedPlayers.includes(p.id));
+      state.allPlayersFinished = allFinished;
     },
     markPlayerFinished(state, action: PayloadAction<string>) {
       const playerId = action.payload;
@@ -68,6 +77,7 @@ const slice = createSlice({
     resetRaceState(state) {
       state.finishedPlayers = [];
       state.allPlayersFinished = false;
+      state.raceStart = null;
     },
     leaveRoom(state) {
       Object.assign(state, initialState);
@@ -76,5 +86,5 @@ const slice = createSlice({
   }
 });
 
-export const { setPlayerName, setWorkflowStage, setRoom, setRoomState, markPlayerFinished, resetRaceState, leaveRoom } = slice.actions;
+export const { setPlayerName, setWorkflowStage, setRoom, setRoomIdentity, setRoomState, markPlayerFinished, resetRaceState, leaveRoom } = slice.actions;
 export default slice.reducer;

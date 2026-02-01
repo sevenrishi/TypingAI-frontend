@@ -140,15 +140,33 @@ export default function RoomWaiting({
                   ? 'bg-gray-800 border-indigo-600'
                   : 'bg-indigo-50 border-indigo-200'
               }`}>
-                <p className={`text-sm font-semibold mb-3 ${
-                  theme === 'dark' ? 'text-indigo-300' : 'text-indigo-700'
+                <div className="flex items-center justify-between mb-3">
+                  <p className={`text-sm font-semibold ${
+                    theme === 'dark' ? 'text-indigo-300' : 'text-indigo-700'
+                  }`}>
+                    Typing Script
+                  </p>
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    textGenerated
+                      ? theme === 'dark'
+                        ? 'bg-green-600/30 text-green-300'
+                        : 'bg-green-200 text-green-800'
+                      : theme === 'dark'
+                      ? 'bg-yellow-600/30 text-yellow-300'
+                      : 'bg-yellow-200 text-yellow-800'
+                  }`}>
+                    {textGenerated ? 'Ready' : 'Not Ready'}
+                  </span>
+                </div>
+                <p className={`text-xs mb-4 ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                 }`}>
-                  Typing Script
+                  Generated the script for this room. All players will receive the same text.
                 </p>
                 <button
                   onClick={onGenerateScript}
                   disabled={isGenerating || textGenerated}
-                  className={`w-full py-2 rounded-md font-semibold text-sm transition-all duration-200 ${
+                  className={`w-full py-2.5 rounded-md font-semibold text-sm transition-all duration-200 ${
                     isGenerating || textGenerated
                       ? theme === 'dark'
                         ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
@@ -158,13 +176,6 @@ export default function RoomWaiting({
                 >
                   {isGenerating ? '⏳ Generating...' : textGenerated ? '✓ Script Ready' : 'Generate Script'}
                 </button>
-                {textGenerated && (
-                  <p className={`text-xs mt-2 ${
-                    theme === 'dark' ? 'text-green-400' : 'text-green-700'
-                  }`}>
-                    ✓ Script generated
-                  </p>
-                )}
               </div>
             ) : (
               <div className={`p-4 rounded-lg border-2 ${
@@ -172,16 +183,34 @@ export default function RoomWaiting({
                   ? 'bg-gray-800 border-gray-600'
                   : 'bg-white border border-gray-200'
               }`}>
-                <p className={`text-sm font-semibold mb-3 ${
-                  theme === 'dark' ? 'text-indigo-300' : 'text-indigo-700'
-                }`}>
-                  Typing Script
-                </p>
-                <div className="w-full py-2 rounded-md font-semibold text-sm text-center ${
+                <div className="flex items-center justify-between mb-3">
+                  <p className={`text-sm font-semibold ${
+                    theme === 'dark' ? 'text-indigo-300' : 'text-indigo-700'
+                  }`}>
+                    Typing Script
+                  </p>
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    textGenerated
+                      ? theme === 'dark'
+                        ? 'bg-green-600/30 text-green-300'
+                        : 'bg-green-200 text-green-800'
+                      : theme === 'dark'
+                      ? 'bg-gray-700 text-gray-300'
+                      : 'bg-gray-200 text-gray-700'
+                  }`}>
+                    {textGenerated ? 'Ready' : 'Pending'}
+                  </span>
+                </div>
+                <div className={`w-full py-2.5 rounded-md font-semibold text-sm text-center ${
                   theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-50 text-gray-600'
-                }">
+                }`}>
                   {isGenerating ? 'Host is generating the script...' : textGenerated ? '✓ Script Ready' : 'Waiting for host to generate script'}
                 </div>
+                <p className={`text-xs mt-3 ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  You’ll start typing as soon as the host starts the race.
+                </p>
               </div>
             )}
 

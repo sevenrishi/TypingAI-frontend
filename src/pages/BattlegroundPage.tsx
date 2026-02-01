@@ -1,9 +1,9 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { setRoom, setRoomState, setWorkflowStage, leaveRoom, markPlayerFinished } from '../features/multiplayer/roomSlice';
+import { setRoom, setRoomState, setWorkflowStage, leaveRoom, markPlayerFinished, resetRaceState, setRoomIdentity } from '../features/multiplayer/roomSlice';
 import { generateMultiplayerText } from '../features/ai/aiMultiplayerSlice';
-import { loadText as loadTextAction } from '../features/typing/typingSlice';
+import { loadText as loadTextAction, reset as resetTyping } from '../features/typing/typingSlice';
 import { useSocket } from '../features/multiplayer/hooks/useSocket';
 
 // Components
@@ -30,6 +30,8 @@ export default function BattlegroundPage() {
   const [playerName, setPlayerName] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isLoadingJoin, setIsLoadingJoin] = useState(false);
+  const [joinError, setJoinError] = useState<string | null>(null);
+  const [pendingJoinRoom, setPendingJoinRoom] = useState<string | null>(null);
 
   // Handle room state updates from socket
   const onRoomState = useCallback((state: any) => {
@@ -48,15 +50,44 @@ export default function BattlegroundPage() {
       host: state.host,
       raceStart: state.raceStart,
       text: state.text,
+      finishedPlayers: state.finishedPlayers || [],
     }));
+
+    // If we were joining, consider this a successful join and move to waiting
+    if (pendingJoinRoom && room.workflowStage === 'join-room') {
+      dispatch(setRoomIdentity({ roomId: pendingJoinRoom, isHost: false }));
+      dispatch(setWorkflowStage('room-waiting'));
+      setIsLoadingJoin(false);
+      setPendingJoinRoom(null);
+    }
 
     // Load text if available
     if (state.text && !typing.text) {
       dispatch(loadTextAction(state.text));
     }
-  }, [dispatch, typing.text]);
+  }, [dispatch, typing.text, pendingJoinRoom, room.workflowStage]);
 
-  const { createRoom, joinRoom, sendProgress, setReady, startRace, leaveRoom: socketLeaveRoom, socket, setRoomText } = useSocket(onRoomState);
+  const { createRoom, joinRoom, sendProgress, setReady, startRace, resetRace, leaveRoom: socketLeaveRoom, socket, setRoomText } = useSocket(
+    onRoomState,
+    (error) => {
+      if (room.workflowStage === 'join-room') {
+        setJoinError(error);
+        setIsLoadingJoin(false);
+        setPendingJoinRoom(null);
+      }
+    }
+  );
+
+  const isCurrentHost = !!room.host && !!socket?.id
+    ? room.host === socket.id
+    : room.isHost;
+
+  // Move all players to race-active when race start is broadcast
+  useEffect(() => {
+    if (room.raceStart && room.workflowStage === 'room-waiting') {
+      dispatch(setWorkflowStage('race-active'));
+    }
+  }, [room.raceStart, room.workflowStage, dispatch]);
 
   // Update progress when typing changes
   useEffect(() => {
@@ -126,20 +157,14 @@ export default function BattlegroundPage() {
 
   const handleJoinRoomSubmit = (roomCode: string) => {
     setIsLoadingJoin(true);
+    setJoinError(null);
+    setPendingJoinRoom(roomCode);
     joinRoom(roomCode, playerName);
-    // ensure local state knows the current room id and that this client is not host
-    dispatch(setRoom({ roomId: roomCode, text: '', isHost: false }));
-    // Room will be joined and state will update via socket callback
-    setTimeout(() => {
-      dispatch(setWorkflowStage('room-waiting'));
-      setIsLoadingJoin(false);
-    }, 500);
   };
 
   const handleStartRace = () => {
     if (room.roomId) {
       startRace(room.roomId);
-      dispatch(setWorkflowStage('race-active'));
     }
   };
 
@@ -159,9 +184,13 @@ export default function BattlegroundPage() {
   };
 
   const handlePlayAgain = () => {
-    // Reset typing state and go back to room waiting
+    // Reset typing/race state and go back to room waiting (same room)
+    dispatch(resetTyping());
+    dispatch(resetRaceState());
+    if (room.roomId) {
+      resetRace(room.roomId);
+    }
     dispatch(setWorkflowStage('room-waiting'));
-    // The room state persists, just waiting for new race to start
   };
 
   // Render based on workflow stage
@@ -185,6 +214,7 @@ export default function BattlegroundPage() {
       <JoinRoom
         playerName={playerName}
         isLoading={isLoadingJoin}
+        error={joinError}
         onJoin={handleJoinRoomSubmit}
         onBack={() => dispatch(setWorkflowStage('room-selection'))}
       />
@@ -196,7 +226,7 @@ export default function BattlegroundPage() {
       <RoomWaiting
         roomCode={room.roomId || ''}
         playerName={playerName}
-        isHost={room.isHost}
+        isHost={isCurrentHost}
         hostId={room.host || ''}
         currentPlayerId={socket?.id || ''}
         players={room.players}
