@@ -31,14 +31,19 @@ export default function HomePage() {
   );
 
   const KeyCap = ({ label, wide }: { label: string; wide?: boolean }) => (
-    <div className={`
-      ${wide ? 'col-span-2' : ''} px-3 py-2 rounded-lg text-xs font-bold tracking-widest text-center border
-      ${theme === 'dark'
-        ? 'bg-gradient-to-b from-gray-800 to-gray-900 border-gray-600 text-gray-200 shadow-[inset_0_-2px_0_rgba(0,0,0,0.6)]'
-        : 'bg-gradient-to-b from-white to-slate-200 border-slate-300 text-slate-700 shadow-[inset_0_-2px_0_rgba(0,0,0,0.12)]'}
-    `}>
+    <button
+      type="button"
+      className={`
+        ${wide ? 'col-span-2' : ''} px-3 py-2 rounded-lg text-xs font-bold tracking-widest text-center border
+        transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0
+        ${theme === 'dark'
+          ? 'bg-gradient-to-b from-gray-800 to-gray-900 border-gray-600 text-gray-200 shadow-[inset_0_-2px_0_rgba(0,0,0,0.6)] hover:border-cyan-300/70'
+          : 'bg-gradient-to-b from-white to-slate-200 border-slate-300 text-slate-700 shadow-[inset_0_-2px_0_rgba(0,0,0,0.12)] hover:border-indigo-300'}
+      `}
+      aria-label={`Key ${label}`}
+    >
       {label}
-    </div>
+    </button>
   );
 
   const FeatureKey = ({ label, description, icon }: { label: string; description: string; icon: React.ReactNode }) => (
