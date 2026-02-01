@@ -1,6 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
-import aiReducer from '../features/ai/aiSlice';
+import aiTestReducer from '../features/ai/aiTestSlice';
+import aiPracticeReducer from '../features/ai/aiPracticeSlice';
+import aiMultiplayerReducer from '../features/ai/aiMultiplayerSlice';
 import typingReducer from '../features/typing/typingSlice';
 import roomReducer from '../features/multiplayer/roomSlice';
 import profileReducer from '../features/user/profileSlice';
@@ -9,7 +11,9 @@ import practiceReducer from '../features/practice/practiceSlice';
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    ai: aiReducer,
+    aiTest: aiTestReducer,
+    aiPractice: aiPracticeReducer,
+    aiMultiplayer: aiMultiplayerReducer,
     typing: typingReducer,
     room: roomReducer,
     profile: profileReducer,

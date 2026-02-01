@@ -3,6 +3,24 @@
 @tailwind utilities;
 
 html, body, #root { height: 100%; }
+html {
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
+
+:root {
+  --app-gutter: clamp(20px, 3vw, 32px);
+}
+
+body {
+  overflow-y: scroll;
+}
+
+.app-shell {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: var(--app-gutter);
+}
 /* Global animations */
 @keyframes shimmer {
   0%, 100% { opacity: 1; }
@@ -42,10 +60,7 @@ html, body, #root { height: 100%; }
 .animate-float-gentle { animation: float-gentle 6s ease-in-out infinite; }
 .animate-spin-slow { animation: spin-slow 20s linear infinite; }
 
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
-}
+
 
 /* Animated Gradient Background */
 @keyframes gradient-shift {
