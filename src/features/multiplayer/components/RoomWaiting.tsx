@@ -81,7 +81,7 @@ export default function RoomWaiting({
   }, [raceStart]);
 
   return (
-    <div className={`min-h-screen p-4 ${
+    <div className={`min-h-[81vh] p-4 ${
       theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'
     }`}>
       <div className="container mx-auto">

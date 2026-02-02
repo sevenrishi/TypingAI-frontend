@@ -12,7 +12,7 @@ export default function RoomSelection({ playerName, onCreateRoom, onJoinRoom, on
   const { theme } = useTheme();
 
   return (
-    <div className={`min-h-screen flex items-center justify-center p-4 ${
+    <div className={`min-h-[81vh] flex items-center justify-center p-4 ${
       theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'
     }`}>
       <div className={`w-full max-w-md rounded-lg shadow-lg p-8 ${

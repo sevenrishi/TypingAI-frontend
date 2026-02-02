@@ -13,9 +13,10 @@ export default function ScriptReview({ text, isGenerating, onGenerate, onUseScri
   const { theme } = useTheme();
   const [topic, setTopic] = React.useState('');
   const [length, setLength] = React.useState<'short'|'medium'|'long'>('short');
+  const isGenerateDisabled = isGenerating || topic.trim().length === 0;
 
   return (
-    <div className={`min-h-screen p-4 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`min-h-[81vh] p-4 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <div className="container mx-auto">
         <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg`}> 
           <h2 className={`text-2xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Generated Script</h2>
@@ -38,8 +39,18 @@ export default function ScriptReview({ text, isGenerating, onGenerate, onUseScri
               </select>
 
               <button
+                disabled={isGenerateDisabled}
                 onClick={() => onGenerate(topic, length)}
-                className={`px-4 py-2 rounded-md font-semibold ${isGenerating ? 'bg-gray-600 text-gray-200 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}>
+                className={`px-4 py-2 rounded-md shadow transition-colors duration-200 ${
+                  isGenerateDisabled
+                    ? theme === 'dark'
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
+                      : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
+                    : theme === 'dark'
+                    ? 'bg-indigo-500 hover:bg-indigo-600 text-white'
+                    : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                }`}
+              >
                 {isGenerating ? 'Generating...' : 'Generate'}
               </button>
             </div>
