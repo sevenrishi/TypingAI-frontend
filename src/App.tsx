@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, Link, NavLink } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -24,8 +24,10 @@ export default function App() {
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const auth = useSelector((s: RootState) => s.auth);
   const dispatch = useDispatch();
+  const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     // Show loader for 2.5 seconds on app startup
@@ -34,6 +36,18 @@ export default function App() {
     }, 2500);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setShowProfileMenu(false);
+      }
+    };
+    if (showProfileMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showProfileMenu]);
 
   return (
     <div>
@@ -114,20 +128,7 @@ export default function App() {
             </nav>
 
             <div className="flex items-center gap-3">
-            {auth.user ? (
-              <>
-                <Link to="/profile" className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 border ${
-                  theme === 'dark'
-                    ? 'bg-gray-800 text-gray-200 border-gray-600 shadow-inner hover:bg-gray-700/70'
-                    : 'bg-gray-50 text-gray-800 border-gray-300 shadow-inner hover:bg-gray-100'
-                }`}>Profile</Link>
-                <button onClick={() => dispatch(logout())} className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 border ${
-                  theme === 'dark'
-                    ? 'bg-red-700/80 text-white border-red-500 shadow-inner hover:bg-red-600'
-                    : 'bg-red-500 text-white border-red-300 shadow-inner hover:bg-red-600'
-                }`}>Sign Out</button>
-              </>
-            ) : (
+            {!auth.user ? (
               <>
                 <button onClick={() => setShowSignIn(true)} className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 border ${
                   theme === 'dark'
@@ -140,7 +141,7 @@ export default function App() {
                     : 'bg-green-600 text-white border-green-300 shadow-inner hover:bg-green-700'
                 }`}>Sign Up</button>
               </>
-            )}
+            ) : null}
             <button
               onClick={toggleTheme}
               className={`relative w-14 h-8 rounded-full transition-colors duration-300 flex items-center ${
@@ -174,6 +175,78 @@ export default function App() {
                 )}
               </div>
             </button>
+            {auth.user && (
+              <div className="relative" ref={profileMenuRef}>
+                <button
+                  onClick={() => setShowProfileMenu(prev => !prev)}
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border transition-colors duration-200 ${
+                    theme === 'dark'
+                      ? 'bg-gray-800 text-gray-200 border-gray-600 hover:bg-gray-700'
+                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                  }`}
+                  aria-label="Open profile menu"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z" />
+                  </svg>
+                </button>
+
+                {showProfileMenu && (
+                  <div className={`absolute right-0 mt-2 w-52 rounded-lg border shadow-xl z-50 overflow-hidden ${
+                    theme === 'dark'
+                      ? 'bg-gray-900 border-gray-700'
+                      : 'bg-white border-gray-200'
+                  }`}>
+                    <Link
+                      to="/profile"
+                      onClick={() => setShowProfileMenu(false)}
+                      className={`block px-4 py-2 text-sm transition-colors ${
+                        theme === 'dark'
+                          ? 'text-gray-200 hover:bg-gray-800'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      Profile
+                    </Link>
+                    <Link
+                      to="/profile"
+                      onClick={() => setShowProfileMenu(false)}
+                      className={`block px-4 py-2 text-sm transition-colors ${
+                        theme === 'dark'
+                          ? 'text-gray-200 hover:bg-gray-800'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      Account Settings
+                    </Link>
+                    <Link
+                      to="/learn"
+                      onClick={() => setShowProfileMenu(false)}
+                      className={`block px-4 py-2 text-sm transition-colors ${
+                        theme === 'dark'
+                          ? 'text-gray-200 hover:bg-gray-800'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      Help Center
+                    </Link>
+                    <button
+                      onClick={() => {
+                        dispatch(logout());
+                        setShowProfileMenu(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                        theme === 'dark'
+                          ? 'text-red-300 hover:bg-gray-800'
+                          : 'text-red-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
             </div>
           </div>
         </header>
