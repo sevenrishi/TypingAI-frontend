@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTheme } from '../providers/ThemeProvider';
 import { CheckCircle, Keyboard, X, Trophy, Play, Zap } from 'lucide-react';
 import TextDisplay from '../features/typing/components/TextDisplay';
+import KeyboardFingerPlacement, { FINGER_LABELS, KEY_FINGER_MAP, SHIFT_BASE_MAP } from '../features/learn/components/KeyboardFingerPlacement';
 
 interface Lesson {
   id: number;
@@ -10,7 +11,15 @@ interface Lesson {
   description: string;
   content: string[];
   completed: boolean;
+  focusKeys?: string[];
 }
+
+const HOME_ROW_KEYS = ['a', 's', 'd', 'f', 'j', 'k', 'l', ';'];
+const UPPER_ROW_KEYS = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'];
+const BOTTOM_ROW_KEYS = ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/'];
+const ALPHABET_KEYS = 'abcdefghijklmnopqrstuvwxyz'.split('');
+const NUMBER_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+const SYMBOL_KEYS = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', ';', ':', "'", '"', ',', '<', '.', '>', '/', '?'];
 
 const lessons: Lesson[] = [
   // PHASE 1 – KEYBOARD MASTERY
@@ -26,6 +35,7 @@ const lessons: Lesson[] = [
       'dkdk dkdk',
       'asdf ;lkj asdf ;lkj'
     ],
+    focusKeys: [...HOME_ROW_KEYS, 'g', 'h'],
     completed: false
   },
   {
@@ -40,6 +50,7 @@ const lessons: Lesson[] = [
       'quit wipe tire your pure',
       'quote write tower power'
     ],
+    focusKeys: UPPER_ROW_KEYS,
     completed: false
   },
   {
@@ -53,6 +64,7 @@ const lessons: Lesson[] = [
       'ask flask desk task',
       'all fall hall ash salsa glass'
     ],
+    focusKeys: HOME_ROW_KEYS,
     completed: false
   },
   {
@@ -66,6 +78,7 @@ const lessons: Lesson[] = [
       'zoom mix cave vine bone name',
       'zebra mixer carbon vine bone name'
     ],
+    focusKeys: BOTTOM_ROW_KEYS,
     completed: false
   },
   {
@@ -79,6 +92,7 @@ const lessons: Lesson[] = [
       'the quick brown fox jumps',
       'typing skills improve with practice'
     ],
+    focusKeys: ALPHABET_KEYS,
     completed: false
   },
   {
@@ -92,6 +106,7 @@ const lessons: Lesson[] = [
       'the five boxing wizards jump quickly',
       'pack my box with five dozen liquor jugs'
     ],
+    focusKeys: ALPHABET_KEYS,
     completed: false
   },
   {
@@ -105,6 +120,7 @@ const lessons: Lesson[] = [
       '10 20 30 40 50 60 70 80 90',
       '2024 1234 5678 9012'
     ],
+    focusKeys: NUMBER_KEYS,
     completed: false
   },
   {
@@ -118,6 +134,7 @@ const lessons: Lesson[] = [
       '; :  \' "  , <  . >  / ?',
       'Hello World! How Are You?'
     ],
+    focusKeys: [...ALPHABET_KEYS, ...NUMBER_KEYS, ...SYMBOL_KEYS],
     completed: false
   },
   // PHASE 2 – AI SKILL DEVELOPMENT
@@ -249,11 +266,17 @@ export default function LearnPage() {
   const [selectedLesson, setSelectedLesson] = useState<number>(1);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
   const [isPracticing, setIsPracticing] = useState(false);
+  const [showPracticeDetails, setShowPracticeDetails] = useState(false);
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [typed, setTyped] = useState('');
   const [startTime, setStartTime] = useState<number | null>(null);
   const [errors, setErrors] = useState(0);
+  const [activeKey, setActiveKey] = useState('');
+  const [placementTargetKey, setPlacementTargetKey] = useState('');
+  const [placementLastKey, setPlacementLastKey] = useState('');
+  const [placementStatus, setPlacementStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
   const inputRef = useRef<HTMLInputElement>(null);
+  const placementInputRef = useRef<HTMLInputElement>(null);
 
   // Load completed lessons from localStorage
   useEffect(() => {
@@ -267,15 +290,63 @@ export default function LearnPage() {
   const handleLessonSelect = (lessonId: number) => {
     setSelectedLesson(lessonId);
     setIsPracticing(false);
+    setShowPracticeDetails(false);
     setTyped('');
     setCurrentLineIndex(0);
     setStartTime(null);
     setErrors(0);
+    setActiveKey('');
   };
 
   const currentLesson = lessons.find(l => l.id === selectedLesson);
   const currentText = currentLesson?.content[currentLineIndex] || '';
   const progressPercentage = Math.round((completedLessons.size / lessons.length) * 100);
+  const showFingerPlacement = Boolean(
+    currentLesson?.phase === 'Phase 1: Keyboard Mastery' && currentLesson?.focusKeys?.length
+  );
+  const isPhase1 = currentLesson?.phase === 'Phase 1: Keyboard Mastery';
+  const normalizePlacementKey = React.useCallback((key: string) => {
+    if (!key) return '';
+    if (SHIFT_BASE_MAP[key]) return SHIFT_BASE_MAP[key];
+    const lower = key.toLowerCase();
+    if (SHIFT_BASE_MAP[lower]) return SHIFT_BASE_MAP[lower];
+    if (key.length > 1) return '';
+    if (key === ' ') return '';
+    return lower;
+  }, []);
+
+  const placementKeyPool = React.useMemo(() => {
+    if (!currentLesson?.focusKeys?.length || !isPhase1) return [];
+    const normalized = currentLesson.focusKeys
+      .map((key) => normalizePlacementKey(key))
+      .filter((key) => key && key.length === 1);
+    return Array.from(new Set(normalized));
+  }, [currentLesson, isPhase1, normalizePlacementKey]);
+
+  const pickPlacementTargetKey = React.useCallback(() => {
+    if (!placementKeyPool.length) return '';
+    const next = placementKeyPool[Math.floor(Math.random() * placementKeyPool.length)];
+    return next ?? '';
+  }, [placementKeyPool]);
+
+  const placementFingerLabel = React.useMemo(() => {
+    if (!placementTargetKey) return '—';
+    const finger = KEY_FINGER_MAP[placementTargetKey];
+    return finger ? FINGER_LABELS[finger] : '—';
+  }, [placementTargetKey]);
+
+  useEffect(() => {
+    if (isPhase1 && placementKeyPool.length) {
+      setPlacementTargetKey(pickPlacementTargetKey());
+      setPlacementStatus('idle');
+      setPlacementLastKey('');
+      setActiveKey('');
+      return;
+    }
+    setPlacementTargetKey('');
+    setPlacementStatus('idle');
+    setPlacementLastKey('');
+  }, [isPhase1, placementKeyPool, pickPlacementTargetKey]);
 
   const handleStartPractice = () => {
     setIsPracticing(true);
@@ -283,7 +354,33 @@ export default function LearnPage() {
     setTyped('');
     setStartTime(Date.now());
     setErrors(0);
+    setActiveKey('');
     setTimeout(() => inputRef.current?.focus(), 100);
+  };
+
+  const handlePlacementKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const rawKey = event.key;
+    if (!rawKey || rawKey === 'Shift' || rawKey === 'Control' || rawKey === 'Alt' || rawKey === 'Meta') {
+      return;
+    }
+    event.preventDefault();
+    const normalized = normalizePlacementKey(rawKey);
+    if (!normalized) return;
+
+    setActiveKey(rawKey);
+    setPlacementLastKey(rawKey.length === 1 ? rawKey : normalized);
+
+    if (normalized === placementTargetKey) {
+      setPlacementStatus('correct');
+      const nextKey = pickPlacementTargetKey();
+      setTimeout(() => {
+        setPlacementTargetKey(nextKey);
+        setPlacementStatus('idle');
+        setPlacementLastKey('');
+      }, 500);
+    } else {
+      setPlacementStatus('wrong');
+    }
   };
 
   const handleChange = (value: string) => {
@@ -319,16 +416,20 @@ export default function LearnPage() {
     setCompletedLessons(updated);
     localStorage.setItem('completedLessons', JSON.stringify([...updated]));
     setIsPracticing(false);
+    setShowPracticeDetails(false);
     setTyped('');
     setCurrentLineIndex(0);
+    setActiveKey('');
   };
 
   const handleClosePractice = () => {
     setIsPracticing(false);
+    setShowPracticeDetails(false);
     setTyped('');
     setCurrentLineIndex(0);
     setStartTime(null);
     setErrors(0);
+    setActiveKey('');
   };
 
   const accuracy = typed.length > 0 
@@ -356,29 +457,34 @@ export default function LearnPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar */}
           <div 
-            className={`lg:col-span-1 rounded-lg p-6 transition-colors duration-300 ${sidebarClass} max-h-[calc(100vh-10px)] overflow-y-auto`}
-            style={{
-              scrollbarWidth: 'thin',
-              scrollbarColor: theme === 'dark' ? '#4B5563 #1F2937' : '#D1D5DB #F3F4F6',
-              WebkitScrollbarWidth: 'thin'
-            }}
+            className={`lg:col-span-1 rounded-lg transition-colors duration-300 ${sidebarClass} max-h-[calc(100vh-10px)] overflow-hidden`}
           >
-            <style jsx>{`
-              div::-webkit-scrollbar {
-                width: 6px;
-              }
-              div::-webkit-scrollbar-track {
-                background: ${theme === 'dark' ? '#1F2937' : '#F3F4F6'};
-                border-radius: 3px;
-              }
-              div::-webkit-scrollbar-thumb {
-                background: ${theme === 'dark' ? '#4B5563' : '#D1D5DB'};
-                border-radius: 3px;
-              }
-              div::-webkit-scrollbar-thumb:hover {
-                background: ${theme === 'dark' ? '#6B7280' : '#9CA3AF'};
-              }
-            `}</style>
+            <div 
+              className="h-full p-6 overflow-y-auto"
+              style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: theme === 'dark' ? '#4B5563 #1F2937' : '#D1D5DB #F3F4F6',
+                WebkitScrollbarWidth: 'thin'
+              }}
+            >
+              <style jsx>{`
+                div::-webkit-scrollbar {
+                  width: 6px;
+                }
+                div::-webkit-scrollbar-track {
+                  background: ${theme === 'dark' ? '#1F2937' : '#F3F4F6'};
+                  border-radius: 3px;
+                  margin-top: 10px;
+                  margin-bottom: 10px;
+                }
+                div::-webkit-scrollbar-thumb {
+                  background: ${theme === 'dark' ? '#4B5563' : '#D1D5DB'};
+                  border-radius: 3px;
+                }
+                div::-webkit-scrollbar-thumb:hover {
+                  background: ${theme === 'dark' ? '#6B7280' : '#9CA3AF'};
+                }
+              `}</style>
             <h2 className="text-xl font-bold mb-4">Course Progress</h2>
             
             {/* Progress Bar */}
@@ -502,6 +608,7 @@ export default function LearnPage() {
                 })}
               </div>
             </div>
+            </div>
           </div>
 
           {/* Main Content */}
@@ -523,33 +630,112 @@ export default function LearnPage() {
                   </p>
                 </div>
 
-                <div className={`mb-6 p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
-                  <h3 className="text-xl font-bold mb-4">Practice Text:</h3>
-                  <div className="space-y-3">
-                    {currentLesson.content.map((line, idx) => (
-                      <div
-                        key={idx}
-                        className={`p-3 rounded-lg font-mono text-lg ${
-                          theme === 'dark' ? 'bg-gray-900 text-gray-300' : 'bg-white text-gray-800'
-                        }`}
-                      >
-                        {line}
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                {showFingerPlacement && (
+                  <div className={`mb-6 p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-xl font-bold">Finger Placement</h3>
+                    </div>
+                    <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Highlighted keys show the correct finger to use for this lesson.
+                    </p>
+                    <KeyboardFingerPlacement focusKeys={currentLesson.focusKeys ?? []} activeKey={activeKey} />
 
-                <button
-                  onClick={handleStartPractice}
-                  className={`w-full py-4 rounded-lg font-bold text-lg transition-all duration-200 flex items-center justify-center gap-3 ${
-                    theme === 'dark'
-                      ? 'bg-green-600 hover:bg-green-700 text-white'
-                      : 'bg-green-600 hover:bg-green-700 text-white'
-                  }`}
-                >
-                  <Play className="w-6 h-6" />
-                  Start Practice
-                </button>
+                    {isPhase1 && (
+                      <div className={`mt-6 rounded-lg border p-4 ${
+                        theme === 'dark' ? 'border-gray-700 bg-gray-900/40' : 'border-gray-200 bg-white'
+                      }`}>
+                        <div className="flex flex-wrap items-center gap-3 mb-4">
+                          <div className={`px-3 py-2 rounded-lg text-sm font-semibold ${
+                            theme === 'dark' ? 'bg-gray-800 text-gray-200' : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            Target Key: <span className="font-mono text-lg">{placementTargetKey.toUpperCase()}</span>
+                          </div>
+                          <div className={`px-3 py-2 rounded-lg text-sm font-semibold ${
+                            theme === 'dark' ? 'bg-gray-800 text-gray-200' : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            Suggested Finger: <span className="font-semibold">{placementFingerLabel}</span>
+                          </div>
+                          {placementStatus === 'correct' && (
+                            <div className="px-3 py-2 rounded-lg text-sm font-semibold bg-green-500/15 text-green-400 border border-green-500/30">
+                              Correct
+                            </div>
+                          )}
+                          {placementStatus === 'wrong' && placementLastKey && (
+                            <div className="px-3 py-2 rounded-lg text-sm font-semibold bg-red-500/15 text-red-400 border border-red-500/30">
+                              Wrong: <span className="font-mono">{placementLastKey}</span>
+                            </div>
+                          )}
+                        </div>
+
+                        <input
+                          ref={placementInputRef}
+                          type="text"
+                          value=""
+                          readOnly
+                          onKeyDown={handlePlacementKeyDown}
+                          onKeyUp={() => setActiveKey('')}
+                          onBlur={() => setActiveKey('')}
+                          placeholder="Click here and press the target key"
+                          className={`w-full p-3 rounded-lg border text-sm font-mono transition-colors duration-200 ${
+                            theme === 'dark'
+                              ? 'border-gray-600 bg-gray-800 text-white placeholder-gray-500'
+                              : 'border-gray-300 bg-gray-50 text-gray-900 placeholder-gray-500'
+                          }`}
+                        />
+                        <p className={`mt-2 text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          Focus this field and press the target key to check your finger placement.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {isPhase1 && (
+                  <div className="mb-6">
+                    <button
+                      onClick={() => setShowPracticeDetails(true)}
+                      className={`px-4 py-2 rounded-lg font-semibold transition-colors duration-200 ${
+                        theme === 'dark'
+                          ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                          : 'bg-blue-600 hover:bg-blue-700 text-white'
+                      }`}
+                    >
+                      Practice
+                    </button>
+                  </div>
+                )}
+
+                {(!isPhase1 || showPracticeDetails) && (
+                  <>
+                    <div className={`mb-6 p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                      <h3 className="text-xl font-bold mb-4">Practice Text:</h3>
+                      <div className="space-y-3">
+                        {currentLesson.content.map((line, idx) => (
+                          <div
+                            key={idx}
+                            className={`p-3 rounded-lg font-mono text-lg ${
+                              theme === 'dark' ? 'bg-gray-900 text-gray-300' : 'bg-white text-gray-800'
+                            }`}
+                          >
+                            {line}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleStartPractice}
+                      className={`w-full py-4 rounded-lg font-bold text-lg transition-all duration-200 flex items-center justify-center gap-3 ${
+                        theme === 'dark'
+                          ? 'bg-green-600 hover:bg-green-700 text-white'
+                          : 'bg-green-600 hover:bg-green-700 text-white'
+                      }`}
+                    >
+                      <Play className="w-6 h-6" />
+                      Start Practice
+                    </button>
+                  </>
+                )}
 
                 {/* Navigation */}
                 <div className="flex gap-4 mt-6">
@@ -612,6 +798,17 @@ export default function LearnPage() {
                   </div>
                 </div>
 
+                {showFingerPlacement && (
+                  <div className={`mb-4 p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                    <KeyboardFingerPlacement
+                      focusKeys={currentLesson.focusKeys ?? []}
+                      activeKey={activeKey}
+                      compact
+                      showLegend={false}
+                    />
+                  </div>
+                )}
+
                 {/* Text Display */}
                 <div className={`w-full rounded-lg border p-6 min-h-32 mb-4 flex items-center transition-colors duration-300 ${
                   theme === 'dark'
@@ -629,7 +826,10 @@ export default function LearnPage() {
                   type="text"
                   value={typed}
                   onChange={(e) => handleChange(e.target.value)}
+                  onKeyDown={(e) => setActiveKey(e.key)}
+                  onKeyUp={() => setActiveKey('')}
                   onPaste={(e) => e.preventDefault()}
+                  onBlur={() => setActiveKey('')}
                   className={`w-full p-4 rounded-lg border text-lg font-mono transition-colors duration-200 ${
                     theme === 'dark'
                       ? 'border-gray-600 bg-gray-800 text-white placeholder-gray-400'
