@@ -464,10 +464,10 @@ export default function LearnPage() {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${bgClass}`}>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-2 text-center">Typing AI Curriculum</h1>
+        {/*-<h1 className="text-4xl font-bold mb-2 text-center">Typing AI Curriculum</h1>
         <p className={`text-center mb-8 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
           Master touch typing through 18 structured lessons
-        </p>
+        </p>*/}
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar */}
@@ -685,36 +685,37 @@ export default function LearnPage() {
 
                 {/* Getting Started Content */}
                 {currentLesson.id === 0 && (
-                  <div className={`mb-6 p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
-                    <h3 className="text-xl font-bold mb-4">How to Use This Course:</h3>
-                    <div className="space-y-4">
-                      <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
+                  <div className={`mb-5 p-5 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                    <h3 className="text-xl font-bold mb-3">How to Use This Course:</h3>
+                    <div className="space-y-3">
+                      <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
                         <h4 className={`font-semibold mb-2 text-blue-500`}>🎯 Finger Placement</h4>
                         <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                           Study the highlighted keys and learn which finger to use for each key. Practice with the target key checker.
                         </p>
                       </div>
-                      <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
+                      <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
                         <h4 className={`font-semibold mb-2 text-purple-500`}>📝 Practice Mode</h4>
                         <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                           Type the provided text exercises to master each lesson. Focus on accuracy over speed.
                         </p>
                       </div>
-                      <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
+                      <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
                         <h4 className={`font-semibold mb-2 text-yellow-500`}>📈 Progress Tracking</h4>
                         <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                           Complete lessons to track your progress and unlock advanced features. Each lesson builds on the previous one.
                         </p>
                       </div>
                     </div>
-                    <div className={`mt-6 p-4 rounded-lg ${theme === 'dark' ? 'bg-blue-900/30 border border-blue-700' : 'bg-blue-50 border border-blue-200'}`}>
+                    <div className={`mt-5 p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900/30 border border-blue-700' : 'bg-blue-50 border border-blue-200'}`}>
                       <h4 className={`font-semibold mb-2 text-blue-500`}>💡 Pro Tips</h4>
-                      <ul className={`text-sm space-y-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      <ul className={`text-sm grid grid-cols-2 gap-x-4 gap-y-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                         <li>• Focus on accuracy first - speed will come naturally</li>
                         <li>• Keep your fingers on the home row (ASDF JKL;)</li>
                         <li>• Practice regularly for 15-30 minutes daily</li>
                         <li>• Don't look at the keyboard while typing</li>
                         <li>• Take breaks to avoid fatigue and maintain focus</li>
+                        <li>• Maintain proper posture while typing</li>
                       </ul>
                     </div>
                   </div>
