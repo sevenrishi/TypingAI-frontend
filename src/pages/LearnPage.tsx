@@ -630,7 +630,7 @@ export default function LearnPage() {
                   </p>
                 </div>
 
-                {showFingerPlacement && (
+                {showFingerPlacement && !showPracticeDetails && (
                   <div className={`mb-6 p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-xl font-bold">Finger Placement</h3>
@@ -640,7 +640,7 @@ export default function LearnPage() {
                     </p>
                     <KeyboardFingerPlacement focusKeys={currentLesson.focusKeys ?? []} activeKey={activeKey} />
 
-                    {isPhase1 && (
+                    {isPhase1 && !showPracticeDetails && (
                       <div className={`mt-6 rounded-lg border p-4 ${
                         theme === 'dark' ? 'border-gray-700 bg-gray-900/40' : 'border-gray-200 bg-white'
                       }`}>
@@ -690,20 +690,7 @@ export default function LearnPage() {
                   </div>
                 )}
 
-                {isPhase1 && (
-                  <div className="mb-6">
-                    <button
-                      onClick={() => setShowPracticeDetails(true)}
-                      className={`px-4 py-2 rounded-lg font-semibold transition-colors duration-200 ${
-                        theme === 'dark'
-                          ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                          : 'bg-blue-600 hover:bg-blue-700 text-white'
-                      }`}
-                    >
-                      Practice
-                    </button>
-                  </div>
-                )}
+
 
                 {(!isPhase1 || showPracticeDetails) && (
                   <>
@@ -738,30 +725,93 @@ export default function LearnPage() {
                 )}
 
                 {/* Navigation */}
+                {/* For Phase 1: Show Practice button beside Previous button when in finger placement screen */}
+                {/* For Phase 1 with practice details: Show Previous and Next navigation */}
+                {/* For other phases: Show normal Previous/Next navigation */}
                 <div className="flex gap-4 mt-6">
-                  {selectedLesson > 1 && (
-                    <button
-                      onClick={() => handleLessonSelect(selectedLesson - 1)}
-                      className={`flex-1 py-3 rounded-lg font-semibold transition-colors duration-200 ${
-                        theme === 'dark'
-                          ? 'bg-gray-800 hover:bg-gray-700 text-gray-200'
-                          : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
-                      }`}
-                    >
-                      ← Previous Lesson
-                    </button>
+                  {!isPhase1 && (
+                    <>
+                      {selectedLesson > 1 && (
+                        <button
+                          onClick={() => handleLessonSelect(selectedLesson - 1)}
+                          className={`flex-1 py-3 rounded-lg font-semibold transition-colors duration-200 ${
+                            theme === 'dark'
+                              ? 'bg-gray-800 hover:bg-gray-700 text-gray-200'
+                              : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                          }`}
+                        >
+                          ← Previous Lesson
+                        </button>
+                      )}
+                      {selectedLesson < 18 && (
+                        <button
+                          onClick={() => handleLessonSelect(selectedLesson + 1)}
+                          className={`flex-1 py-3 rounded-lg font-semibold transition-colors duration-200 ${
+                            theme === 'dark'
+                              ? 'bg-gray-800 hover:bg-gray-700 text-gray-200'
+                              : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                          }`}
+                        >
+                          Next Lesson →
+                        </button>
+                      )}
+                    </>
                   )}
-                  {selectedLesson < 18 && (
-                    <button
-                      onClick={() => handleLessonSelect(selectedLesson + 1)}
-                      className={`flex-1 py-3 rounded-lg font-semibold transition-colors duration-200 ${
-                        theme === 'dark'
-                          ? 'bg-gray-800 hover:bg-gray-700 text-gray-200'
-                          : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
-                      }`}
-                    >
-                      Next Lesson →
-                    </button>
+                  
+                  {isPhase1 && !showPracticeDetails && (
+                    <>
+                      {selectedLesson > 1 && (
+                        <button
+                          onClick={() => handleLessonSelect(selectedLesson - 1)}
+                          className={`flex-1 py-3 rounded-lg font-semibold transition-colors duration-200 ${
+                            theme === 'dark'
+                              ? 'bg-gray-800 hover:bg-gray-700 text-gray-200'
+                              : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                          }`}
+                        >
+                          ← Previous Lesson
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setShowPracticeDetails(true)}
+                        className={`flex-1 py-3 rounded-lg font-semibold transition-colors duration-200 ${
+                          theme === 'dark'
+                            ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        }`}
+                      >
+                        Practice
+                      </button>
+                    </>
+                  )}
+                  
+                  {isPhase1 && showPracticeDetails && (
+                    <>
+                      {selectedLesson > 1 && (
+                        <button
+                          onClick={() => handleLessonSelect(selectedLesson - 1)}
+                          className={`flex-1 py-3 rounded-lg font-semibold transition-colors duration-200 ${
+                            theme === 'dark'
+                              ? 'bg-gray-800 hover:bg-gray-700 text-gray-200'
+                              : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                          }`}
+                        >
+                          ← Previous Lesson
+                        </button>
+                      )}
+                      {selectedLesson < 18 && (
+                        <button
+                          onClick={() => handleLessonSelect(selectedLesson + 1)}
+                          className={`flex-1 py-3 rounded-lg font-semibold transition-colors duration-200 ${
+                            theme === 'dark'
+                              ? 'bg-gray-800 hover:bg-gray-700 text-gray-200'
+                              : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                          }`}
+                        >
+                          Next Lesson →
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -857,6 +907,40 @@ export default function LearnPage() {
                       </div>
                     </div>
                   </div>
+                </div>
+
+                {/* Practice Navigation */}
+                <div className="flex gap-4 mt-6">
+                  {selectedLesson > 1 && (
+                    <button
+                      onClick={() => {
+                        handleClosePractice();
+                        handleLessonSelect(selectedLesson - 1);
+                      }}
+                      className={`flex-1 py-3 rounded-lg font-semibold transition-colors duration-200 ${
+                        theme === 'dark'
+                          ? 'bg-gray-800 hover:bg-gray-700 text-gray-200'
+                          : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                      }`}
+                    >
+                      ← Previous Lesson
+                    </button>
+                  )}
+                  {selectedLesson < 18 && (
+                    <button
+                      onClick={() => {
+                        handleClosePractice();
+                        handleLessonSelect(selectedLesson + 1);
+                      }}
+                      className={`flex-1 py-3 rounded-lg font-semibold transition-colors duration-200 ${
+                        theme === 'dark'
+                          ? 'bg-gray-800 hover:bg-gray-700 text-gray-200'
+                          : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                      }`}
+                    >
+                      Next Lesson →
+                    </button>
+                  )}
                 </div>
               </div>
             )}
