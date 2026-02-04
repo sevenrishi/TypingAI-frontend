@@ -22,6 +22,20 @@ const NUMBER_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
 const SYMBOL_KEYS = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', ';', ':', "'", '"', ',', '<', '.', '>', '/', '?'];
 
 const lessons: Lesson[] = [
+  // GETTING STARTED
+  {
+    id: 0,
+    title: 'Getting Started',
+    phase: 'Introduction',
+    description: 'Learn how to use the typing course effectively',
+    content: [
+      'Welcome to TypingAI! Follow the instructions below to get started.',
+      'Use finger placement guides and practice exercises to improve.',
+      'Focus on accuracy first, speed will come naturally.',
+      'Complete each lesson to unlock the next level.'
+    ],
+    completed: false
+  },
   // PHASE 1 – KEYBOARD MASTERY
   {
     id: 1,
@@ -263,7 +277,7 @@ const lessons: Lesson[] = [
 
 export default function LearnPage() {
   const { theme } = useTheme();
-  const [selectedLesson, setSelectedLesson] = useState<number>(1);
+  const [selectedLesson, setSelectedLesson] = useState<number>(0);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
   const [isPracticing, setIsPracticing] = useState(false);
   const [showPracticeDetails, setShowPracticeDetails] = useState(false);
@@ -442,7 +456,8 @@ export default function LearnPage() {
   const progressBarBgClass = theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200';
 
   // Group lessons by phase
-  const phase1 = lessons.filter(l => l.id <= 8);
+  const gettingStarted = lessons.filter(l => l.id === 0);
+  const phase1 = lessons.filter(l => l.id >= 1 && l.id <= 8);
   const phase2 = lessons.filter(l => l.id >= 9 && l.id <= 14);
   const phase3 = lessons.filter(l => l.id >= 15);
 
@@ -498,6 +513,42 @@ export default function LearnPage() {
                   className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
                   style={{ width: `${progressPercentage}%` }}
                 />
+              </div>
+            </div>
+
+            {/* Getting Started */}
+            <div className="mb-6">
+              <h3 className={`text-sm font-bold mb-2 uppercase tracking-wide ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>
+                Introduction
+              </h3>
+              <div className="space-y-2">
+                {gettingStarted.map(lesson => {
+                  const isSelected = selectedLesson === lesson.id;
+                  const isCompleted = completedLessons.has(lesson.id);
+                  return (
+                    <button
+                      key={lesson.id}
+                      onClick={() => handleLessonSelect(lesson.id)}
+                      className={`w-full text-left p-2 rounded-lg transition-all duration-200 text-sm ${
+                        isSelected
+                          ? theme === 'dark'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-blue-100 text-blue-900'
+                          : theme === 'dark'
+                          ? 'hover:bg-gray-800 text-gray-300'
+                          : 'hover:bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Play className="w-4 h-4" />
+                          <span className="font-medium">{lesson.title}</span>
+                        </div>
+                        {isCompleted && <CheckCircle className="w-4 h-4 text-green-500" />}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -617,7 +668,9 @@ export default function LearnPage() {
               <div>
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-3xl font-bold">Lesson {currentLesson.id}: {currentLesson.title}</h2>
+                    <h2 className="text-3xl font-bold">
+                      {currentLesson.id === 0 ? currentLesson.title : `Lesson ${currentLesson.id}: ${currentLesson.title}`}
+                    </h2>
                     {completedLessons.has(currentLesson.id) && (
                       <div className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg">
                         <CheckCircle className="w-5 h-5" />
@@ -629,6 +682,43 @@ export default function LearnPage() {
                     {currentLesson.description}
                   </p>
                 </div>
+
+                {/* Getting Started Content */}
+                {currentLesson.id === 0 && (
+                  <div className={`mb-6 p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                    <h3 className="text-xl font-bold mb-4">How to Use This Course:</h3>
+                    <div className="space-y-4">
+                      <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
+                        <h4 className={`font-semibold mb-2 text-blue-500`}>🎯 Finger Placement</h4>
+                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                          Study the highlighted keys and learn which finger to use for each key. Practice with the target key checker.
+                        </p>
+                      </div>
+                      <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
+                        <h4 className={`font-semibold mb-2 text-purple-500`}>📝 Practice Mode</h4>
+                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                          Type the provided text exercises to master each lesson. Focus on accuracy over speed.
+                        </p>
+                      </div>
+                      <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
+                        <h4 className={`font-semibold mb-2 text-yellow-500`}>📈 Progress Tracking</h4>
+                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                          Complete lessons to track your progress and unlock advanced features. Each lesson builds on the previous one.
+                        </p>
+                      </div>
+                    </div>
+                    <div className={`mt-6 p-4 rounded-lg ${theme === 'dark' ? 'bg-blue-900/30 border border-blue-700' : 'bg-blue-50 border border-blue-200'}`}>
+                      <h4 className={`font-semibold mb-2 text-blue-500`}>💡 Pro Tips</h4>
+                      <ul className={`text-sm space-y-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                        <li>• Focus on accuracy first - speed will come naturally</li>
+                        <li>• Keep your fingers on the home row (ASDF JKL;)</li>
+                        <li>• Practice regularly for 15-30 minutes daily</li>
+                        <li>• Don't look at the keyboard while typing</li>
+                        <li>• Take breaks to avoid fatigue and maintain focus</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
 
                 {showFingerPlacement && !showPracticeDetails && (
                   <div className={`mb-6 p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
@@ -692,7 +782,7 @@ export default function LearnPage() {
 
 
 
-                {(!isPhase1 || showPracticeDetails) && (
+                {(!isPhase1 || showPracticeDetails) && currentLesson.id > 0 && (
                   <>
                     <div className={`mb-6 p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
                       <h3 className="text-xl font-bold mb-4">Practice Text:</h3>
@@ -725,11 +815,25 @@ export default function LearnPage() {
                 )}
 
                 {/* Navigation */}
+                {/* For Getting Started: Show only Next button */}
                 {/* For Phase 1: Show Practice button beside Previous button when in finger placement screen */}
                 {/* For Phase 1 with practice details: Show Previous and Next navigation */}
                 {/* For other phases: Show normal Previous/Next navigation */}
                 <div className="flex gap-4 mt-6">
-                  {!isPhase1 && (
+                  {currentLesson.id === 0 && (
+                    <button
+                      onClick={() => handleLessonSelect(1)}
+                      className={`flex-1 py-3 rounded-lg font-semibold transition-colors duration-200 ${
+                        theme === 'dark'
+                          ? 'bg-gray-800 hover:bg-gray-700 text-gray-200'
+                          : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                      }`}
+                    >
+                      Start Learning →
+                    </button>
+                  )}
+                  
+                  {currentLesson.id > 0 && !isPhase1 && (
                     <>
                       {selectedLesson > 1 && (
                         <button
