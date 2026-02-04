@@ -953,16 +953,15 @@ export default function LearnPage() {
                   </div>
                 </div>
 
-                {showFingerPlacement && (
-                  <div className={`mb-4 p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
-                    <KeyboardFingerPlacement
-                      focusKeys={currentLesson.focusKeys ?? []}
-                      activeKey={activeKey}
-                      compact
-                      showLegend={false}
-                    />
+                {/* Lesson Objective */}
+                <div className={`mb-4 p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900/20 border border-blue-700' : 'bg-blue-50 border border-blue-200'}`}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-blue-500">🎯</span>
+                    <span className={`text-sm font-medium ${theme === 'dark' ? 'text-blue-300' : 'text-blue-700'}`}>
+                      Lesson Goal: {currentLesson.description}
+                    </span>
                   </div>
-                )}
+                </div>
 
                 {/* Text Display */}
                 <div className={`w-full rounded-lg border p-6 min-h-32 mb-4 flex items-center transition-colors duration-300 ${
@@ -994,25 +993,30 @@ export default function LearnPage() {
                   autoFocus
                 />
 
-                {/* Stats */}
-                <div className={`mt-4 p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
-                  <div className="grid grid-cols-3 gap-4 text-center">
-                    <div>
-                      <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Errors</div>
-                      <div className="text-2xl font-bold text-red-500">{errors}</div>
+                {/* Detailed Stats */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+                  <div className={`p-4 rounded-lg text-center ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                    <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Errors</div>
+                    <div className="text-2xl font-bold text-red-500">{errors}</div>
+                  </div>
+                  <div className={`p-4 rounded-lg text-center ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                    <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Characters</div>
+                    <div className="text-2xl font-bold text-blue-500">{typed.length}/{currentText.length}</div>
+                  </div>
+                  <div className={`p-4 rounded-lg text-center ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                    <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Accuracy</div>
+                    <div className={`text-2xl font-bold ${accuracy >= 95 ? 'text-green-500' : accuracy >= 80 ? 'text-yellow-500' : 'text-red-500'}`}>
+                      {accuracy}%
                     </div>
-                    <div>
-                      <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Characters</div>
-                      <div className="text-2xl font-bold text-blue-500">{typed.length}/{currentText.length}</div>
-                    </div>
-                    <div>
-                      <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Accuracy</div>
-                      <div className={`text-2xl font-bold ${accuracy >= 95 ? 'text-green-500' : accuracy >= 80 ? 'text-yellow-500' : 'text-red-500'}`}>
-                        {accuracy}%
-                      </div>
+                  </div>
+                  <div className={`p-4 rounded-lg text-center ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                    <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Error Rate</div>
+                    <div className={`text-2xl font-bold ${errors === 0 ? 'text-green-500' : errors <= 2 ? 'text-yellow-500' : 'text-red-500'}`}>
+                      {typed.length > 0 ? ((errors / typed.length) * 100).toFixed(1) : 0}%
                     </div>
                   </div>
                 </div>
+
 
                 {/* Practice Navigation */}
                 <div className="flex gap-4 mt-6">
