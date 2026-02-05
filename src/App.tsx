@@ -64,15 +64,9 @@ export default function App() {
         }`}>
           <div className="app-shell py-4 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md font-bold ${
-              theme === 'dark'
-                ? 'bg-indigo-500 text-white'
-                : 'bg-indigo-600 text-white'
-            }`}>TI</div>
-            <div>
-              <h1 className="text-2xl font-bold">Typing AI</h1>
-              <div className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>Practice • Compete • Improve</div>
-            </div>
+            <h1 className="text-4xl font-bold">
+              Typing<span className="bg-gradient-to-r from-cyan-400 to-purple-600 bg-clip-text text-transparent">AI</span>
+            </h1>
           </Link>
 
             <nav className={`flex items-center gap-3 px-3 py-2 rounded-xl border shadow-md ${
