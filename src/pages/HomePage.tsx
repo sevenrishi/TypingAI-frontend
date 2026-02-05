@@ -2,6 +2,21 @@ import React from 'react';
 import { useTheme } from '../providers/ThemeProvider';
 import { Link } from 'react-router-dom';
 import AnimatedTypingTitle from '../components/AnimatedTypingTitle';
+import {
+  BarChart3,
+  BookOpen,
+  Brain,
+  Globe,
+  Keyboard,
+  Play,
+  SlidersHorizontal,
+  Sparkles,
+  Swords,
+  Target,
+  Trophy,
+  TrendingUp,
+  Users,
+} from 'lucide-react';
 
 export default function HomePage() {
   const { theme } = useTheme();
@@ -93,35 +108,21 @@ export default function HomePage() {
             label="PRACTICE"
             href="/practice"
             icon={(
-              <svg className="w-7 h-7 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <circle cx="12" cy="12" r="8" />
-                <circle cx="12" cy="12" r="3" />
-                <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
-              </svg>
+              <Target className="w-7 h-7 mx-auto" strokeWidth={1.8} />
             )}
           />
           <KeyButton
             label="LEARN"
             href="/learn"
             icon={(
-              <svg className="w-7 h-7 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M4 6.5c0-1 1-1.5 2-1.5h11c1 0 2 .5 2 1.5v11c0 1-1 1.5-2 1.5H6c-1 0-2-.5-2-1.5z" />
-                <path d="M8 5v14" />
-                <path d="M12 8h5M12 12h5M12 16h4" />
-              </svg>
+              <BookOpen className="w-7 h-7 mx-auto" strokeWidth={1.8} />
             )}
           />
           <KeyButton
             label="COMPETE"
             href="/battleground"
             icon={(
-              <svg className="w-7 h-7 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M6 4h6v6H6z" />
-                <path d="M12 10h6v6h-6z" />
-                <path d="M6 16h6v4H6z" />
-                <path d="M9 7l2 2" />
-                <path d="M15 13l2 2" />
-              </svg>
+              <Swords className="w-7 h-7 mx-auto" strokeWidth={1.8} />
             )}
           />
         </div>
@@ -166,37 +167,21 @@ export default function HomePage() {
             label="AI GENERATED"
             description="Get custom typing exercises generated for any topic you want to master"
             icon={(
-              <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <rect x="7" y="7" width="10" height="10" rx="2" />
-                <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" />
-                <circle cx="12" cy="12" r="2.5" />
-              </svg>
+              <Sparkles className="w-10 h-10" strokeWidth={1.6} />
             )}
           />
           <FeatureKey 
             label="REAL-TIME STATS"
             description="Track your WPM, accuracy, and improvement over time with detailed analytics"
             icon={(
-              <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <path d="M4 19V5" />
-                <path d="M8 19V9" />
-                <path d="M12 19V12" />
-                <path d="M16 19V7" />
-                <path d="M20 19V4" />
-              </svg>
+              <BarChart3 className="w-10 h-10" strokeWidth={1.6} />
             )}
           />
           <FeatureKey 
             label="MULTIPLAYER"
             description="Race against other players in real-time multiplayer typing battles"
             icon={(
-              <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                <circle cx="8" cy="10" r="3" />
-                <circle cx="16" cy="10" r="3" />
-                <path d="M3 20c0-3 3-5 5-5" />
-                <path d="M21 20c0-3-3-5-5-5" />
-                <path d="M10.5 20c.5-2 2.5-3.5 5-3.5" />
-              </svg>
+              <Users className="w-10 h-10" strokeWidth={1.6} />
             )}
           />
         </div>
@@ -214,44 +199,12 @@ export default function HomePage() {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[
-            { icon: (
-              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                <path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.8 7.1 18.2 8 12.7 4 8.8 9.5 8z" />
-              </svg>
-            ), text: 'AI-powered personalized learning paths' },
-            { icon: (
-              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                <circle cx="12" cy="12" r="7" />
-                <circle cx="12" cy="12" r="2" />
-              </svg>
-            ), text: 'Adaptive difficulty based on your skill level' },
-            { icon: (
-              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M3 12h18" />
-                <path d="M12 3a14 14 0 010 18" />
-                <path d="M12 3a14 14 0 000 18" />
-              </svg>
-            ), text: 'Compete with players from around the world' },
-            { icon: (
-              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                <path d="M4 16l6-6 4 4 6-7" />
-                <path d="M20 7v5h-5" />
-              </svg>
-            ), text: 'Detailed performance analytics and insights' },
-            { icon: (
-              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                <path d="M6 7h12" />
-                <path d="M7 7l2 10h6l2-10" />
-                <path d="M9 17v3M15 17v3" />
-              </svg>
-            ), text: 'Gamified experience with achievements' },
-            { icon: (
-              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                <rect x="3" y="6" width="18" height="12" rx="2" />
-                <path d="M7 10h2M11 10h2M15 10h2M7 14h10" />
-              </svg>
-            ), text: 'Perfect your rhythm and muscle memory' }
+            { icon: <Brain className="w-7 h-7" strokeWidth={1.7} />, text: 'AI-powered personalized learning paths' },
+            { icon: <SlidersHorizontal className="w-7 h-7" strokeWidth={1.7} />, text: 'Adaptive difficulty based on your skill level' },
+            { icon: <Globe className="w-7 h-7" strokeWidth={1.7} />, text: 'Compete with players from around the world' },
+            { icon: <TrendingUp className="w-7 h-7" strokeWidth={1.7} />, text: 'Detailed performance analytics and insights' },
+            { icon: <Trophy className="w-7 h-7" strokeWidth={1.7} />, text: 'Gamified experience with achievements' },
+            { icon: <Keyboard className="w-7 h-7" strokeWidth={1.7} />, text: 'Perfect your rhythm and muscle memory' }
           ].map((item, idx) => (
             <div key={idx} className={`
               flex items-center gap-4 p-4 rounded-lg transition-all duration-300
@@ -282,9 +235,7 @@ export default function HomePage() {
         `}>
           <span className="inline-flex items-center gap-3 text-white">
             PRESS START
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M8 5v14l11-7z" />
-            </svg>
+            <Play className="w-5 h-5" aria-hidden="true" />
           </span>
         </Link>
       </div>
