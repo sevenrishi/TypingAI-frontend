@@ -64,9 +64,22 @@ export default function App() {
         }`}>
           <div className="app-shell py-4 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <h1 className="text-4xl font-bold">
-              Typing<span className="bg-gradient-to-r from-cyan-400 to-purple-600 bg-clip-text text-transparent">AI</span>
-            </h1>
+            <div className="flex flex-wrap items-end justify-center gap-1">
+              <span
+                className={`text-5xl font-medium tracking-tight ${
+                  theme === 'dark' ? 'text-slate-100' : 'text-slate-900'
+                }`}
+                style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
+              >
+                Typing
+              </span>
+              <span
+                className="text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-600"
+                style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
+              >
+                AI
+              </span>
+            </div>
           </Link>
 
             <nav className={`flex items-center gap-3 px-3 py-2 rounded-xl border shadow-md ${
