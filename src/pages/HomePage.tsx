@@ -324,31 +324,6 @@ export default function HomePage() {
               </span>
             </div>
           </div>
-
-          <div className={`md:col-span-6 rounded-3xl border p-6 animate-rise animate-rise-delay-3 ${surfaceSoft}`}>
-            <div className="flex flex-wrap items-center justify-between gap-6">
-              <div className="space-y-2">
-                <h3 className="text-xl font-semibold">Global rhythm, local focus</h3>
-                <p className={mutedText}>
-                  Join an active community, share drills, and level up with live events and weekly challenges.
-                </p>
-              </div>
-              <div className="flex items-center gap-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold">120+</div>
-                  <div className={`text-xs uppercase tracking-[0.28em] ${mutedText}`}>Countries</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold">24k</div>
-                  <div className={`text-xs uppercase tracking-[0.28em] ${mutedText}`}>Daily runs</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold">4.9</div>
-                  <div className={`text-xs uppercase tracking-[0.28em] ${mutedText}`}>Avg rating</div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
