@@ -13,8 +13,9 @@ import ResultsPage from '../../practice/components/ResultsPage';
 export default function TypingTest() {
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const aiText = useSelector((s: RootState) => s.aiTest.text);
-  const { typed, text, status, stats, handleChange, handleReset, raceLocked, countdown } = useTyping();
+  const { typed, text, status, stats, handleChange, raceLocked, countdown } = useTyping();
 
   const [topic, setTopic] = useState('');
   const [length, setLength] = useState<'short'|'medium'|'long'>('short');
@@ -79,52 +80,64 @@ export default function TypingTest() {
   }
 
   const showGenerateUI = !testStarted;
+  const surface = isDark
+    ? 'bg-slate-900/70 border-slate-700/60 text-slate-100 backdrop-blur-xl'
+    : 'bg-white/80 border-slate-200 text-slate-900 backdrop-blur-xl';
+  const surfaceSoft = isDark
+    ? 'bg-slate-900/45 border-slate-700/50 text-slate-100'
+    : 'bg-white/60 border-slate-200/80 text-slate-900';
+  const mutedText = isDark ? 'text-slate-300' : 'text-slate-600';
+  const inputBase = isDark
+    ? 'bg-slate-900/60 border-slate-700 text-slate-100 placeholder-slate-500'
+    : 'bg-white border-slate-200 text-slate-900 placeholder-slate-500';
+  const primaryButton = isDark
+    ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 text-slate-900 shadow-[0_18px_40px_rgba(34,211,238,0.35)] hover:shadow-[0_22px_48px_rgba(34,211,238,0.45)]'
+    : 'bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 text-white shadow-[0_18px_40px_rgba(14,165,233,0.25)] hover:shadow-[0_22px_48px_rgba(14,165,233,0.35)]';
+  const disabledButton = isDark
+    ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+    : 'bg-slate-200 text-slate-500 cursor-not-allowed';
 
   return (
-    <div className={`p-6 rounded-lg shadow-lg transition-colors duration-300 ${
-      theme === 'dark'
-        ? 'bg-gray-800/40 backdrop-blur-md'
-        : 'bg-white border border-gray-300'
-    }`}>
-      <div className="flex flex-col gap-4">
+    <section className={`rounded-[28px] border p-6 md:p-8 shadow-lg transition-colors duration-300 ${surface}`}>
+      <div className="flex flex-col gap-6">
+        <header className="space-y-2">
+          <div
+            className={`text-[11px] uppercase tracking-[0.35em] ${mutedText}`}
+            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+          >
+            Typing Test
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}>
+            AI-generated test run
+          </h2>
+          <p className={mutedText}>
+            Generate a custom script, then lock in focus for a single high-precision sprint.
+          </p>
+        </header>
+
         {showGenerateUI && (
-          <>
-            {/* First page: Generate controls */}
+          <div className={`rounded-2xl border p-4 ${surfaceSoft}`}>
             <div className="flex flex-wrap gap-3 items-center">
-              <input 
-                className={`flex-1 min-w-[160px] p-2 rounded-md border transition-colors duration-200 ${
-                  theme === 'dark'
-                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
-                    : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
-                }`}
+              <input
+                className={`flex-1 min-w-[160px] p-3 rounded-xl border transition-colors duration-200 ${inputBase}`}
                 value={topic}
                 onChange={e => setTopic(e.target.value)}
                 placeholder="Enter a topic to generate your typing script using AI"
               />
-              <select 
+              <select
                 value={length}
                 onChange={e => setLength(e.target.value as any)}
-                className={`p-2 rounded-md border transition-colors duration-200 ${
-                  theme === 'dark'
-                    ? 'bg-gray-700 border-gray-600 text-white'
-                    : 'bg-gray-50 border-gray-300 text-gray-900'
-                }`}
+                className={`p-3 rounded-xl border transition-colors duration-200 ${inputBase}`}
               >
                 <option value="short">Short</option>
                 <option value="medium">Medium</option>
                 <option value="long">Long</option>
               </select>
-              <button 
+              <button
                 onClick={handleStart}
                 disabled={!topic.trim()}
-                className={`px-4 py-2 rounded-md shadow transition-colors duration-200 ${
-                  !topic.trim()
-                    ? theme === 'dark'
-                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
-                      : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
-                    : theme === 'dark'
-                    ? 'bg-indigo-500 hover:bg-indigo-600 text-white'
-                    : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                className={`px-4 py-3 rounded-xl font-semibold transition-colors duration-200 ${
+                  !topic.trim() ? disabledButton : primaryButton
                 }`}
               >
                 Generate
@@ -132,22 +145,18 @@ export default function TypingTest() {
             </div>
 
             {error && (
-              <div className={`p-3 rounded-md text-sm font-medium ${
-                theme === 'dark'
-                  ? 'bg-red-900/30 border border-red-700 text-red-300'
-                  : 'bg-red-100 border border-red-400 text-red-800'
+              <div className={`mt-4 p-3 rounded-xl text-sm font-medium border ${
+                isDark
+                  ? 'border-rose-500/30 bg-rose-500/10 text-rose-300'
+                  : 'border-rose-200 bg-rose-50 text-rose-600'
               }`}>
                 {error}
               </div>
             )}
-          </>
+          </div>
         )}
 
-        <div className={`rounded-md overflow-hidden border p-4 h-48 transition-colors duration-300 ${
-          theme === 'dark'
-            ? 'border-gray-700 bg-gradient-to-b from-gray-900 to-gray-800'
-            : 'border-gray-300 bg-gray-50'
-        }`}>
+        <div className={`rounded-2xl overflow-hidden border p-4 h-52 ${surfaceSoft}`}>
           <TextDisplay text={text} typed={typed} />
         </div>
 
@@ -155,14 +164,8 @@ export default function TypingTest() {
           <button
             onClick={handleStartTest}
             disabled={!text}
-            className={`w-full py-2.5 rounded-md font-semibold transition-colors duration-200 ${
-              !text
-                ? theme === 'dark'
-                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
-                  : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
-                : theme === 'dark'
-                ? 'bg-green-600 hover:bg-green-700 text-white'
-                : 'bg-green-600 hover:bg-green-700 text-white'
+            className={`w-full py-3 rounded-xl font-semibold transition-colors duration-200 ${
+              !text ? disabledButton : primaryButton
             }`}
           >
             Start Test
@@ -172,9 +175,7 @@ export default function TypingTest() {
         {!showGenerateUI && (
           <>
             {raceLocked && typeof countdown === 'number' && (
-              <div className={`text-center text-sm ${
-                theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'
-              }`}>
+              <div className="text-center text-sm text-amber-400">
                 Race starts in {countdown}s
               </div>
             )}
@@ -186,14 +187,10 @@ export default function TypingTest() {
               onPaste={e => e.preventDefault()}
               onCopy={e => e.preventDefault()}
               disabled={status === 'finished'}
-              className={`w-full p-3 rounded-md border transition-colors duration-200 ${
+              className={`w-full p-3 rounded-xl border transition-colors duration-200 ${
                 status === 'finished'
-                  ? theme === 'dark'
-                    ? 'border-gray-600 bg-gray-700 text-gray-400 placeholder-gray-500 cursor-not-allowed'
-                    : 'border-gray-300 bg-gray-100 text-gray-500 placeholder-gray-400 cursor-not-allowed'
-                  : theme === 'dark'
-                  ? 'border-gray-600 bg-gray-800 text-white placeholder-gray-400'
-                  : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+                  ? `${inputBase} opacity-60 cursor-not-allowed`
+                  : inputBase
               }`}
               placeholder={raceLocked ? 'Waiting for race to start...' : status === 'finished' ? 'Test completed!' : 'Start typing here...'}
             />
@@ -202,6 +199,6 @@ export default function TypingTest() {
           </>
         )}
       </div>
-    </div>
+    </section>
   );
 }

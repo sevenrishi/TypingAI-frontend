@@ -102,13 +102,13 @@ export default function ForgotPassword({ onClose, onVerifyCode }: ForgotPassword
               emailError
                 ? `border-red-500 focus:border-red-400 ${
                     theme === 'dark'
-                      ? 'bg-gray-700/50'
+                      ? 'bg-slate-900/50'
                       : 'bg-red-50'
                   }`
                 : `${
                     theme === 'dark'
-                      ? 'bg-gray-700/50 border-gray-600 focus:border-indigo-500 disabled:border-gray-700 disabled:opacity-50'
-                      : 'bg-gray-50 border-gray-300 focus:border-indigo-600 disabled:border-gray-200 disabled:opacity-50'
+                      ? 'bg-slate-900/50 border-slate-700 focus:border-cyan-400 disabled:border-slate-700 disabled:opacity-50'
+                      : 'bg-white border-slate-200 focus:border-sky-500 disabled:border-slate-200 disabled:opacity-50'
                   }`
             }`}
             placeholder="your@email.com"
@@ -121,8 +121,8 @@ export default function ForgotPassword({ onClose, onVerifyCode }: ForgotPassword
           disabled={loading || !email || !!emailError || success}
           className={`w-full px-4 py-2.5 rounded-lg font-semibold transition shadow-lg ${
             theme === 'dark'
-              ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 disabled:from-gray-600 disabled:to-gray-600 text-white'
-              : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 disabled:from-gray-400 disabled:to-gray-400 text-white'
+              ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 hover:from-cyan-300 hover:via-sky-300 hover:to-emerald-300 disabled:from-gray-600 disabled:to-gray-600 text-slate-900'
+              : 'bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 hover:from-sky-600 hover:via-cyan-600 hover:to-emerald-600 disabled:from-gray-400 disabled:to-gray-400 text-white'
           }`}
         >
           {loading ? (

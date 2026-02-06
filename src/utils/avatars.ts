@@ -1,14 +1,14 @@
 export const AVATARS = [
   {
     id: 'avatar-1',
-    name: 'Blue',
-    bgColor: 'bg-blue-500',
+    name: 'Sky',
+    bgColor: 'bg-sky-500',
     initials: true
   },
   {
     id: 'avatar-2',
-    name: 'Purple',
-    bgColor: 'bg-purple-500',
+    name: 'Emerald',
+    bgColor: 'bg-emerald-500',
     initials: true
   },
   {
@@ -55,8 +55,8 @@ export const AVATARS = [
   },
   {
     id: 'avatar-10',
-    name: 'Indigo',
-    bgColor: 'bg-indigo-500',
+    name: 'Aqua',
+    bgColor: 'bg-cyan-600',
     initials: true
   },
 ];

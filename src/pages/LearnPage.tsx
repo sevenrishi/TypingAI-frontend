@@ -506,11 +506,11 @@ export default function LearnPage() {
             <div className="mb-6">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium">Overall</span>
-                <span className="text-sm font-bold text-blue-500">{progressPercentage}%</span>
+                <span className="text-sm font-bold text-sky-600 dark:text-cyan-300">{progressPercentage}%</span>
               </div>
               <div className={`w-full h-3 rounded-full overflow-hidden ${progressBarBgClass}`}>
                 <div
-                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
+                  className="h-full bg-gradient-to-r from-sky-500 to-emerald-500 transition-all duration-300"
                   style={{ width: `${progressPercentage}%` }}
                 />
               </div>
@@ -518,7 +518,7 @@ export default function LearnPage() {
 
             {/* Getting Started */}
             <div className="mb-6">
-              <h3 className={`text-sm font-bold mb-2 uppercase tracking-wide ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>
+              <h3 className={`text-sm font-bold mb-2 uppercase tracking-wide ${theme === 'dark' ? 'text-cyan-300' : 'text-sky-600'}`}>
                 Introduction
               </h3>
               <div className="space-y-2">
@@ -532,8 +532,8 @@ export default function LearnPage() {
                       className={`w-full text-left p-2 rounded-lg transition-all duration-200 text-sm ${
                         isSelected
                           ? theme === 'dark'
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-blue-100 text-blue-900'
+                            ? 'bg-cyan-400 text-slate-900'
+                            : 'bg-sky-100 text-sky-900'
                           : theme === 'dark'
                           ? 'hover:bg-gray-800 text-gray-300'
                           : 'hover:bg-gray-100 text-gray-700'
@@ -568,8 +568,8 @@ export default function LearnPage() {
                       className={`w-full text-left p-2 rounded-lg transition-all duration-200 text-sm ${
                         isSelected
                           ? theme === 'dark'
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-blue-100 text-blue-900'
+                            ? 'bg-cyan-400 text-slate-900'
+                            : 'bg-sky-100 text-sky-900'
                           : theme === 'dark'
                           ? 'hover:bg-gray-800 text-gray-300'
                           : 'hover:bg-gray-100 text-gray-700'
@@ -590,7 +590,7 @@ export default function LearnPage() {
 
             {/* Phase 2 */}
             <div className="mb-6">
-              <h3 className={`text-sm font-bold mb-2 uppercase tracking-wide ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}`}>
+              <h3 className={`text-sm font-bold mb-2 uppercase tracking-wide ${theme === 'dark' ? 'text-emerald-300' : 'text-emerald-600'}`}>
                 Phase 2: Skill Development
               </h3>
               <div className="space-y-2">
@@ -604,8 +604,8 @@ export default function LearnPage() {
                       className={`w-full text-left p-2 rounded-lg transition-all duration-200 text-sm ${
                         isSelected
                           ? theme === 'dark'
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-blue-100 text-blue-900'
+                            ? 'bg-cyan-400 text-slate-900'
+                            : 'bg-sky-100 text-sky-900'
                           : theme === 'dark'
                           ? 'hover:bg-gray-800 text-gray-300'
                           : 'hover:bg-gray-100 text-gray-700'
@@ -640,8 +640,8 @@ export default function LearnPage() {
                       className={`w-full text-left p-2 rounded-lg transition-all duration-200 text-sm ${
                         isSelected
                           ? theme === 'dark'
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-blue-100 text-blue-900'
+                            ? 'bg-cyan-400 text-slate-900'
+                            : 'bg-sky-100 text-sky-900'
                           : theme === 'dark'
                           ? 'hover:bg-gray-800 text-gray-300'
                           : 'hover:bg-gray-100 text-gray-700'
@@ -689,13 +689,13 @@ export default function LearnPage() {
                     <h3 className="text-xl font-bold mb-3">How to Use This Course:</h3>
                     <div className="space-y-3">
                       <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
-                        <h4 className={`font-semibold mb-2 text-blue-500`}>🎯 Finger Placement</h4>
+                        <h4 className={`font-semibold mb-2 text-sky-600 dark:text-cyan-300`}>🎯 Finger Placement</h4>
                         <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                           Study the highlighted keys and learn which finger to use for each key. Practice with the target key checker.
                         </p>
                       </div>
                       <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
-                        <h4 className={`font-semibold mb-2 text-purple-500`}>📝 Practice Mode</h4>
+                        <h4 className={`font-semibold mb-2 text-emerald-500 dark:text-emerald-300`}>📝 Practice Mode</h4>
                         <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                           Type the provided text exercises to master each lesson. Focus on accuracy over speed.
                         </p>
@@ -707,8 +707,8 @@ export default function LearnPage() {
                         </p>
                       </div>
                     </div>
-                    <div className={`mt-5 p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900/30 border border-blue-700' : 'bg-blue-50 border border-blue-200'}`}>
-                      <h4 className={`font-semibold mb-2 text-blue-500`}>💡 Pro Tips</h4>
+                    <div className={`mt-5 p-3 rounded-lg ${theme === 'dark' ? 'bg-cyan-500/10 border border-cyan-500/30' : 'bg-sky-50 border border-sky-200'}`}>
+                      <h4 className={`font-semibold mb-2 text-sky-600 dark:text-cyan-300`}>💡 Pro Tips</h4>
                       <ul className={`text-sm grid grid-cols-2 gap-x-4 gap-y-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                         <li>• Focus on accuracy first - speed will come naturally</li>
                         <li>• Keep your fingers on the home row (ASDF JKL;)</li>
@@ -881,8 +881,8 @@ export default function LearnPage() {
                         onClick={() => setShowPracticeDetails(true)}
                         className={`flex-1 py-3 rounded-lg font-semibold transition-colors duration-200 ${
                           theme === 'dark'
-                            ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                            ? 'bg-cyan-400 hover:bg-cyan-300 text-slate-900'
+                            : 'bg-sky-600 hover:bg-sky-700 text-white'
                         }`}
                       >
                         Practice
@@ -947,17 +947,17 @@ export default function LearnPage() {
                   </div>
                   <div className={`w-full h-2 rounded-full overflow-hidden ${progressBarBgClass}`}>
                     <div
-                      className="h-full bg-gradient-to-r from-green-500 to-blue-500 transition-all duration-300"
+                      className="h-full bg-gradient-to-r from-emerald-400 to-sky-500 transition-all duration-300"
                       style={{ width: `${((currentLineIndex + (typed.length / currentText.length)) / currentLesson.content.length) * 100}%` }}
                     />
                   </div>
                 </div>
 
                 {/* Lesson Objective */}
-                <div className={`mb-4 p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900/20 border border-blue-700' : 'bg-blue-50 border border-blue-200'}`}>
+                <div className={`mb-4 p-3 rounded-lg ${theme === 'dark' ? 'bg-cyan-500/10 border border-cyan-500/30' : 'bg-sky-50 border border-sky-200'}`}>
                   <div className="flex items-center gap-2">
-                    <span className="text-blue-500">🎯</span>
-                    <span className={`text-sm font-medium ${theme === 'dark' ? 'text-blue-300' : 'text-blue-700'}`}>
+                    <span className="text-sky-600 dark:text-cyan-300">🎯</span>
+                    <span className={`text-sm font-medium ${theme === 'dark' ? 'text-cyan-200' : 'text-sky-700'}`}>
                       Lesson Goal: {currentLesson.description}
                     </span>
                   </div>
@@ -1001,7 +1001,7 @@ export default function LearnPage() {
                   </div>
                   <div className={`p-4 rounded-lg text-center ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
                     <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Characters</div>
-                    <div className="text-2xl font-bold text-blue-500">{typed.length}/{currentText.length}</div>
+                    <div className="text-2xl font-bold text-sky-600 dark:text-cyan-300">{typed.length}/{currentText.length}</div>
                   </div>
                   <div className={`p-4 rounded-lg text-center ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
                     <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Accuracy</div>

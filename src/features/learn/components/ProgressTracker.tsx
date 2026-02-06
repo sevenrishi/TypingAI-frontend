@@ -55,15 +55,15 @@ export default function ProgressTracker() {
   const nextMilestone = milestones[Math.min(currentMilestoneIndex + 1, milestones.length - 1)];
 
   return (
-    <div className={`rounded-lg shadow-lg p-6 transition-colors duration-300 ${
+    <div className={`rounded-2xl shadow-lg p-6 transition-colors duration-300 ${
       theme === 'dark'
-        ? 'bg-gray-800/40 backdrop-blur-md'
-        : 'bg-white border border-gray-300'
+        ? 'bg-slate-900/70 border border-slate-700/60 backdrop-blur-xl'
+        : 'bg-white/80 border border-slate-200'
     }`}>
       <h3 className="text-2xl font-bold mb-6">Your Progress</h3>
 
       {/* Current Stats */}
-      <div className="mb-6 p-4 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+      <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 text-slate-900">
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-sm opacity-90">Current WPM</p>
@@ -82,7 +82,7 @@ export default function ProgressTracker() {
           Current Level
         </p>
         <p className="text-4xl mb-2">{currentMilestone.badge}</p>
-        <p className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+        <p className="text-xl font-bold text-sky-600 dark:text-cyan-300">
           {currentMilestone.level}
         </p>
       </div>
@@ -100,10 +100,10 @@ export default function ProgressTracker() {
             <span>{nextMilestone.wpm} WPM</span>
           </div>
           <div className={`w-full h-3 rounded-full overflow-hidden ${
-            theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'
+            theme === 'dark' ? 'bg-slate-800' : 'bg-slate-200'
           }`}>
             <div
-              className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-300"
+              className="h-full bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 transition-all duration-300"
               style={{
                 width: `${Math.min(
                   (userStats.currentWpm / nextMilestone.wpm) * 100,

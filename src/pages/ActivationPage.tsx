@@ -68,7 +68,7 @@ export default function ActivationPage() {
       }`}>
         {status === 'loading' && (
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-green-500 mb-4"></div>
+            <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-emerald-500 mb-4"></div>
             <h2 className="text-2xl font-bold mb-2">Activating Your Account</h2>
             <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
               Please wait while we activate your account...
@@ -80,7 +80,7 @@ export default function ActivationPage() {
           <div className="text-center">
             <div className="mb-4">
               <svg 
-                className="mx-auto h-16 w-16 text-green-500" 
+                className="mx-auto h-16 w-16 text-emerald-500" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -93,7 +93,7 @@ export default function ActivationPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold mb-2 text-green-500">Activation Successful</h2>
+            <h2 className="text-2xl font-bold mb-2 text-emerald-500">Activation Successful</h2>
             <p className={`mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
               {message}
             </p>
@@ -101,8 +101,8 @@ export default function ActivationPage() {
               onClick={handleGoToLogin}
               className={`w-full px-4 py-3 rounded-lg font-semibold transition shadow-lg ${
                 theme === 'dark'
-                  ? 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white'
-                  : 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white'
+                  ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-900'
+                  : 'bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white'
               }`}
             >
               Go to Login
@@ -114,7 +114,7 @@ export default function ActivationPage() {
           <div className="text-center">
             <div className="mb-4">
               <svg 
-                className="mx-auto h-16 w-16 text-blue-500" 
+                className="mx-auto h-16 w-16 text-cyan-400" 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -127,7 +127,7 @@ export default function ActivationPage() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold mb-2 text-blue-500">Account Activated</h2>
+            <h2 className="text-2xl font-bold mb-2 text-cyan-400">Account Activated</h2>
             <p className={`mb-6 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
               {message}
             </p>
@@ -135,8 +135,8 @@ export default function ActivationPage() {
               onClick={handleGoToLogin}
               className={`w-full px-4 py-3 rounded-lg font-semibold transition shadow-lg ${
                 theme === 'dark'
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white'
-                  : 'bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white'
+                  ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 hover:from-cyan-300 hover:via-sky-300 hover:to-emerald-300 text-slate-900'
+                  : 'bg-gradient-to-r from-sky-600 via-cyan-500 to-emerald-500 hover:from-sky-700 hover:via-cyan-600 hover:to-emerald-600 text-white'
               }`}
             >
               Go to Login

@@ -16,8 +16,8 @@ function getPasswordStrength(pwd: string) {
     : score === 2
     ? { score, label: 'Fair', color: 'bg-yellow-500' }
     : score === 3
-    ? { score, label: 'Good', color: 'bg-blue-500' }
-    : { score, label: 'Strong', color: 'bg-green-500' };
+    ? { score, label: 'Good', color: 'bg-cyan-500' }
+    : { score, label: 'Strong', color: 'bg-emerald-500' };
 }
 
 export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onSwitch?: () => void }) {
@@ -113,8 +113,8 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
             onChange={e => setDisplayName(e.target.value)}
             className={`w-full p-3 rounded-lg border mt-1 outline-none transition ${
               theme === 'dark'
-                ? 'bg-gray-700/50 border-gray-600 focus:border-green-500'
-                : 'bg-gray-50 border-gray-300 focus:border-green-600'
+                ? 'bg-slate-900/50 border-slate-700 focus:border-emerald-400'
+                : 'bg-white border-slate-200 focus:border-emerald-500'
             }`}
             placeholder="John Doe"
           />
@@ -134,13 +134,13 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
               emailError
                 ? `border-red-500 focus:border-red-400 ${
                     theme === 'dark'
-                      ? 'bg-gray-700/50'
+                      ? 'bg-slate-900/50'
                       : 'bg-red-50'
                   }`
                 : `${
                     theme === 'dark'
-                      ? 'bg-gray-700/50 border-gray-600 focus:border-green-500'
-                      : 'bg-gray-50 border-gray-300 focus:border-green-600'
+                      ? 'bg-slate-900/50 border-slate-700 focus:border-emerald-400'
+                      : 'bg-white border-slate-200 focus:border-emerald-500'
                   }`
             }`}
             placeholder="your@email.com"
@@ -160,8 +160,8 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
             type="password"
             className={`w-full p-3 rounded-lg border mt-1 outline-none transition ${
               theme === 'dark'
-                ? 'bg-gray-700/50 border-gray-600 focus:border-green-500'
-                : 'bg-gray-50 border-gray-300 focus:border-green-600'
+                ? 'bg-slate-900/50 border-slate-700 focus:border-emerald-400'
+                : 'bg-white border-slate-200 focus:border-emerald-500'
             }`}
             placeholder="••••••••"
           />
@@ -176,9 +176,9 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
                     ? 'text-red-500'
                     : strength.color === 'bg-yellow-500'
                     ? 'text-yellow-500'
-                    : strength.color === 'bg-blue-500'
-                    ? 'text-blue-500'
-                    : 'text-green-500'
+                    : strength.color === 'bg-cyan-500'
+                    ? 'text-cyan-500'
+                    : 'text-emerald-500'
                 }`}>
                   {strength.label}
                 </span>
@@ -206,13 +206,13 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
               confirmError
                 ? `border-red-500 focus:border-red-400 ${
                     theme === 'dark'
-                      ? 'bg-gray-700/50'
+                      ? 'bg-slate-900/50'
                       : 'bg-red-50'
                   }`
                 : `${
                     theme === 'dark'
-                      ? 'bg-gray-700/50 border-gray-600 focus:border-green-500'
-                      : 'bg-gray-50 border-gray-300 focus:border-green-600'
+                      ? 'bg-slate-900/50 border-slate-700 focus:border-emerald-400'
+                      : 'bg-white border-slate-200 focus:border-emerald-500'
                   }`
             }`}
             placeholder="••••••••"
@@ -224,8 +224,8 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
           disabled={loading || !isFormValid}
           className={`w-full px-4 py-2.5 rounded-lg font-semibold transition shadow-lg ${
             theme === 'dark'
-              ? 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 disabled:from-gray-600 disabled:to-gray-600 text-white'
-              : 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 disabled:from-gray-400 disabled:to-gray-400 text-white'
+              ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 hover:from-cyan-300 hover:via-sky-300 hover:to-emerald-300 disabled:from-gray-600 disabled:to-gray-600 text-slate-900'
+              : 'bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 hover:from-sky-600 hover:via-cyan-600 hover:to-emerald-600 disabled:from-gray-400 disabled:to-gray-400 text-white'
           }`}
         >
           {loading ? (
@@ -246,8 +246,8 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
             onClick={() => onSwitch && onSwitch()}
             className={`font-semibold ${
               theme === 'dark'
-                ? 'text-indigo-400 hover:text-indigo-300'
-                : 'text-indigo-600 hover:text-indigo-700'
+                ? 'text-cyan-300 hover:text-cyan-200'
+                : 'text-sky-600 hover:text-sky-700'
             }`}
           >
             Sign in

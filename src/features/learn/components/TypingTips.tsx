@@ -57,10 +57,10 @@ export default function TypingTips() {
     : tips;
 
   return (
-    <div className={`rounded-lg shadow-lg p-8 transition-colors duration-300 ${
+    <div className={`rounded-2xl shadow-lg p-8 transition-colors duration-300 ${
       theme === 'dark'
-        ? 'bg-gray-800/40 backdrop-blur-md'
-        : 'bg-white border border-gray-300'
+        ? 'bg-slate-900/70 border border-slate-700/60 backdrop-blur-xl'
+        : 'bg-white/80 border border-slate-200'
     }`}>
       <h3 className="text-2xl font-bold mb-6">Pro Tips</h3>
 
@@ -70,11 +70,11 @@ export default function TypingTips() {
           className={`px-4 py-2 rounded-full transition-colors duration-200 font-medium ${
             selectedCategory === null
               ? theme === 'dark'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-indigo-600 text-white'
+                ? 'bg-cyan-400 text-slate-900'
+                : 'bg-sky-600 text-white'
               : theme === 'dark'
-              ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+              : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
           }`}
         >
           All
@@ -86,11 +86,11 @@ export default function TypingTips() {
             className={`px-4 py-2 rounded-full transition-colors duration-200 font-medium ${
               selectedCategory === cat
                 ? theme === 'dark'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-indigo-600 text-white'
+                  ? 'bg-cyan-400 text-slate-900'
+                  : 'bg-sky-600 text-white'
                 : theme === 'dark'
-                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
             }`}
           >
             {cat}
@@ -104,21 +104,21 @@ export default function TypingTips() {
             key={tip.id}
             className={`rounded-lg p-4 border transition-colors duration-200 ${
               theme === 'dark'
-                ? 'bg-gray-700/50 border-gray-600'
-                : 'bg-gray-50 border-gray-300'
+                ? 'bg-slate-900/50 border-slate-700'
+                : 'bg-white border-slate-200'
             }`}
           >
             <div className="flex items-start justify-between mb-2">
               <h4 className="font-bold text-lg">{tip.title}</h4>
               <span className={`text-xs px-2 py-1 rounded-full ${
                 theme === 'dark'
-                  ? 'bg-indigo-600/30 text-indigo-300'
-                  : 'bg-indigo-100 text-indigo-700'
+                  ? 'bg-cyan-500/20 text-cyan-200'
+                  : 'bg-sky-100 text-sky-700'
               }`}>
                 {tip.category}
               </span>
             </div>
-            <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+            <p className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
               {tip.content}
             </p>
           </div>

@@ -139,7 +139,7 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
                           onClick={() => handleAvatarSelect(avatar.name)}
                           className={`relative group w-20 h-20 rounded-full overflow-hidden transition-transform duration-200 hover:scale-110 border-2 ${
                             selectedAvatarId === avatar.name 
-                              ? 'border-indigo-500 ring-2 ring-indigo-400' 
+                              ? 'border-cyan-400 ring-2 ring-cyan-300' 
                               : theme === 'dark'
                               ? 'border-gray-600 hover:border-gray-500'
                               : 'border-gray-300 hover:border-gray-400'
@@ -193,7 +193,7 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
               <div className={`text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 Best WPM
               </div>
-              <div className="text-4xl font-bold text-blue-500">{Math.round(profile.bestWPM || 0)}</div>
+              <div className="text-4xl font-bold text-sky-600 dark:text-cyan-300">{Math.round(profile.bestWPM || 0)}</div>
             </div>
             <div className={`p-6 rounded-lg transition-colors duration-300 ${
               theme === 'dark'
@@ -213,7 +213,7 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
               <div className={`text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 Total Tests
               </div>
-              <div className="text-4xl font-bold text-purple-500">{(profile.history || []).length}</div>
+              <div className="text-4xl font-bold text-emerald-500 dark:text-emerald-300">{(profile.history || []).length}</div>
             </div>
           </div>
 
@@ -233,13 +233,13 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
               {/* Category Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Tests */}
-                <div className={`rounded-lg p-6 border-l-4 border-blue-500 ${
+                <div className={`rounded-lg p-6 border-l-4 border-sky-500 ${
                   theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'
                 }`}>
                   <div className={`text-sm font-medium mb-2 ${
                     theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>Tests</div>
-                  <div className="text-3xl font-bold text-blue-500 mb-3">{stats.stats.tests.count}</div>
+                  <div className="text-3xl font-bold text-sky-600 dark:text-cyan-300 mb-3">{stats.stats.tests.count}</div>
                   <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Avg WPM: <span className="font-semibold">{stats.stats.tests.avgWPM}</span>
                   </div>
@@ -249,13 +249,13 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
                 </div>
 
                 {/* Practice */}
-                <div className={`rounded-lg p-6 border-l-4 border-purple-500 ${
+                <div className={`rounded-lg p-6 border-l-4 border-emerald-500 ${
                   theme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'
                 }`}>
                   <div className={`text-sm font-medium mb-2 ${
                     theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>Practice</div>
-                  <div className="text-3xl font-bold text-purple-500 mb-3">{stats.stats.practice.count}</div>
+                  <div className="text-3xl font-bold text-emerald-500 dark:text-emerald-300 mb-3">{stats.stats.practice.count}</div>
                   <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Avg WPM: <span className="font-semibold">{stats.stats.practice.avgWPM}</span>
                   </div>
@@ -348,7 +348,7 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
                     </div>
                   </div>
                   <div className="text-right ml-4">
-                    <div className="text-lg font-bold text-blue-500">{Math.round(r.wpm)} WPM</div>
+                    <div className="text-lg font-bold text-sky-600 dark:text-cyan-300">{Math.round(r.wpm)} WPM</div>
                     <div className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                       {Math.round(r.accuracy)}% • {r.errors} err
                     </div>

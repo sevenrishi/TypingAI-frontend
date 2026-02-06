@@ -11,6 +11,7 @@ import { useTheme } from '../../../providers/ThemeProvider';
 export default function TypingBattleground() {
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const aiText = useSelector((s: RootState) => s.aiMultiplayer.text);
   const { typed, text, status, stats, handleChange, raceLocked, countdown } = useTyping();
 
@@ -22,26 +23,28 @@ export default function TypingBattleground() {
   }, [aiText, dispatch]);
 
   return (
-    <div className={`p-6 rounded-lg shadow-lg transition-colors duration-300 ${
-      theme === 'dark'
-        ? 'bg-gray-800/40 backdrop-blur-md'
-        : 'bg-white border border-gray-300'
-    }`}>
-      <div className="flex flex-col gap-4">
+    <section
+      className={`p-6 md:p-8 rounded-[28px] border shadow-lg transition-colors duration-300 ${
+        isDark
+          ? 'bg-slate-900/70 border-slate-700/60 text-slate-100 backdrop-blur-xl'
+          : 'bg-white/80 border-slate-200 text-slate-900 backdrop-blur-xl'
+      }`}
+    >
+      <div className="flex flex-col gap-5">
         {/* Script display */}
-        <div className={`rounded-md overflow-hidden border p-4 h-48 transition-colors duration-300 ${
-          theme === 'dark'
-            ? 'border-gray-700 bg-gradient-to-b from-gray-900 to-gray-800'
-            : 'border-gray-300 bg-gray-50'
-        }`}>
+        <div
+          className={`rounded-2xl overflow-hidden border p-4 h-52 ${
+            isDark
+              ? 'bg-slate-900/45 border-slate-700/50'
+              : 'bg-white/60 border-slate-200/80'
+          }`}
+        >
           <TextDisplay text={text} typed={typed} />
         </div>
 
         {/* Race countdown */}
         {raceLocked && typeof countdown === 'number' && (
-          <div className={`text-center text-sm ${
-            theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'
-          }`}>
+          <div className="text-center text-sm text-amber-400">
             Race starts in {countdown}s
           </div>
         )}
@@ -54,14 +57,14 @@ export default function TypingBattleground() {
           onPaste={e => e.preventDefault()}
           onCopy={e => e.preventDefault()}
           disabled={status === 'finished'}
-          className={`w-full p-3 rounded-md border transition-colors duration-200 ${
+          className={`w-full p-3 rounded-xl border transition-colors duration-200 ${
             status === 'finished'
-              ? theme === 'dark'
-                ? 'border-gray-600 bg-gray-700 text-gray-400 placeholder-gray-500 cursor-not-allowed'
-                : 'border-gray-300 bg-gray-100 text-gray-500 placeholder-gray-400 cursor-not-allowed'
-              : theme === 'dark'
-              ? 'border-gray-600 bg-gray-800 text-white placeholder-gray-400'
-              : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+              ? isDark
+                ? 'border-slate-700 bg-slate-900/60 text-slate-500 placeholder-slate-600 cursor-not-allowed'
+                : 'border-slate-200 bg-slate-100 text-slate-500 placeholder-slate-400 cursor-not-allowed'
+              : isDark
+              ? 'border-slate-700 bg-slate-900/60 text-slate-100 placeholder-slate-500'
+              : 'border-slate-200 bg-white text-slate-900 placeholder-slate-500'
           }`}
           placeholder={raceLocked ? 'Waiting for race to start...' : status === 'finished' ? 'Test completed!' : 'Start typing here...'}
           autoFocus
@@ -70,6 +73,6 @@ export default function TypingBattleground() {
         {/* Stats panel */}
         <StatsPanel wpm={stats.wpm} cpm={stats.cpm} accuracy={stats.accuracy} errors={stats.errors} elapsed={stats.elapsed} />
       </div>
-    </div>
+    </section>
   );
 }

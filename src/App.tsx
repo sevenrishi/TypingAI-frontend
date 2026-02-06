@@ -59,8 +59,8 @@ export default function App() {
       }`}>
         <header className={`border-b transition-colors duration-300 ${
           theme === 'dark' 
-            ? 'border-gray-700 bg-gray-900/70' 
-            : 'border-gray-200 bg-white/70'
+            ? 'border-slate-800 bg-slate-950/60' 
+            : 'border-slate-200 bg-white/70'
         }`}>
           <div className="app-shell py-4 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
@@ -74,7 +74,7 @@ export default function App() {
                 Typing
               </span>
               <span
-                className="text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-600"
+                className="text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400"
                 style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
               >
                 AI
@@ -84,53 +84,53 @@ export default function App() {
 
             <nav className={`flex items-center gap-3 px-3 py-2 rounded-xl border shadow-md ${
               theme === 'dark'
-                ? 'bg-gray-900/70 border-gray-700'
-                : 'bg-white/80 border-gray-200'
+                ? 'bg-slate-950/60 border-slate-800'
+                : 'bg-white/80 border-slate-200'
             }`}>
               <NavLink to="/" end className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-bold tracking-wider uppercase transition-all duration-200 border ${
                 isActive
                   ? theme === 'dark'
-                    ? 'bg-indigo-500 text-white border-indigo-300 shadow-lg shadow-indigo-500/40 -translate-y-0.5'
-                    : 'bg-indigo-600 text-white border-indigo-300 shadow-lg shadow-indigo-300/50 -translate-y-0.5'
+                    ? 'bg-cyan-400 text-slate-900 border-cyan-300 shadow-lg shadow-cyan-500/40 -translate-y-0.5'
+                    : 'bg-sky-600 text-white border-sky-300 shadow-lg shadow-sky-300/50 -translate-y-0.5'
                   : theme === 'dark'
-                  ? 'bg-gray-800 text-gray-200 border-gray-600 shadow-inner hover:bg-gray-700/70'
-                  : 'bg-gray-50 text-gray-800 border-gray-300 shadow-inner hover:bg-gray-100'
+                  ? 'bg-slate-900/70 text-slate-200 border-slate-700 shadow-inner hover:bg-slate-800/80'
+                  : 'bg-white text-slate-700 border-slate-200 shadow-inner hover:bg-slate-50'
               }`}>Home</NavLink>
               <NavLink to="/practice" className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-bold tracking-wider uppercase transition-all duration-200 border ${
                 isActive
                   ? theme === 'dark'
-                    ? 'bg-indigo-500 text-white border-indigo-300 shadow-lg shadow-indigo-500/40 -translate-y-0.5'
-                    : 'bg-indigo-600 text-white border-indigo-300 shadow-lg shadow-indigo-300/50 -translate-y-0.5'
+                    ? 'bg-cyan-400 text-slate-900 border-cyan-300 shadow-lg shadow-cyan-500/40 -translate-y-0.5'
+                    : 'bg-sky-600 text-white border-sky-300 shadow-lg shadow-sky-300/50 -translate-y-0.5'
                   : theme === 'dark'
-                  ? 'bg-gray-800 text-gray-200 border-gray-600 shadow-inner hover:bg-gray-700/70'
-                  : 'bg-gray-50 text-gray-800 border-gray-300 shadow-inner hover:bg-gray-100'
+                  ? 'bg-slate-900/70 text-slate-200 border-slate-700 shadow-inner hover:bg-slate-800/80'
+                  : 'bg-white text-slate-700 border-slate-200 shadow-inner hover:bg-slate-50'
               }`}>Practice</NavLink>
               <NavLink to="/typing" className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-bold tracking-wider uppercase transition-all duration-200 border ${
                 isActive
                   ? theme === 'dark'
-                    ? 'bg-indigo-500 text-white border-indigo-300 shadow-lg shadow-indigo-500/40 -translate-y-0.5'
-                    : 'bg-indigo-600 text-white border-indigo-300 shadow-lg shadow-indigo-300/50 -translate-y-0.5'
+                    ? 'bg-cyan-400 text-slate-900 border-cyan-300 shadow-lg shadow-cyan-500/40 -translate-y-0.5'
+                    : 'bg-sky-600 text-white border-sky-300 shadow-lg shadow-sky-300/50 -translate-y-0.5'
                   : theme === 'dark'
-                  ? 'bg-gray-800 text-gray-200 border-gray-600 shadow-inner hover:bg-gray-700/70'
-                  : 'bg-gray-50 text-gray-800 border-gray-300 shadow-inner hover:bg-gray-100'
+                  ? 'bg-slate-900/70 text-slate-200 border-slate-700 shadow-inner hover:bg-slate-800/80'
+                  : 'bg-white text-slate-700 border-slate-200 shadow-inner hover:bg-slate-50'
               }`}>Typing Test</NavLink>
               <NavLink to="/learn" className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-bold tracking-wider uppercase transition-all duration-200 border ${
                 isActive
                   ? theme === 'dark'
-                    ? 'bg-indigo-500 text-white border-indigo-300 shadow-lg shadow-indigo-500/40 -translate-y-0.5'
-                    : 'bg-indigo-600 text-white border-indigo-300 shadow-lg shadow-indigo-300/50 -translate-y-0.5'
+                    ? 'bg-cyan-400 text-slate-900 border-cyan-300 shadow-lg shadow-cyan-500/40 -translate-y-0.5'
+                    : 'bg-sky-600 text-white border-sky-300 shadow-lg shadow-sky-300/50 -translate-y-0.5'
                   : theme === 'dark'
-                  ? 'bg-gray-800 text-gray-200 border-gray-600 shadow-inner hover:bg-gray-700/70'
-                  : 'bg-gray-50 text-gray-800 border-gray-300 shadow-inner hover:bg-gray-100'
+                  ? 'bg-slate-900/70 text-slate-200 border-slate-700 shadow-inner hover:bg-slate-800/80'
+                  : 'bg-white text-slate-700 border-slate-200 shadow-inner hover:bg-slate-50'
               }`}>Learn</NavLink>
               <NavLink to="/battleground" className={({ isActive }) => `px-4 py-2 rounded-lg text-sm font-bold tracking-wider uppercase transition-all duration-200 border ${
                 isActive
                   ? theme === 'dark'
-                    ? 'bg-indigo-500 text-white border-indigo-300 shadow-lg shadow-indigo-500/40 -translate-y-0.5'
-                    : 'bg-indigo-600 text-white border-indigo-300 shadow-lg shadow-indigo-300/50 -translate-y-0.5'
+                    ? 'bg-cyan-400 text-slate-900 border-cyan-300 shadow-lg shadow-cyan-500/40 -translate-y-0.5'
+                    : 'bg-sky-600 text-white border-sky-300 shadow-lg shadow-sky-300/50 -translate-y-0.5'
                   : theme === 'dark'
-                  ? 'bg-gray-800 text-gray-200 border-gray-600 shadow-inner hover:bg-gray-700/70'
-                  : 'bg-gray-50 text-gray-800 border-gray-300 shadow-inner hover:bg-gray-100'
+                  ? 'bg-slate-900/70 text-slate-200 border-slate-700 shadow-inner hover:bg-slate-800/80'
+                  : 'bg-white text-slate-700 border-slate-200 shadow-inner hover:bg-slate-50'
               }`}>Battleground</NavLink>
             </nav>
 
@@ -139,13 +139,13 @@ export default function App() {
               <>
                 <button onClick={() => setShowSignIn(true)} className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 border ${
                   theme === 'dark'
-                    ? 'bg-indigo-600 text-white border-indigo-400 shadow-inner hover:bg-indigo-500'
-                    : 'bg-indigo-600 text-white border-indigo-300 shadow-inner hover:bg-indigo-700'
+                    ? 'bg-sky-500 text-slate-900 border-sky-300 shadow-inner hover:bg-sky-400'
+                    : 'bg-sky-600 text-white border-sky-300 shadow-inner hover:bg-sky-700'
                 }`}>Sign In</button>
                 <button onClick={() => setShowSignUp(true)} className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 border ${
                   theme === 'dark'
-                    ? 'bg-green-600 text-white border-green-400 shadow-inner hover:bg-green-500'
-                    : 'bg-green-600 text-white border-green-300 shadow-inner hover:bg-green-700'
+                    ? 'bg-emerald-400 text-slate-900 border-emerald-300 shadow-inner hover:bg-emerald-300'
+                    : 'bg-emerald-500 text-white border-emerald-300 shadow-inner hover:bg-emerald-600'
                 }`}>Sign Up</button>
               </>
             ) : null}
@@ -164,7 +164,7 @@ export default function App() {
                 }`}
               >
                 {theme === 'dark' ? (
-                  <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
                   </svg>
                 ) : (
@@ -188,8 +188,8 @@ export default function App() {
                   onClick={() => setShowProfileMenu(prev => !prev)}
                   className={`w-10 h-10 rounded-full flex items-center justify-center border transition-colors duration-200 ${
                     theme === 'dark'
-                      ? 'bg-gray-800 text-gray-200 border-gray-600 hover:bg-gray-700'
-                      : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                      ? 'bg-slate-900 text-slate-200 border-slate-700 hover:bg-slate-800'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                   }`}
                   aria-label="Open profile menu"
                 >
@@ -201,16 +201,16 @@ export default function App() {
                 {showProfileMenu && (
                   <div className={`absolute right-0 mt-2 w-52 rounded-lg border shadow-xl z-50 overflow-hidden ${
                     theme === 'dark'
-                      ? 'bg-gray-900 border-gray-700'
-                      : 'bg-white border-gray-200'
+                      ? 'bg-slate-950 border-slate-800'
+                      : 'bg-white border-slate-200'
                   }`}>
                     <Link
                       to="/profile"
                       onClick={() => setShowProfileMenu(false)}
                       className={`block px-4 py-2 text-sm transition-colors ${
                         theme === 'dark'
-                          ? 'text-gray-200 hover:bg-gray-800'
-                          : 'text-gray-700 hover:bg-gray-100'
+                          ? 'text-slate-200 hover:bg-slate-900'
+                          : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       Profile
@@ -220,8 +220,8 @@ export default function App() {
                       onClick={() => setShowProfileMenu(false)}
                       className={`block px-4 py-2 text-sm transition-colors ${
                         theme === 'dark'
-                          ? 'text-gray-200 hover:bg-gray-800'
-                          : 'text-gray-700 hover:bg-gray-100'
+                          ? 'text-slate-200 hover:bg-slate-900'
+                          : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       Account Settings
@@ -231,8 +231,8 @@ export default function App() {
                       onClick={() => setShowProfileMenu(false)}
                       className={`block px-4 py-2 text-sm transition-colors ${
                         theme === 'dark'
-                          ? 'text-gray-200 hover:bg-gray-800'
-                          : 'text-gray-700 hover:bg-gray-100'
+                          ? 'text-slate-200 hover:bg-slate-900'
+                          : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       Help Center
@@ -244,8 +244,8 @@ export default function App() {
                       }}
                       className={`w-full text-left px-4 py-2 text-sm transition-colors ${
                         theme === 'dark'
-                          ? 'text-red-300 hover:bg-gray-800'
-                          : 'text-red-600 hover:bg-gray-100'
+                          ? 'text-rose-300 hover:bg-slate-900'
+                          : 'text-rose-600 hover:bg-slate-50'
                       }`}
                     >
                       Sign Out

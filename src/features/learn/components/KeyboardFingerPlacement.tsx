@@ -30,7 +30,7 @@ const FINGER_STYLES: Record<Finger, string> = {
   rightIndex: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
   rightMiddle: 'bg-teal-500/15 text-teal-400 border-teal-500/30',
   rightRing: 'bg-sky-500/15 text-sky-400 border-sky-500/30',
-  rightPinky: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30'
+  rightPinky: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30'
 };
 
 export const KEY_FINGER_MAP: Record<string, Finger> = {
@@ -156,7 +156,7 @@ export default function KeyboardFingerPlacement({
   const activeKeyClasses =
     theme === 'dark'
       ? 'ring-2 ring-white/70 shadow-[0_0_12px_rgba(255,255,255,0.35)] scale-[1.05]'
-      : 'ring-2 ring-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.35)] scale-[1.05]';
+      : 'ring-2 ring-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.35)] scale-[1.05]';
 
   return (
     <div className={className}>

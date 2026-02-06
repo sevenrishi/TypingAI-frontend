@@ -35,7 +35,7 @@ export default function TypingLoader({ isLoading, duration = 3000 }: TypingLoade
         />
         <div
           className={`absolute -bottom-48 -left-28 h-[520px] w-[520px] rounded-full blur-3xl ${
-            theme === 'dark' ? 'bg-purple-700/20' : 'bg-purple-300/40'
+            theme === 'dark' ? 'bg-emerald-700/20' : 'bg-emerald-300/40'
           }`}
         />
         <div
@@ -76,7 +76,7 @@ export default function TypingLoader({ isLoading, duration = 3000 }: TypingLoade
                 Typing
               </span>
               <span
-                className="text-4xl font-black tracking-tight text-transparent sm:text-6xl bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-600"
+                className="text-4xl font-black tracking-tight text-transparent sm:text-6xl bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400"
                 style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
               >
                 AI
@@ -143,7 +143,7 @@ export default function TypingLoader({ isLoading, duration = 3000 }: TypingLoade
               }`}
             >
               <div
-                className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-500"
+                className="h-full rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400"
                 style={{
                   animation: `loader-progress ${duration / 1000}s ease-in-out forwards`,
                 }}
@@ -209,7 +209,7 @@ export default function TypingLoader({ isLoading, duration = 3000 }: TypingLoade
         }
 
         .loader-caret {
-          color: ${theme === 'dark' ? '#38bdf8' : '#4f46e5'};
+          color: ${theme === 'dark' ? '#22d3ee' : '#0ea5e9'};
           animation: loader-caret 1.1s steps(2) infinite;
         }
 
