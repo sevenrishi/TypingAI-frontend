@@ -205,7 +205,7 @@ export default function HomePage() {
                 <MiniStat label="Mode" value="Sprint" />
               </div>
             </div>
-            <div
+            {/*<div
               className={`absolute -bottom-10 -left-6 hidden md:block rounded-2xl border px-4 py-4 shadow-lg ${surfaceSoft}`}
             >
               <div
@@ -218,7 +218,7 @@ export default function HomePage() {
                 <span className="text-2xl font-bold">1,240</span>
                 <span className={`text-sm ${mutedText}`}>words trained</span>
               </div>
-            </div>
+            </div>*/}
           </div>
         </div>
       </section>

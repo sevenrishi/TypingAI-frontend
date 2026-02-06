@@ -8,6 +8,8 @@ import BattlegroundPage from './pages/BattlegroundPage';
 import PracticePage from './pages/PracticePage';
 import LearnPage from './pages/LearnPage';
 import UserProfilePage from './pages/UserProfilePage';
+import AccountSettingsPage from './pages/AccountSettingsPage';
+import HelpCenterPage from './pages/HelpCenterPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import ActivationPage from './pages/ActivationPage';
 import SignIn from './features/auth/components/SignIn';
@@ -18,6 +20,18 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from './store';
 import { logout } from './features/auth/authSlice';
 import { useTheme } from './providers/ThemeProvider';
+import { getAvatarColor } from './utils/avatars';
+import { LifeBuoy, LogOut, Moon, Settings, Sun, User } from 'lucide-react';
+
+function initials(name?: string) {
+  if (!name) return 'U';
+  return name
+    .split(' ')
+    .map(part => part[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+}
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
@@ -26,8 +40,27 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const auth = useSelector((s: RootState) => s.auth);
+  const profile = useSelector((s: RootState) => s.profile);
   const dispatch = useDispatch();
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
+
+  const displayName = profile.user?.displayName || auth.user?.displayName || 'Member';
+  const email = profile.user?.email || auth.user?.email || 'No email on file';
+  const hasHistory = Array.isArray(profile.history) && profile.history.length > 0;
+  const bestWpm = hasHistory ? Math.round(profile.bestWPM || 0) : null;
+  const avgAccuracy = hasHistory ? Math.round(profile.averageAccuracy || 0) : null;
+  const totalTests = Array.isArray(profile.history) ? profile.history.length : 0;
+
+  const menuSurface = theme === 'dark'
+    ? 'bg-slate-950 border-slate-800'
+    : 'bg-white border-slate-200';
+  const menuText = theme === 'dark' ? 'text-slate-100' : 'text-slate-900';
+  const menuMuted = theme === 'dark' ? 'text-slate-400' : 'text-slate-500';
+  const menuHover = theme === 'dark' ? 'hover:bg-slate-900' : 'hover:bg-slate-50';
+  const menuChip = theme === 'dark'
+    ? 'bg-slate-900/70 border-slate-800'
+    : 'bg-slate-50 border-slate-200';
+  const menuIcon = theme === 'dark' ? 'text-cyan-200' : 'text-sky-600';
 
   useEffect(() => {
     // Show loader for 2.5 seconds on app startup
@@ -164,21 +197,9 @@ export default function App() {
                 }`}
               >
                 {theme === 'dark' ? (
-                  <svg className="w-4 h-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
-                  </svg>
+                  <Moon className="w-4 h-4 text-cyan-300" />
                 ) : (
-                  <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"></line>
-                    <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" strokeWidth="2" strokeLinecap="round"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" strokeWidth="2" strokeLinecap="round"></line>
-                    <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"></line>
-                    <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" strokeWidth="2" strokeLinecap="round"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"></line>
-                  </svg>
+                  <Sun className="w-4 h-4 text-amber-400" />
                 )}
               </div>
             </button>
@@ -199,57 +220,114 @@ export default function App() {
                 </button>
 
                 {showProfileMenu && (
-                  <div className={`absolute right-0 mt-2 w-52 rounded-lg border shadow-xl z-50 overflow-hidden ${
-                    theme === 'dark'
-                      ? 'bg-slate-950 border-slate-800'
-                      : 'bg-white border-slate-200'
-                  }`}>
-                    <Link
-                      to="/profile"
-                      onClick={() => setShowProfileMenu(false)}
-                      className={`block px-4 py-2 text-sm transition-colors ${
-                        theme === 'dark'
-                          ? 'text-slate-200 hover:bg-slate-900'
-                          : 'text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      Profile
-                    </Link>
-                    <Link
-                      to="/profile"
-                      onClick={() => setShowProfileMenu(false)}
-                      className={`block px-4 py-2 text-sm transition-colors ${
-                        theme === 'dark'
-                          ? 'text-slate-200 hover:bg-slate-900'
-                          : 'text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      Account Settings
-                    </Link>
-                    <Link
-                      to="/learn"
-                      onClick={() => setShowProfileMenu(false)}
-                      className={`block px-4 py-2 text-sm transition-colors ${
-                        theme === 'dark'
-                          ? 'text-slate-200 hover:bg-slate-900'
-                          : 'text-slate-700 hover:bg-slate-50'
-                      }`}
-                    >
-                      Help Center
-                    </Link>
-                    <button
-                      onClick={() => {
-                        dispatch(logout());
-                        setShowProfileMenu(false);
-                      }}
-                      className={`w-full text-left px-4 py-2 text-sm transition-colors ${
-                        theme === 'dark'
-                          ? 'text-rose-300 hover:bg-slate-900'
-                          : 'text-rose-600 hover:bg-slate-50'
-                      }`}
-                    >
-                      Sign Out
-                    </button>
+                  <div className={`absolute right-0 mt-3 w-80 rounded-2xl border shadow-xl z-50 overflow-hidden ${menuSurface} ${menuText}`}>
+                    <div className={`px-4 py-4 border-b ${theme === 'dark' ? 'border-slate-800' : 'border-slate-200'}`}>
+                      <div className="flex items-center gap-3">
+                        <div className={`h-12 w-12 rounded-full flex items-center justify-center text-sm font-bold text-white ${getAvatarColor(profile.user?.avatarId)}`}>
+                          {initials(displayName)}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-sm font-semibold truncate">{displayName}</div>
+                          <div className={`text-xs ${menuMuted} truncate`}>{email}</div>
+                          <div
+                            className={`mt-2 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] ${menuMuted}`}
+                            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                          >
+                            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                            Active
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+                        <div className={`rounded-lg border px-2 py-2 ${menuChip}`}>
+                          <div
+                            className={`text-[10px] uppercase tracking-[0.2em] ${menuMuted}`}
+                            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                          >
+                            Best WPM
+                          </div>
+                          <div className="mt-1 text-sm font-semibold">{bestWpm ?? '--'}</div>
+                        </div>
+                        <div className={`rounded-lg border px-2 py-2 ${menuChip}`}>
+                          <div
+                            className={`text-[10px] uppercase tracking-[0.2em] ${menuMuted}`}
+                            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                          >
+                            Accuracy
+                          </div>
+                          <div className="mt-1 text-sm font-semibold">{avgAccuracy == null ? '--' : `${avgAccuracy}%`}</div>
+                        </div>
+                        <div className={`rounded-lg border px-2 py-2 ${menuChip}`}>
+                          <div
+                            className={`text-[10px] uppercase tracking-[0.2em] ${menuMuted}`}
+                            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                          >
+                            Tests
+                          </div>
+                          <div className="mt-1 text-sm font-semibold">{totalTests}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="py-2">
+                      <Link
+                        to="/profile"
+                        onClick={() => setShowProfileMenu(false)}
+                        className={`group flex items-start gap-3 px-4 py-3 text-sm transition-colors ${menuHover}`}
+                      >
+                        <div className={`h-9 w-9 rounded-xl border flex items-center justify-center ${menuChip}`}>
+                          <User className={`w-4 h-4 ${menuIcon}`} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-semibold">Profile</div>
+                          <div className={`text-xs ${menuMuted}`}>Avatar, stats, and recent tests.</div>
+                        </div>
+                      </Link>
+                      <Link
+                        to="/account"
+                        onClick={() => setShowProfileMenu(false)}
+                        className={`group flex items-start gap-3 px-4 py-3 text-sm transition-colors ${menuHover}`}
+                      >
+                        <div className={`h-9 w-9 rounded-xl border flex items-center justify-center ${menuChip}`}>
+                          <Settings className={`w-4 h-4 ${menuIcon}`} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-semibold">Account Settings</div>
+                          <div className={`text-xs ${menuMuted}`}>Security, preferences, and defaults.</div>
+                        </div>
+                      </Link>
+                      <Link
+                        to="/help"
+                        onClick={() => setShowProfileMenu(false)}
+                        className={`group flex items-start gap-3 px-4 py-3 text-sm transition-colors ${menuHover}`}
+                      >
+                        <div className={`h-9 w-9 rounded-xl border flex items-center justify-center ${menuChip}`}>
+                          <LifeBuoy className={`w-4 h-4 ${menuIcon}`} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="font-semibold">Help Center</div>
+                          <div className={`text-xs ${menuMuted}`}>Guides, FAQs, and support.</div>
+                        </div>
+                      </Link>
+                    </div>
+                    <div className={`border-t ${theme === 'dark' ? 'border-slate-800' : 'border-slate-200'}`}>
+                      <button
+                        onClick={() => {
+                          dispatch(logout());
+                          setShowProfileMenu(false);
+                        }}
+                        className={`w-full flex items-start gap-3 px-4 py-3 text-sm transition-colors ${menuHover} ${
+                          theme === 'dark' ? 'text-rose-300' : 'text-rose-600'
+                        }`}
+                      >
+                        <div className={`h-9 w-9 rounded-xl border flex items-center justify-center ${menuChip}`}>
+                          <LogOut className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 text-left">
+                          <div className="font-semibold">Sign Out</div>
+                          <div className={`text-xs ${menuMuted}`}>End this session safely.</div>
+                        </div>
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -268,6 +346,8 @@ export default function App() {
             <Route path="/learn" element={<ProtectedRoute element={<LearnPage />} onShowSignIn={() => setShowSignIn(true)} />} />
             <Route path="/battleground" element={<ProtectedRoute element={<BattlegroundPage />} onShowSignIn={() => setShowSignIn(true)} />} />
             <Route path="/profile" element={<ProtectedRoute element={<UserProfilePage />} onShowSignIn={() => setShowSignIn(true)} />} />
+            <Route path="/account" element={<ProtectedRoute element={<AccountSettingsPage />} onShowSignIn={() => setShowSignIn(true)} />} />
+            <Route path="/help" element={<ProtectedRoute element={<HelpCenterPage />} onShowSignIn={() => setShowSignIn(true)} />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/activate" element={<ActivationPage />} />
           </Routes>
