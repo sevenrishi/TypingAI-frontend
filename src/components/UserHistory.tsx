@@ -215,7 +215,7 @@ export default function UserHistory() {
           {sessions.map((session) => (
             <div
               key={session._id}
-              className={`rounded-lg p-4 flex items-center justify-between transition-all hover:shadow-md ${
+              className={`rounded-lg p-4 flex items-center justify-between transition-all hover:shadow-md max-sm:flex-col max-sm:items-start max-sm:gap-3 ${
                 theme === 'dark'
                   ? 'bg-gray-800/50 border border-gray-700 hover:border-gray-600'
                   : 'bg-white border border-gray-200 hover:border-gray-300'

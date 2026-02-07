@@ -709,7 +709,7 @@ export default function LearnPage() {
                     </div>
                     <div className={`mt-5 p-3 rounded-lg ${theme === 'dark' ? 'bg-cyan-500/10 border border-cyan-500/30' : 'bg-sky-50 border border-sky-200'}`}>
                       <h4 className={`font-semibold mb-2 text-sky-600 dark:text-cyan-300`}>💡 Pro Tips</h4>
-                      <ul className={`text-sm grid grid-cols-2 gap-x-4 gap-y-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      <ul className={`text-sm grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                         <li>• Focus on accuracy first - speed will come naturally</li>
                         <li>• Keep your fingers on the home row (ASDF JKL;)</li>
                         <li>• Practice regularly for 15-30 minutes daily</li>
@@ -820,7 +820,7 @@ export default function LearnPage() {
                 {/* For Phase 1: Show Practice button beside Previous button when in finger placement screen */}
                 {/* For Phase 1 with practice details: Show Previous and Next navigation */}
                 {/* For other phases: Show normal Previous/Next navigation */}
-                <div className="flex gap-4 mt-6">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6">
                   {currentLesson.id === 0 && (
                     <button
                       onClick={() => handleLessonSelect(1)}
@@ -994,7 +994,7 @@ export default function LearnPage() {
                 />
 
                 {/* Detailed Stats */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
                   <div className={`p-4 rounded-lg text-center ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
                     <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Errors</div>
                     <div className="text-2xl font-bold text-red-500">{errors}</div>
@@ -1019,7 +1019,7 @@ export default function LearnPage() {
 
 
                 {/* Practice Navigation */}
-                <div className="flex gap-4 mt-6">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6">
                   {selectedLesson > 1 && (
                     <button
                       onClick={() => {

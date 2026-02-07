@@ -147,8 +147,8 @@ export default function KeyboardFingerPlacement({
   const hasShiftSymbols = focusKeys.some((key) => SHIFT_BASE_MAP[key] || SHIFT_BASE_MAP[key.toLowerCase()]);
 
   const keyBaseClasses = compact
-    ? 'w-8 h-8 text-[11px]'
-    : 'w-9 h-9 text-sm';
+    ? 'w-8 h-8 text-[11px] max-sm:w-7 max-sm:h-7 max-sm:text-[10px]'
+    : 'w-9 h-9 text-sm max-sm:w-7 max-sm:h-7 max-sm:text-[10px]';
   const keyInactiveClasses =
     theme === 'dark'
       ? 'bg-gray-900/60 border-gray-700 text-gray-500'
@@ -176,7 +176,7 @@ export default function KeyboardFingerPlacement({
       <div className={`flex flex-col gap-2 ${compact ? 'items-start' : 'items-center'}`}>
         {KEY_ROWS.map((row, rowIndex) => {
           if (rowIndex === 0 && !showNumberRow) return null;
-          const indentClass = rowIndex === 2 ? 'ml-3' : rowIndex === 3 ? 'ml-6' : '';
+          const indentClass = rowIndex === 2 ? 'ml-3 max-sm:ml-1' : rowIndex === 3 ? 'ml-6 max-sm:ml-2' : '';
           return (
             <div key={`row-${rowIndex}`} className={`flex gap-2 ${indentClass}`}>
               {row.map((key) => {

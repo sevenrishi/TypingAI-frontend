@@ -105,9 +105,9 @@ export default function HomePage() {
   );
 
   return (
-    <div className="space-y-24 pb-10">
+    <div className="space-y-24 max-md:space-y-16 pb-10">
       <section
-        className={`relative overflow-hidden rounded-[32px] border p-10 md:p-14 ${
+        className={`relative overflow-hidden rounded-[32px] border p-6 sm:p-8 md:p-10 lg:p-14 ${
           isDark ? 'bg-slate-950/90 border-slate-800' : 'bg-white border-slate-200'
         }`}
       >
@@ -202,7 +202,7 @@ export default function HomePage() {
                   accuracy 98%
                 </div>
               </div>
-              <div className="mt-6 grid grid-cols-3 gap-3">
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <MiniStat label="Focus" value="Deep" />
                 <MiniStat label="Drill" value="Precision" />
                 <MiniStat label="Mode" value="Sprint" />
@@ -374,7 +374,7 @@ export default function HomePage() {
       </section>
 
       <section
-        className={`relative overflow-hidden rounded-[28px] border p-10 text-center ${
+        className={`relative overflow-hidden rounded-[28px] border p-6 sm:p-8 lg:p-10 text-center ${
           isDark ? 'bg-slate-950/90 border-slate-800' : 'bg-white border-slate-200'
         }`}
       >

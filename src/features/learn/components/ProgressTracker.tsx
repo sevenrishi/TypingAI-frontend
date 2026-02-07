@@ -64,7 +64,7 @@ export default function ProgressTracker() {
 
       {/* Current Stats */}
       <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 text-slate-900">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <p className="text-sm opacity-90">Current WPM</p>
             <p className="text-3xl font-bold">{userStats.currentWpm}</p>

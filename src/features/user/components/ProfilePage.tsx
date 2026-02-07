@@ -257,7 +257,7 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
                 {showAvatarMenu && (
                   <div
                     ref={avatarMenuRef}
-                    className={`absolute z-50 mt-4 rounded-2xl shadow-2xl p-6 top-full left-0 grid grid-cols-4 gap-6 w-[26rem] h-[22rem] overflow-y-auto border ${
+                    className={`absolute z-50 mt-4 rounded-2xl shadow-2xl p-6 top-full left-0 grid grid-cols-4 max-md:grid-cols-3 max-sm:grid-cols-2 gap-6 w-[26rem] h-[22rem] max-md:w-[92vw] max-md:h-[70vh] max-md:left-1/2 max-md:-translate-x-1/2 overflow-y-auto border ${
                       isDark ? 'bg-slate-950/95 border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-900'
                     }`}
                   >
@@ -624,7 +624,7 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-10 gap-2">
+        <div className="mt-6 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
           {Array.from({ length: 30 }).map((_, i) => {
             const r = recent[i];
             const acc = r ? Math.round(r.accuracy) : null;
@@ -680,7 +680,7 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
               key={r._id}
               className={`p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4 transition-colors duration-300 ${surfaceSoft}`}
             >
-              <div className="flex-1 min-w-[220px]">
+              <div className="flex-1 min-w-[220px] max-sm:min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   {r.type && (
                     <span

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Routes, Route, Link, NavLink } from 'react-router-dom';
+import { Routes, Route, Link, NavLink, useLocation } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -39,10 +39,14 @@ export default function App() {
   const [showSignUp, setShowSignUp] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showMobileNav, setShowMobileNav] = useState(false);
   const auth = useSelector((s: RootState) => s.auth);
   const profile = useSelector((s: RootState) => s.profile);
   const dispatch = useDispatch();
+  const location = useLocation();
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
+  const mobileNavRef = useRef<HTMLDivElement | null>(null);
+  const mobileNavButtonRef = useRef<HTMLButtonElement | null>(null);
 
   const displayName = profile.user?.displayName || auth.user?.displayName || 'Member';
   const email = profile.user?.email || auth.user?.email || 'No email on file';
@@ -83,6 +87,30 @@ export default function App() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showProfileMenu]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        mobileNavRef.current &&
+        !mobileNavRef.current.contains(event.target as Node) &&
+        mobileNavButtonRef.current &&
+        !mobileNavButtonRef.current.contains(event.target as Node)
+      ) {
+        setShowMobileNav(false);
+      }
+    };
+    if (showMobileNav) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showMobileNav]);
+
+  useEffect(() => {
+    if (location.pathname === '/reset-password') {
+      setShowSignIn(false);
+      setShowSignUp(false);
+    }
+  }, [location.pathname]);
+
   return (
     <div>
       <TypingLoader isLoading={isLoading} duration={2500} />
@@ -96,27 +124,47 @@ export default function App() {
             ? 'border-slate-800 bg-slate-950/60' 
             : 'border-slate-200 bg-white/70'
         }`}>
-          <div className="app-shell py-4 flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="flex flex-wrap items-end justify-center gap-1">
-              <span
-                className={`text-5xl font-medium tracking-tight ${
-                  theme === 'dark' ? 'text-slate-100' : 'text-slate-900'
+          <div className="app-shell py-4 flex items-center justify-between max-lg:items-center max-lg:gap-3">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowMobileNav(prev => !prev)}
+                className={`inline-flex items-center justify-center h-10 w-10 rounded-xl border transition-colors lg:hidden ${
+                  theme === 'dark'
+                    ? 'bg-slate-900 text-slate-200 border-slate-700 hover:bg-slate-800'
+                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                 }`}
-                style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
+                aria-label="Toggle navigation"
+                aria-expanded={showMobileNav}
+                ref={mobileNavButtonRef}
               >
-                Typing
-              </span>
-              <span
-                className="text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400"
-                style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
-              >
-                AI
-              </span>
+                <span className="sr-only">Toggle navigation</span>
+                <div className="flex flex-col gap-1">
+                  <span className={`h-0.5 w-5 rounded-full transition ${theme === 'dark' ? 'bg-slate-200' : 'bg-slate-700'}`} />
+                  <span className={`h-0.5 w-5 rounded-full transition ${theme === 'dark' ? 'bg-slate-200' : 'bg-slate-700'}`} />
+                  <span className={`h-0.5 w-5 rounded-full transition ${theme === 'dark' ? 'bg-slate-200' : 'bg-slate-700'}`} />
+                </div>
+              </button>
+              <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div className="flex flex-wrap items-end justify-center gap-1">
+                  <span
+                    className={`text-5xl font-medium tracking-tight ${
+                      theme === 'dark' ? 'text-slate-100' : 'text-slate-900'
+                    } max-sm:text-4xl`}
+                    style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
+                  >
+                    Typing
+                  </span>
+                  <span
+                    className="text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 max-sm:text-4xl"
+                    style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
+                  >
+                    AI
+                  </span>
+                </div>
+              </Link>
             </div>
-          </Link>
 
-            <nav className={`flex items-center gap-3 px-3 py-2 rounded-xl border shadow-md ${
+            <nav className={`flex items-center gap-3 px-3 py-2 rounded-xl border shadow-md max-lg:hidden ${
               theme === 'dark'
                 ? 'bg-slate-950/60 border-slate-800'
                 : 'bg-white/80 border-slate-200'
@@ -168,15 +216,15 @@ export default function App() {
               }`}>Battleground</NavLink>
             </nav>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 max-lg:gap-2">
             {!auth.user ? (
               <>
-                <button onClick={() => setShowSignIn(true)} className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 border ${
+                <button onClick={() => setShowSignIn(true)} className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 border max-lg:hidden ${
                   theme === 'dark'
                     ? 'bg-sky-500 text-slate-900 border-sky-300 shadow-inner hover:bg-sky-400'
                     : 'bg-sky-600 text-white border-sky-300 shadow-inner hover:bg-sky-700'
                 }`}>Sign In</button>
-                <button onClick={() => setShowSignUp(true)} className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 border ${
+                <button onClick={() => setShowSignUp(true)} className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 border max-lg:hidden ${
                   theme === 'dark'
                     ? 'bg-emerald-400 text-slate-900 border-emerald-300 shadow-inner hover:bg-emerald-300'
                     : 'bg-emerald-500 text-white border-emerald-300 shadow-inner hover:bg-emerald-600'
@@ -221,7 +269,7 @@ export default function App() {
                 </button>
 
                 {showProfileMenu && (
-                  <div className={`absolute right-0 mt-3 w-80 rounded-2xl border shadow-xl z-50 overflow-hidden ${menuSurface} ${menuText}`}>
+                  <div className={`absolute right-0 mt-3 w-80 rounded-2xl border shadow-xl z-50 overflow-hidden ${menuSurface} ${menuText} max-md:fixed max-md:top-20 max-md:left-1/2 max-md:-translate-x-1/2 max-md:right-auto max-md:mt-0 max-md:w-[92vw] max-md:overflow-auto max-md:max-h-[80vh]`}>
                     <div className={`px-4 py-4 border-b ${theme === 'dark' ? 'border-slate-800' : 'border-slate-200'}`}>
                       <div className="flex items-center gap-3">
                         <div
@@ -343,6 +391,127 @@ export default function App() {
             )}
             </div>
           </div>
+
+          {showMobileNav && (
+            <div className={`lg:hidden border-t ${theme === 'dark' ? 'border-slate-800' : 'border-slate-200'}`}>
+              <div ref={mobileNavRef} className="app-shell py-4">
+                <div className={`rounded-2xl border p-4 shadow-lg ${
+                  theme === 'dark'
+                    ? 'bg-slate-950/80 border-slate-800 text-slate-100'
+                    : 'bg-white/90 border-slate-200 text-slate-900'
+                }`}>
+                  <div className="grid grid-cols-2 gap-3">
+                    <NavLink
+                      to="/"
+                      end
+                      onClick={() => setShowMobileNav(false)}
+                      className={({ isActive }) => `px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 border ${
+                        isActive
+                          ? theme === 'dark'
+                            ? 'bg-cyan-400 text-slate-900 border-cyan-300 shadow-lg shadow-cyan-500/40'
+                            : 'bg-sky-600 text-white border-sky-300 shadow-lg shadow-sky-300/50'
+                          : theme === 'dark'
+                          ? 'bg-slate-900/70 text-slate-200 border-slate-700 hover:bg-slate-800/80'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      }`}
+                    >
+                      Home
+                    </NavLink>
+                    <NavLink
+                      to="/practice"
+                      onClick={() => setShowMobileNav(false)}
+                      className={({ isActive }) => `px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 border ${
+                        isActive
+                          ? theme === 'dark'
+                            ? 'bg-cyan-400 text-slate-900 border-cyan-300 shadow-lg shadow-cyan-500/40'
+                            : 'bg-sky-600 text-white border-sky-300 shadow-lg shadow-sky-300/50'
+                          : theme === 'dark'
+                          ? 'bg-slate-900/70 text-slate-200 border-slate-700 hover:bg-slate-800/80'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      }`}
+                    >
+                      Practice
+                    </NavLink>
+                    <NavLink
+                      to="/typing"
+                      onClick={() => setShowMobileNav(false)}
+                      className={({ isActive }) => `px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 border ${
+                        isActive
+                          ? theme === 'dark'
+                            ? 'bg-cyan-400 text-slate-900 border-cyan-300 shadow-lg shadow-cyan-500/40'
+                            : 'bg-sky-600 text-white border-sky-300 shadow-lg shadow-sky-300/50'
+                          : theme === 'dark'
+                          ? 'bg-slate-900/70 text-slate-200 border-slate-700 hover:bg-slate-800/80'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      }`}
+                    >
+                      Typing Test
+                    </NavLink>
+                    <NavLink
+                      to="/learn"
+                      onClick={() => setShowMobileNav(false)}
+                      className={({ isActive }) => `px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 border ${
+                        isActive
+                          ? theme === 'dark'
+                            ? 'bg-cyan-400 text-slate-900 border-cyan-300 shadow-lg shadow-cyan-500/40'
+                            : 'bg-sky-600 text-white border-sky-300 shadow-lg shadow-sky-300/50'
+                          : theme === 'dark'
+                          ? 'bg-slate-900/70 text-slate-200 border-slate-700 hover:bg-slate-800/80'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      }`}
+                    >
+                      Learn
+                    </NavLink>
+                    <NavLink
+                      to="/battleground"
+                      onClick={() => setShowMobileNav(false)}
+                      className={({ isActive }) => `px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 border ${
+                        isActive
+                          ? theme === 'dark'
+                            ? 'bg-cyan-400 text-slate-900 border-cyan-300 shadow-lg shadow-cyan-500/40'
+                            : 'bg-sky-600 text-white border-sky-300 shadow-lg shadow-sky-300/50'
+                          : theme === 'dark'
+                          ? 'bg-slate-900/70 text-slate-200 border-slate-700 hover:bg-slate-800/80'
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      }`}
+                    >
+                      Battleground
+                    </NavLink>
+                    {!auth.user && (
+                      <div className="col-span-2 grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => {
+                            setShowMobileNav(false);
+                            setShowSignIn(true);
+                          }}
+                          className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 border ${
+                            theme === 'dark'
+                              ? 'bg-slate-900/70 text-slate-200 border-slate-700 hover:bg-slate-800/80'
+                              : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                          }`}
+                        >
+                          Sign In
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowMobileNav(false);
+                            setShowSignUp(true);
+                          }}
+                          className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 border ${
+                            theme === 'dark'
+                              ? 'bg-emerald-400 text-slate-900 border-emerald-300 shadow-lg shadow-emerald-500/40'
+                              : 'bg-emerald-500 text-white border-emerald-300 shadow-lg shadow-emerald-300/50'
+                          }`}
+                        >
+                          Sign Up
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </header>
 
         <main className="app-shell py-6">

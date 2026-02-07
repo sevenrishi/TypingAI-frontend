@@ -44,12 +44,12 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
   };
 
   return (
-    <div className={`fixed inset-0 flex items-center justify-center z-50 transition-colors duration-300 ${
+    <div className={`fixed inset-0 flex items-center justify-center z-50 transition-colors duration-300 overflow-auto max-md:px-4 max-md:py-6 ${
       theme === 'dark'
         ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'
         : 'bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200'
     }`}>
-      <form onSubmit={handleSubmit} className={`p-8 rounded-lg w-96 shadow-2xl border transition-colors duration-300 ${
+      <form onSubmit={handleSubmit} className={`p-8 rounded-lg w-full max-w-[24rem] shadow-2xl border transition-colors duration-300 ${
         theme === 'dark'
           ? 'bg-gradient-to-b from-gray-800 to-gray-900 text-white border-gray-700'
           : 'bg-gradient-to-b from-white to-gray-50 text-gray-900 border-gray-300'
@@ -119,7 +119,6 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
             <button
               type="button"
               onClick={() => {
-                onClose();
                 navigate('/reset-password');
               }}
               className={`text-xs ${
