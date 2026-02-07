@@ -121,7 +121,7 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
               onClick={() => {
                 navigate('/reset-password');
               }}
-              className={`text-xs ${
+              className={`no-key text-xs ${
                 theme === 'dark'
                   ? 'text-cyan-300 hover:text-cyan-200'
                   : 'text-sky-600 hover:text-sky-700'
@@ -167,7 +167,7 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
           <button
             type="button"
             onClick={() => onSwitch && onSwitch()}
-            className={`font-semibold ${
+            className={`no-key font-semibold ${
               theme === 'dark'
                 ? 'text-cyan-300 hover:text-cyan-200'
                 : 'text-sky-600 hover:text-sky-700'

@@ -244,7 +244,7 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
           <button
             type="button"
             onClick={() => onSwitch && onSwitch()}
-            className={`font-semibold ${
+            className={`no-key font-semibold ${
               theme === 'dark'
                 ? 'text-cyan-300 hover:text-cyan-200'
                 : 'text-sky-600 hover:text-sky-700'

@@ -31,6 +31,17 @@ body {
   }
 }
 
+@layer components {
+  .no-key {
+    box-shadow: none !important;
+  }
+
+  .no-key:active {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
 .app-shell {
   max-width: 1280px;
   margin-inline: auto;

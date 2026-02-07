@@ -233,7 +233,7 @@ export default function App() {
             ) : null}
             <button
               onClick={toggleTheme}
-              className={`relative w-14 h-8 rounded-full transition-colors duration-300 flex items-center ${
+              className={`no-key relative w-14 h-8 rounded-full transition-colors duration-300 flex items-center ${
                 theme === 'dark'
                   ? 'bg-gray-700'
                   : 'bg-gray-300'
@@ -256,10 +256,10 @@ export default function App() {
               <div className="relative" ref={profileMenuRef}>
                 <button
                   onClick={() => setShowProfileMenu(prev => !prev)}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border transition-colors duration-200 ${
+                  className={`no-key w-10 h-10 rounded-full flex items-center justify-center border transition-colors duration-200 ${
                     theme === 'dark'
-                      ? 'bg-slate-900 text-slate-200 border-slate-700 hover:bg-slate-800'
-                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                      ? 'bg-slate-900 text-slate-200 border-cyan-400/70 hover:bg-slate-800 hover:border-cyan-300'
+                      : 'bg-white text-slate-700 border-sky-300 hover:bg-slate-50 hover:border-sky-400'
                   }`}
                   aria-label="Open profile menu"
                 >
@@ -372,7 +372,7 @@ export default function App() {
                           dispatch(logout());
                           setShowProfileMenu(false);
                         }}
-                        className={`w-full flex items-start gap-3 px-4 py-3 text-sm transition-colors ${menuHover} ${
+                        className={`no-key w-full rounded-t-none rounded-b-2xl flex items-start gap-3 px-4 py-3 text-sm transition-colors ${menuHover} ${
                           theme === 'dark' ? 'text-rose-300' : 'text-rose-600'
                         }`}
                       >
