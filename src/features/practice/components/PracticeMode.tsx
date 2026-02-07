@@ -9,6 +9,7 @@ import StatsPanel from '../../typing/components/StatsPanel';
 import ResultsPage from './ResultsPage';
 import { useTheme } from '../../../providers/ThemeProvider';
 import { generatePracticeText, clear } from '../../ai/aiPracticeSlice';
+import { useSaveSession } from '../../../hooks/useSaveSession';
 
 const TIMER_OPTIONS = [
   { label: '1 min', value: 60000, length: 'short' as const },
@@ -55,6 +56,7 @@ const SCRIPT_LIBRARY = {
 
 export default function PracticeMode() {
   const dispatch = useDispatch();
+  const { saveSession } = useSaveSession();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const practice = useSelector((s: RootState) => s.practice);
@@ -95,6 +97,7 @@ export default function PracticeMode() {
   const [error, setError] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const savedRef = useRef(false);
 
   // Load default script when selected
   useEffect(() => {
@@ -140,6 +143,25 @@ export default function PracticeMode() {
       dispatch(endPractice());
     }
   }, [typingStatus, practice.started, practice.timeRemaining, dispatch]);
+
+  useEffect(() => {
+    if (!practice.started || practice.timeRemaining > 0 || savedRef.current || !text) return;
+    savedRef.current = true;
+
+    const durationFromTimer = practice.selectedTime ? (practice.selectedTime - practice.timeRemaining) : stats.elapsed;
+    const duration = stats.elapsed > 0 ? stats.elapsed : durationFromTimer;
+
+    saveSession({
+      type: 'practice',
+      wpm: stats.wpm,
+      cpm: stats.cpm,
+      accuracy: stats.accuracy,
+      errors: stats.errors,
+      duration,
+      text,
+      mode: practice.scriptMode
+    });
+  }, [practice.started, practice.timeRemaining, practice.selectedTime, text, stats.wpm, stats.cpm, stats.accuracy, stats.errors, stats.elapsed, practice.scriptMode, saveSession]);
 
   const handleSelectTime = (timeMs: number) => {
     dispatch(selectTime(timeMs));
@@ -192,6 +214,7 @@ export default function PracticeMode() {
 
   const handleResetPractice = () => {
     if (timerRef.current) clearInterval(timerRef.current);
+    savedRef.current = false;
     dispatch(reset());
     dispatch(resetTypingAction());
     setTopic('');

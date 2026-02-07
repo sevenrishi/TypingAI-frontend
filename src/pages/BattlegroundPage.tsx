@@ -1,10 +1,12 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { setRoom, setRoomState, setWorkflowStage, leaveRoom, markPlayerFinished, resetRaceState, setRoomIdentity } from '../features/multiplayer/roomSlice';
 import { generateMultiplayerText } from '../features/ai/aiMultiplayerSlice';
 import { loadText as loadTextAction, reset as resetTyping } from '../features/typing/typingSlice';
 import { useSocket } from '../features/multiplayer/hooks/useSocket';
+import { useSaveSession } from '../hooks/useSaveSession';
+import { calcAccuracy, calcCPM, calcWPM } from '../utils/metrics';
 
 // Components
 import NameEntry from '../features/multiplayer/components/NameEntry';
@@ -23,6 +25,7 @@ function genRoomCode() {
 
 export default function BattlegroundPage() {
   const dispatch = useDispatch();
+  const { saveSession } = useSaveSession();
   const room = useSelector((s: RootState) => s.room);
   const aiText = useSelector((s: RootState) => s.aiMultiplayer.text);
   const typing = useSelector((s: RootState) => s.typing);
@@ -32,6 +35,7 @@ export default function BattlegroundPage() {
   const [isLoadingJoin, setIsLoadingJoin] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
   const [pendingJoinRoom, setPendingJoinRoom] = useState<string | null>(null);
+  const battleSavedRef = useRef(false);
 
   // Handle room state updates from socket
   const onRoomState = useCallback((state: any) => {
@@ -89,6 +93,12 @@ export default function BattlegroundPage() {
     }
   }, [room.raceStart, room.workflowStage, dispatch]);
 
+  useEffect(() => {
+    if (room.workflowStage !== 'race-active') {
+      battleSavedRef.current = false;
+    }
+  }, [room.workflowStage]);
+
   // Update progress when typing changes
   useEffect(() => {
     if (room.roomId && typing.status === 'running') {
@@ -111,6 +121,49 @@ export default function BattlegroundPage() {
       dispatch(markPlayerFinished(socket?.id || ''));
     }
   }, [typing.status, room.roomId, typing.typed, typing.errors, typing.elapsed, typing.text, dispatch, socket?.id, sendProgress]);
+
+  useEffect(() => {
+    if (battleSavedRef.current) return;
+    const myId = socket?.id;
+    if (!room.roomId || !myId) return;
+    if (typing.status !== 'finished' || typing.typed.length === 0 || !typing.text) return;
+
+    const finishIndex = room.finishedPlayers.indexOf(myId);
+    if (finishIndex < 0) return;
+
+    battleSavedRef.current = true;
+
+    const accuracy = calcAccuracy(typing.typed.length, typing.errors);
+    const wpm = calcWPM(Math.max(0, typing.typed.length - typing.errors), typing.elapsed);
+    const cpm = calcCPM(typing.typed.length, typing.elapsed);
+
+    const opponents = room.players
+      .filter(p => p.id !== myId)
+      .map(p => p.name)
+      .filter(Boolean);
+    const opponent = opponents.length ? opponents.join(', ') : undefined;
+
+    let battleResult: 'win' | 'loss' | 'draw' = 'draw';
+    if (room.players.length <= 1 && finishIndex >= 0) {
+      battleResult = 'win';
+    } else if (finishIndex === 0) {
+      battleResult = 'win';
+    } else if (finishIndex > 0) {
+      battleResult = 'loss';
+    }
+
+    saveSession({
+      type: 'battle',
+      wpm,
+      cpm,
+      accuracy,
+      errors: typing.errors,
+      duration: typing.elapsed,
+      text: typing.text,
+      battleResult,
+      opponent
+    });
+  }, [room.roomId, room.finishedPlayers, room.players, socket?.id, typing.status, typing.typed.length, typing.errors, typing.elapsed, typing.text, saveSession]);
 
   // Handle workflow stage transitions
   const handleNameSubmit = (name: string) => {

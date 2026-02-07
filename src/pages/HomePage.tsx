@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../providers/ThemeProvider';
+import { getStreakSnapshot } from '../utils/streaks';
 import {
   BarChart3,
   BookOpen,
@@ -20,6 +21,8 @@ import {
 export default function HomePage() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const streakSnapshot = getStreakSnapshot();
+  const streakLabel = `${streakSnapshot.currentStreak}d`;
 
   const surface = isDark
     ? 'bg-slate-900/70 border-slate-700/60 text-slate-100 backdrop-blur-xl'
@@ -168,7 +171,7 @@ export default function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 animate-rise animate-rise-delay-1">
               <StatChip label="Live WPM" value="92" />
               <StatChip label="Accuracy" value="98%" />
-              <StatChip label="Streak" value="14d" />
+              <StatChip label="Streak" value={streakLabel} />
             </div>
           </div>
 

@@ -9,9 +9,12 @@ import { useTyping } from '../hooks/useTyping';
 import { loadText as loadTextAction, reset as resetTypingAction } from '../typingSlice';
 import { useTheme } from '../../../providers/ThemeProvider';
 import ResultsPage from '../../practice/components/ResultsPage';
+import { useSaveSession } from '../../../hooks/useSaveSession';
+import api from '../../../api/axios';
 
 export default function TypingTest() {
   const dispatch = useAppDispatch();
+  const { saveSession } = useSaveSession();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const aiText = useSelector((s: RootState) => s.aiTest.text);
@@ -23,15 +26,46 @@ export default function TypingTest() {
   const [startTime, setStartTime] = useState(0);
   const [testStarted, setTestStarted] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const savedRef = useRef(false);
 
   // when AI text changes, load into typing slice
   React.useEffect(() => {
     if (aiText) {
+      savedRef.current = false;
       dispatch(loadTextAction(aiText));
       setStartTime(Date.now());
       setTestStarted(false);
     }
   }, [aiText, dispatch]);
+
+  React.useEffect(() => {
+    if (status !== 'finished' || !text || savedRef.current) return;
+    savedRef.current = true;
+
+    const duration = stats.elapsed || 0;
+    const payload = {
+      type: 'test' as const,
+      wpm: stats.wpm,
+      cpm: stats.cpm,
+      accuracy: stats.accuracy,
+      errors: stats.errors,
+      duration,
+      text
+    };
+
+    saveSession(payload);
+
+    api.post('/results', {
+      wpm: stats.wpm,
+      cpm: stats.cpm,
+      accuracy: stats.accuracy,
+      errors: stats.errors,
+      duration,
+      text
+    }).catch((err) => {
+      console.error('Failed to save test result:', err);
+    });
+  }, [status, text, stats.wpm, stats.cpm, stats.accuracy, stats.errors, stats.elapsed, saveSession]);
 
   const handleStart = async () => {
     if (!topic.trim()) {
@@ -45,6 +79,7 @@ export default function TypingTest() {
   };
 
   const handleTestReset = () => {
+    savedRef.current = false;
     setTopic('');
     setStartTime(0);
     setTestStarted(false);
@@ -64,7 +99,7 @@ export default function TypingTest() {
 
   // If test is finished, show results page
   if (status === 'finished' && text.length > 0) {
-    const duration = Date.now() - startTime;
+    const duration = stats.elapsed || (Date.now() - startTime);
     return (
       <ResultsPage
         wpm={stats.wpm}

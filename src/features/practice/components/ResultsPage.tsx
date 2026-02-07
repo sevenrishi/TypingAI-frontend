@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTheme } from '../../../providers/ThemeProvider';
+import { recordStreakActivity } from '../../../utils/streaks';
 import {
   BarChart,
   Bar,
@@ -39,6 +40,10 @@ export default function ResultsPage({
 }: ResultsPageProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+
+  useEffect(() => {
+    recordStreakActivity();
+  }, []);
 
   // Convert duration from ms to seconds/minutes
   const durationSeconds = Math.round(duration / 1000);

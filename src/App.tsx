@@ -20,7 +20,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from './store';
 import { logout } from './features/auth/authSlice';
 import { useTheme } from './providers/ThemeProvider';
-import { getAvatarColor } from './utils/avatars';
+import { getAvatarColor, getAvatarImageSrc } from './utils/avatars';
 import { LifeBuoy, LogOut, Moon, Settings, Sun, User } from 'lucide-react';
 
 function initials(name?: string) {
@@ -46,6 +46,7 @@ export default function App() {
 
   const displayName = profile.user?.displayName || auth.user?.displayName || 'Member';
   const email = profile.user?.email || auth.user?.email || 'No email on file';
+  const avatarSrc = getAvatarImageSrc(profile.user?.avatarId || auth.user?.avatarId);
   const hasHistory = Array.isArray(profile.history) && profile.history.length > 0;
   const bestWpm = hasHistory ? Math.round(profile.bestWPM || 0) : null;
   const avgAccuracy = hasHistory ? Math.round(profile.averageAccuracy || 0) : null;
@@ -223,8 +224,16 @@ export default function App() {
                   <div className={`absolute right-0 mt-3 w-80 rounded-2xl border shadow-xl z-50 overflow-hidden ${menuSurface} ${menuText}`}>
                     <div className={`px-4 py-4 border-b ${theme === 'dark' ? 'border-slate-800' : 'border-slate-200'}`}>
                       <div className="flex items-center gap-3">
-                        <div className={`h-12 w-12 rounded-full flex items-center justify-center text-sm font-bold text-white ${getAvatarColor(profile.user?.avatarId)}`}>
-                          {initials(displayName)}
+                        <div
+                          className={`h-12 w-12 rounded-full flex items-center justify-center text-sm font-bold text-white overflow-hidden ${
+                            avatarSrc ? 'bg-slate-800' : getAvatarColor(profile.user?.avatarId)
+                          }`}
+                        >
+                          {avatarSrc ? (
+                            <img src={avatarSrc} alt="avatar" className="w-full h-full object-cover" />
+                          ) : (
+                            initials(displayName)
+                          )}
                         </div>
                         <div className="min-w-0">
                           <div className="text-sm font-semibold truncate">{displayName}</div>

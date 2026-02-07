@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../api/axios';
 
-type User = { id: string; displayName?: string; email?: string } | null;
+type User = { id: string; displayName?: string; email?: string; avatarId?: string } | null;
 
 export const login = createAsyncThunk('auth/login', async (payload: { email: string; password: string }, { rejectWithValue }) => {
   try {

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTheme } from '../../../providers/ThemeProvider';
 import type { PlayerState } from '../roomSlice';
+import { recordStreakActivity } from '../../../utils/streaks';
 
 interface RaceResultsProps {
   players: PlayerState[];
@@ -25,6 +26,10 @@ export default function RaceResults({ players, finishedPlayerIds, onPlayAgain, o
   const ghostButton = isDark
     ? 'bg-slate-800 hover:bg-slate-700 text-slate-200'
     : 'bg-slate-200 hover:bg-slate-300 text-slate-700';
+
+  useEffect(() => {
+    recordStreakActivity();
+  }, []);
 
   // Sort players by finish order
   const results = finishedPlayerIds
