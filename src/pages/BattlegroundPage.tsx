@@ -71,6 +71,15 @@ export default function BattlegroundPage() {
     }
   }, [dispatch, typing.text, pendingJoinRoom, room.workflowStage]);
 
+  const handleRoomClosed = useCallback(() => {
+    setJoinError(null);
+    setIsLoadingJoin(false);
+    setPendingJoinRoom(null);
+    dispatch(leaveRoom());
+    dispatch(setWorkflowStage('name-entry'));
+    setPlayerName('');
+  }, [dispatch]);
+
   const { createRoom, joinRoom, sendProgress, setReady, startRace, resetRace, leaveRoom: socketLeaveRoom, socket, setRoomText } = useSocket(
     onRoomState,
     (error) => {
@@ -79,7 +88,8 @@ export default function BattlegroundPage() {
         setIsLoadingJoin(false);
         setPendingJoinRoom(null);
       }
-    }
+    },
+    handleRoomClosed
   );
 
   const isCurrentHost = !!room.host && !!socket?.id

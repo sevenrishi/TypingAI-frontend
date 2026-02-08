@@ -1,22 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { useTheme } from '../providers/ThemeProvider';
 import { Bell, Palette, ShieldCheck, User } from 'lucide-react';
+import api from '../api/axios';
 
 export default function AccountSettingsPage() {
   const { theme } = useTheme();
   const auth = useSelector((s: RootState) => s.auth);
   const profile = useSelector((s: RootState) => s.profile);
   const isDark = theme === 'dark';
+  const [sessionStats, setSessionStats] = useState<any>(null);
 
   const displayName = profile.user?.displayName || auth.user?.displayName || 'Member';
   const email = profile.user?.email || auth.user?.email || 'Not provided';
   const totalTests = Array.isArray(profile.history) ? profile.history.length : 0;
-  const statsAvailable = totalTests > 0;
-  const bestWpmLabel = statsAvailable ? String(Math.round(profile.bestWPM || 0)) : 'NA';
-  const accuracyLabel = statsAvailable ? `${Math.round(profile.averageAccuracy || 0)}%` : 'NA';
+  const testsCount = sessionStats?.stats?.tests?.count ?? totalTests;
+  const practiceCount = sessionStats?.stats?.practice?.count ?? 0;
+  const battlesCount = sessionStats?.stats?.battles?.count ?? 0;
+  const totalSessions = sessionStats?.stats ? testsCount + practiceCount + battlesCount : totalTests;
+  const bestWpmValue = sessionStats?.user?.bestWPM ?? profile.bestWPM;
+  const avgAccuracyValue = sessionStats?.user?.averageAccuracy ?? profile.averageAccuracy;
+  const statsAvailable = totalSessions > 0;
+  const bestWpmLabel = statsAvailable ? String(Math.round(bestWpmValue || 0)) : 'NA';
+  const accuracyLabel = statsAvailable ? `${Math.round(avgAccuracyValue || 0)}%` : 'NA';
 
   const surface = isDark
     ? 'bg-slate-900/70 border-slate-700/60 text-slate-100 backdrop-blur-xl'
@@ -26,6 +34,21 @@ export default function AccountSettingsPage() {
     : 'bg-white/60 border-slate-200 text-slate-900 backdrop-blur-md';
   const mutedText = isDark ? 'text-slate-300' : 'text-slate-600';
   const accentText = isDark ? 'text-cyan-300' : 'text-sky-600';
+
+  useEffect(() => {
+    if (!profile.user?._id) return;
+    let active = true;
+    api.get(`/sessions/stats/${profile.user._id}`)
+      .then((response) => {
+        if (active) setSessionStats(response.data);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch session stats', error);
+      });
+    return () => {
+      active = false;
+    };
+  }, [profile.user?._id]);
 
   return (
     <div className="space-y-10 pb-10">
@@ -60,13 +83,22 @@ export default function AccountSettingsPage() {
               Member: <span className="font-semibold">{displayName}</span>
             </div>
             <div className={`rounded-full border px-4 py-2 ${surfaceSoft}`}>
-              Total sessions: <span className="font-semibold">{totalTests}</span>
+              Total sessions: <span className="font-semibold">{totalSessions}</span>
             </div>
             <div className={`rounded-full border px-4 py-2 ${surfaceSoft}`}>
               Best WPM: <span className="font-semibold">{bestWpmLabel}</span>
             </div>
             <div className={`rounded-full border px-4 py-2 ${surfaceSoft}`}>
               Accuracy: <span className="font-semibold">{accuracyLabel}</span>
+            </div>
+            <div className={`rounded-full border px-4 py-2 ${surfaceSoft}`}>
+              Tests: <span className="font-semibold">{testsCount}</span>
+            </div>
+            <div className={`rounded-full border px-4 py-2 ${surfaceSoft}`}>
+              Practice: <span className="font-semibold">{practiceCount}</span>
+            </div>
+            <div className={`rounded-full border px-4 py-2 ${surfaceSoft}`}>
+              Battles: <span className="font-semibold">{battlesCount}</span>
             </div>
           </div>
         </div>

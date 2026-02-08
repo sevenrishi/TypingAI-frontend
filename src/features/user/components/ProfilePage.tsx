@@ -9,18 +9,18 @@ import {
   getAvatarImages,
   normalizeAvatarId
 } from '../../../utils/avatars';
-import axios from 'axios';
-import { Award, BarChart3, Crown, Download, Facebook, Flame, Linkedin, Link, Medal, Pencil, Rocket, Share2, Sparkles, Swords, Twitter, Zap } from 'lucide-react';
-import { getStreakSnapshot } from '../../../utils/streaks';
+import api from '../../../api/axios';
+import { Award, BarChart3, Crown, Download, Facebook, Flame, Linkedin, Link, Medal, Pencil, Rocket, Share2, Sparkles, Swords, Zap } from 'lucide-react';
+import { fetchStreakSnapshot, getStreakSnapshot, StreakSnapshot, toDateKey } from '../../../utils/streaks';
 import CertificateCard from '../../../components/CertificateCard';
 import {
   CertificateData,
-  downloadCertificateSvg,
+  downloadCertificatePdf,
   getCertificateShareLinks,
   getCertificateShareText,
-  loadCertificate,
   shareCertificate
 } from '../../../utils/certificates';
+import { fetchUserProgress } from '../../../api/progress';
 
 function initials(name?: string) {
   if (!name) return 'U';
@@ -46,6 +46,12 @@ function formatDateKey(dateKey?: string | null) {
   return new Date(year, month - 1, day).toLocaleDateString();
 }
 
+const XLogo = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26L22.5 21.75h-6.17l-4.84-6.32-5.53 6.32H2.65l7.73-8.84L2.5 2.25h6.33l4.37 5.72 5.044-5.72zm-1.16 17.52h1.833L7.62 4.126H5.675l11.41 15.644z" />
+  </svg>
+);
+
 export default function ProfilePage({ onClose }: { onClose: () => void }) {
   const dispatch = useDispatch();
   const { theme } = useTheme();
@@ -58,6 +64,7 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
   const [copied, setCopied] = useState(false);
   const [certificate, setCertificate] = useState<CertificateData | null>(null);
   const [certificateCopied, setCertificateCopied] = useState(false);
+  const [streakSnapshot, setStreakSnapshot] = useState<StreakSnapshot>(getStreakSnapshot());
   const avatarMenuRef = useRef<HTMLDivElement>(null);
   const copyTimerRef = useRef<number | null>(null);
   const certificateCopyTimerRef = useRef<number | null>(null);
@@ -68,9 +75,7 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
 
     const fetchStats = async () => {
       try {
-        const response = await axios.get(`/api/sessions/stats/${profile.user?._id}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-        });
+        const response = await api.get(`/sessions/stats/${profile.user?._id}`);
         setStats(response.data);
       } catch (error) {
         console.error('Failed to fetch stats:', error);
@@ -80,9 +85,8 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
     const fetchSessions = async () => {
       try {
         setSessionsLoading(true);
-        const response = await axios.get(`/api/sessions/user/${profile.user?._id}`, {
-          params: { limit: 30 },
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+        const response = await api.get(`/sessions/user/${profile.user?._id}`, {
+          params: { limit: 30 }
         });
         setSessions(response.data.sessions || []);
       } catch (error) {
@@ -92,9 +96,25 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
       }
     };
 
+    const fetchProgress = async () => {
+      try {
+        const progress = await fetchUserProgress(toDateKey(new Date()));
+        setCertificate(progress.learning?.certificate || null);
+        if (progress.streak) {
+          setStreakSnapshot(progress.streak);
+        } else {
+          const streak = await fetchStreakSnapshot();
+          setStreakSnapshot(streak);
+        }
+      } catch (error) {
+        console.error('Failed to fetch progress:', error);
+      }
+    };
+
     if (profile.user?._id) {
       fetchStats();
       fetchSessions();
+      fetchProgress();
     }
   }, [dispatch, profile.user?._id]);
 
@@ -103,10 +123,6 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
       setSelectedAvatarId(normalizeAvatarId(profile.user.avatarId));
     }
   }, [profile.user?.avatarId]);
-
-  useEffect(() => {
-    setCertificate(loadCertificate());
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -140,7 +156,6 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
     : (hasHistory ? Math.round(profile.averageAccuracy || 0) : null);
   const avatarSrc = getAvatarImageSrc(selectedAvatarId);
   const normalizedSelectedId = normalizeAvatarId(selectedAvatarId);
-  const streakSnapshot = getStreakSnapshot();
   const currentStreak = streakSnapshot.currentStreak;
   const longestStreak = streakSnapshot.longestStreak;
   const lastActiveLabel = formatDateKey(streakSnapshot.lastActiveDate);
@@ -232,7 +247,7 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
 
   const handleCertificateDownload = () => {
     if (!certificate) return;
-    downloadCertificateSvg(certificate);
+    void downloadCertificatePdf(certificate);
   };
 
   useEffect(() => {
@@ -543,19 +558,19 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
               <Linkedin className="h-4 w-4" />
               LinkedIn
             </a>
-            <a
-              href={shareLinks.twitter}
-              target="_blank"
-              rel="noreferrer"
-              className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${
-                isDark
-                  ? 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-cyan-400/60 hover:text-cyan-200'
-                  : 'border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-700'
-              }`}
-            >
-              <Twitter className="h-4 w-4" />
-              X
-            </a>
+              <a
+                href={shareLinks.twitter}
+                target="_blank"
+                rel="noreferrer"
+                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${
+                  isDark
+                    ? 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-cyan-400/60 hover:text-cyan-200'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-700'
+                }`}
+              >
+                <XLogo className="h-4 w-4" />
+                X
+              </a>
             <a
               href={shareLinks.facebook}
               target="_blank"
@@ -636,7 +651,7 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
                     : 'border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-700'
                 }`}
               >
-                <Twitter className="h-4 w-4" />
+                <XLogo className="h-4 w-4" />
                 X
               </a>
               <a
@@ -683,7 +698,7 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
                 }`}
               >
                 <Download className="h-4 w-4" />
-                Download
+                Download PDF
               </button>
             </div>
           </div>

@@ -42,13 +42,6 @@ export default function TypingBattleground() {
           <TextDisplay text={text} typed={typed} />
         </div>
 
-        {/* Race countdown */}
-        {raceLocked && typeof countdown === 'number' && (
-          <div className="text-center text-sm text-amber-400">
-            Race starts in {countdown}s
-          </div>
-        )}
-
         {/* Typing input */}
         <input
           ref={inputRef}

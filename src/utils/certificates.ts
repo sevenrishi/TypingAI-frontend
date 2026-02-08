@@ -1,3 +1,5 @@
+import { jsPDF } from 'jspdf';
+
 export interface CertificateData {
   id: string;
   issuedTo: string;
@@ -6,19 +8,7 @@ export interface CertificateData {
   lessonCount: number;
 }
 
-const STORAGE_KEY = 'typingai_certificate';
 const DEFAULT_COURSE_NAME = 'TypingAI Complete Learning Path';
-
-const canUseStorage = () =>
-  typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
-
-const safeParse = (value: string) => {
-  try {
-    return JSON.parse(value);
-  } catch (error) {
-    return null;
-  }
-};
 
 const escapeXml = (value: string) =>
   value
@@ -35,45 +25,21 @@ const generateId = () => {
   return Math.random().toString(36).slice(2, 10).toUpperCase();
 };
 
-export const loadCertificate = (): CertificateData | null => {
-  if (!canUseStorage()) return null;
-  const raw = window.localStorage.getItem(STORAGE_KEY);
-  if (!raw) return null;
-  const parsed = safeParse(raw);
-  if (!parsed || typeof parsed !== 'object') return null;
-  const { id, issuedTo, courseName, issuedAt, lessonCount } = parsed as CertificateData;
-  if (!id || !issuedTo || !issuedAt) return null;
-  return {
-    id,
-    issuedTo,
-    courseName: courseName || DEFAULT_COURSE_NAME,
-    issuedAt,
-    lessonCount: Number(lessonCount || 0)
-  };
-};
-
-export const saveCertificate = (certificate: CertificateData) => {
-  if (!canUseStorage()) return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(certificate));
-};
-
 export const issueCertificate = (
   name?: string | null,
   lessonCount = 0,
-  courseName = DEFAULT_COURSE_NAME
+  courseName = DEFAULT_COURSE_NAME,
+  existing?: CertificateData | null
 ): CertificateData => {
-  const existing = loadCertificate();
   if (existing) return existing;
   const issuedTo = name?.trim() ? name.trim() : 'TypingAI Learner';
-  const certificate: CertificateData = {
+  return {
     id: generateId(),
     issuedTo,
     courseName,
     issuedAt: new Date().toISOString(),
     lessonCount
   };
-  saveCertificate(certificate);
-  return certificate;
 };
 
 export const formatCertificateDate = (issuedAt: string) => {
@@ -165,6 +131,38 @@ export const downloadCertificateSvg = (certificate: CertificateData, filename?: 
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+};
+
+export const downloadCertificatePdf = async (certificate: CertificateData, filename?: string) => {
+  if (typeof document === 'undefined') return;
+  const svg = getCertificateSvg(certificate);
+  const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width || 1400;
+    canvas.height = img.height || 1000;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      URL.revokeObjectURL(url);
+      return;
+    }
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    const pngData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({
+      orientation: canvas.width >= canvas.height ? 'landscape' : 'portrait',
+      unit: 'px',
+      format: [canvas.width, canvas.height]
+    });
+    pdf.addImage(pngData, 'PNG', 0, 0, canvas.width, canvas.height);
+    pdf.save(filename ?? `TypingAI-Certificate-${certificate.id}.pdf`);
+    URL.revokeObjectURL(url);
+  };
+  img.onerror = () => {
+    URL.revokeObjectURL(url);
+  };
+  img.src = url;
 };
 
 export const shareCertificate = async (

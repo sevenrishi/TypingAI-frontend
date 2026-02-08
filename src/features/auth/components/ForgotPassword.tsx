@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { forgotPassword } from '../../../api/passwordResetService';
 import { useTheme } from '../../../providers/ThemeProvider';
+import { CheckCircle2, Loader2 } from 'lucide-react';
 
 interface ForgotPasswordProps {
   onClose: () => void;
@@ -127,11 +128,13 @@ export default function ForgotPassword({ onClose, onVerifyCode }: ForgotPassword
         >
           {loading ? (
             <span className="flex items-center justify-center">
-              <span className="inline-block animate-spin">⟳</span> Sending...
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="ml-2">Sending...</span>
             </span>
           ) : success ? (
             <span className="flex items-center justify-center">
-              <span className="inline-block animate-spin">✓</span> Code Sent!
+              <CheckCircle2 className="h-4 w-4" />
+              <span className="ml-2">Code Sent!</span>
             </span>
           ) : (
             'Send Reset Code'

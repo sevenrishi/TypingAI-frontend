@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { register, loadUser } from '../authSlice';
+import { register } from '../authSlice';
 import { useTheme } from '../../../providers/ThemeProvider';
+import { showToast } from '../../../utils/toast';
+import { Loader2 } from 'lucide-react';
 
 function getPasswordStrength(pwd: string) {
   if (!pwd) return { score: 0, label: '', color: 'bg-gray-400' };
@@ -29,7 +31,6 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [emailError, setEmailError] = useState('');
   const [confirmError, setConfirmError] = useState('');
 
@@ -51,14 +52,18 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
     if (!displayName || !validateEmail(email) || !password || confirmPassword !== password) return;
     setLoading(true);
     setError(null);
-    setSuccess(null);
+    let successMessage: string | null = null;
     try {
       const result = await dispatch(register({ email, password, displayName }) as any).unwrap();
-      setSuccess(result.message || 'Registration successful! Please check your email to activate your account.');
+      successMessage = result.message || 'Registration successful! Please check your email to activate your account.';
     } catch (err: any) {
       setError(err?.error || err?.message || 'Registration failed. Email may already exist.');
     } finally {
       setLoading(false);
+    }
+    if (successMessage) {
+      showToast({ message: successMessage, tone: 'success' });
+      onSwitch?.();
     }
   };
 
@@ -89,16 +94,6 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
               : 'bg-red-100 border-red-300 text-red-700'
           }`}>
             {error}
-          </div>
-        )}
-
-        {success && (
-          <div className={`mb-4 p-3 border rounded text-sm ${
-            theme === 'dark'
-              ? 'bg-green-500/20 border-green-500/50 text-green-300'
-              : 'bg-green-100 border-green-300 text-green-700'
-          }`}>
-            {success}
           </div>
         )}
 
@@ -230,7 +225,8 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
         >
           {loading ? (
             <span className="flex items-center justify-center">
-              <span className="inline-block animate-spin">⟳</span> Creating...
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="ml-2">Creating...</span>
             </span>
           ) : (
             'Create Account'

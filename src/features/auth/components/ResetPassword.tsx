@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { verifyResetCode, resetPassword } from '../../../api/passwordResetService';
 import { useTheme } from '../../../providers/ThemeProvider';
+import { Loader2 } from 'lucide-react';
 
 interface ResetPasswordProps {
   email: string;
@@ -174,7 +175,8 @@ export default function ResetPassword({ email, onClose, onSuccess }: ResetPasswo
             >
               {loading ? (
                 <span className="flex items-center justify-center">
-                  <span className="inline-block animate-spin">⟳</span> Verifying...
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="ml-2">Verifying...</span>
                 </span>
               ) : (
                 'Verify Code'
@@ -302,7 +304,8 @@ export default function ResetPassword({ email, onClose, onSuccess }: ResetPasswo
             >
               {loading ? (
                 <span className="flex items-center justify-center">
-                  <span className="inline-block animate-spin">⟳</span> Resetting...
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span className="ml-2">Resetting...</span>
                 </span>
               ) : (
                 'Reset Password'

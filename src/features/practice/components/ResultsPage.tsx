@@ -42,7 +42,7 @@ export default function ResultsPage({
   const isDark = theme === 'dark';
 
   useEffect(() => {
-    recordStreakActivity();
+    void recordStreakActivity();
   }, []);
 
   // Convert duration from ms to seconds/minutes

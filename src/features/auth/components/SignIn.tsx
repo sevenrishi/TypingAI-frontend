@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { login, loadUser } from '../authSlice';
 import { useTheme } from '../../../providers/ThemeProvider';
+import { Loader2 } from 'lucide-react';
 
 export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onSwitch?: () => void }) {
   const dispatch = useDispatch();
@@ -153,7 +154,8 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
         >
           {loading ? (
             <span className="flex items-center justify-center">
-              <span className="inline-block animate-spin">⟳</span> Signing in...
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="ml-2">Signing in...</span>
             </span>
           ) : (
             'Sign In'

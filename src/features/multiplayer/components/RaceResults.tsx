@@ -28,7 +28,7 @@ export default function RaceResults({ players, finishedPlayerIds, onPlayAgain, o
     : 'bg-slate-200 hover:bg-slate-300 text-slate-700';
 
   useEffect(() => {
-    recordStreakActivity();
+    void recordStreakActivity();
   }, []);
 
   // Sort players by finish order

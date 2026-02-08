@@ -6,13 +6,13 @@ import TextDisplay from '../features/typing/components/TextDisplay';
 import KeyboardFingerPlacement, { FINGER_LABELS, KEY_FINGER_MAP, SHIFT_BASE_MAP } from '../features/learn/components/KeyboardFingerPlacement';
 import CourseCompletionModal from '../features/learn/components/CourseCompletionModal';
 import { RootState } from '../store';
+import { fetchUserProgress, updateLearningProgress } from '../api/progress';
 import {
   CertificateData,
-  downloadCertificateSvg,
+  downloadCertificatePdf,
   getCertificateShareLinks,
   getCertificateShareText,
   issueCertificate,
-  loadCertificate,
   shareCertificate
 } from '../utils/certificates';
 
@@ -312,16 +312,26 @@ export default function LearnPage() {
   const placementInputRef = useRef<HTMLInputElement>(null);
   const certificateCopyTimerRef = useRef<number | null>(null);
 
-  // Load completed lessons from localStorage
+  // Load completed lessons from API
   useEffect(() => {
-    const saved = localStorage.getItem('completedLessons');
-    if (saved) {
-      setCompletedLessons(new Set(JSON.parse(saved)));
-    }
-    const storedCertificate = loadCertificate();
-    if (storedCertificate) {
-      setCertificate(storedCertificate);
-    }
+    let active = true;
+    const loadProgress = async () => {
+      try {
+        const progress = await fetchUserProgress();
+        if (!active) return;
+        const completed = Array.isArray(progress.learning?.completedLessons)
+          ? progress.learning.completedLessons
+          : [];
+        setCompletedLessons(new Set(completed));
+        setCertificate(progress.learning?.certificate || null);
+      } catch (error) {
+        console.error('Failed to load learning progress', error);
+      }
+    };
+    loadProgress();
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -459,20 +469,35 @@ export default function LearnPage() {
     }
   };
 
-  const handleCompleteLesson = () => {
+  const persistLearningProgress = async (nextCompleted: Set<number>, nextCertificate?: CertificateData | null) => {
+    try {
+      const payload: { completedLessons: number[]; certificate?: CertificateData } = {
+        completedLessons: Array.from(nextCompleted)
+      };
+      if (nextCertificate) {
+        payload.certificate = nextCertificate;
+      }
+      await updateLearningProgress(payload);
+    } catch (error) {
+      console.error('Failed to save learning progress', error);
+    }
+  };
+
+  const handleCompleteLesson = async () => {
     const updated = new Set(completedLessons);
     updated.add(selectedLesson);
     const wasComplete = TRACKED_LESSON_IDS.every((id) => completedLessons.has(id));
     const willComplete = TRACKED_LESSON_IDS.every((id) => updated.has(id));
     setCompletedLessons(updated);
-    localStorage.setItem('completedLessons', JSON.stringify([...updated]));
+    let issuedCertificate = certificate;
     if (!wasComplete && willComplete) {
       const displayName =
         profile.user?.displayName || profile.user?.name || profile.user?.email || 'TypingAI Learner';
-      const issued = issueCertificate(displayName, TOTAL_TRACKED_LESSONS);
-      setCertificate(issued);
+      issuedCertificate = issueCertificate(displayName, TOTAL_TRACKED_LESSONS, undefined, certificate);
+      setCertificate(issuedCertificate);
       setShowCompletionModal(true);
     }
+    await persistLearningProgress(updated, issuedCertificate || undefined);
     setIsPracticing(false);
     setShowPracticeDetails(false);
     setTyped('');
@@ -507,7 +532,7 @@ export default function LearnPage() {
 
   const handleCertificateDownload = () => {
     if (!certificate) return;
-    downloadCertificateSvg(certificate);
+    void downloadCertificatePdf(certificate);
   };
 
   const handleClosePractice = () => {
@@ -910,7 +935,7 @@ export default function LearnPage() {
                           const updated = new Set(completedLessons);
                           updated.add(0);
                           setCompletedLessons(updated);
-                          localStorage.setItem('completedLessons', JSON.stringify([...updated]));
+                          persistLearningProgress(updated, certificate || undefined);
                         }
                         handleLessonSelect(1);
                       }}

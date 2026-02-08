@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { useTheme } from '../providers/ThemeProvider';
-import { getStreakSnapshot } from '../utils/streaks';
+import { fetchStreakSnapshot, getStreakSnapshot, StreakSnapshot } from '../utils/streaks';
+import { RootState } from '../store';
 import {
   BarChart3,
   BookOpen,
@@ -20,9 +22,28 @@ import {
 
 export default function HomePage() {
   const { theme } = useTheme();
+  const auth = useSelector((state: RootState) => state.auth);
   const isDark = theme === 'dark';
-  const streakSnapshot = getStreakSnapshot();
+  const [streakSnapshot, setStreakSnapshot] = useState<StreakSnapshot>(getStreakSnapshot());
   const streakLabel = `${streakSnapshot.currentStreak}d`;
+
+  useEffect(() => {
+    if (!auth.token) {
+      setStreakSnapshot(getStreakSnapshot());
+      return;
+    }
+    let active = true;
+    fetchStreakSnapshot()
+      .then((snapshot) => {
+        if (active) setStreakSnapshot(snapshot);
+      })
+      .catch(() => {
+        // ignore errors; keep default snapshot
+      });
+    return () => {
+      active = false;
+    };
+  }, [auth.token]);
 
   const surface = isDark
     ? 'bg-slate-900/70 border-slate-700/60 text-slate-100 backdrop-blur-xl'

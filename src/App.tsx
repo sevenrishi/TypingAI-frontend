@@ -21,6 +21,8 @@ import { RootState } from './store';
 import { logout } from './features/auth/authSlice';
 import { useTheme } from './providers/ThemeProvider';
 import { getAvatarColor, getAvatarImageSrc } from './utils/avatars';
+import api from './api/axios';
+import ToastHost from './components/ToastHost';
 import { LifeBuoy, LogOut, Moon, Settings, Sun, User } from 'lucide-react';
 
 function initials(name?: string) {
@@ -40,6 +42,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileNav, setShowMobileNav] = useState(false);
+  const [sessionStats, setSessionStats] = useState<any>(null);
   const auth = useSelector((s: RootState) => s.auth);
   const profile = useSelector((s: RootState) => s.profile);
   const dispatch = useDispatch();
@@ -52,9 +55,16 @@ export default function App() {
   const email = profile.user?.email || auth.user?.email || 'No email on file';
   const avatarSrc = getAvatarImageSrc(profile.user?.avatarId || auth.user?.avatarId);
   const hasHistory = Array.isArray(profile.history) && profile.history.length > 0;
-  const bestWpm = hasHistory ? Math.round(profile.bestWPM || 0) : null;
-  const avgAccuracy = hasHistory ? Math.round(profile.averageAccuracy || 0) : null;
   const totalTests = Array.isArray(profile.history) ? profile.history.length : 0;
+  const testsCount = sessionStats?.stats?.tests?.count ?? totalTests;
+  const practiceCount = sessionStats?.stats?.practice?.count ?? 0;
+  const battlesCount = sessionStats?.stats?.battles?.count ?? 0;
+  const bestWpm = sessionStats?.user?.bestWPM != null
+    ? Math.round(sessionStats.user.bestWPM)
+    : (hasHistory ? Math.round(profile.bestWPM || 0) : null);
+  const avgAccuracy = sessionStats?.user?.averageAccuracy != null
+    ? Math.round(sessionStats.user.averageAccuracy)
+    : (hasHistory ? Math.round(profile.averageAccuracy || 0) : null);
 
   const menuSurface = theme === 'dark'
     ? 'bg-slate-950 border-slate-800'
@@ -74,6 +84,21 @@ export default function App() {
     }, 2500);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!profile.user?._id) return;
+    let active = true;
+    api.get(`/sessions/stats/${profile.user._id}`)
+      .then((response) => {
+        if (active) setSessionStats(response.data);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch session stats', error);
+      });
+    return () => {
+      active = false;
+    };
+  }, [profile.user?._id]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -321,7 +346,25 @@ export default function App() {
                           >
                             Tests
                           </div>
-                          <div className="mt-1 text-sm font-semibold">{totalTests}</div>
+                          <div className="mt-1 text-sm font-semibold">{testsCount}</div>
+                        </div>
+                        <div className={`rounded-lg border px-2 py-2 ${menuChip}`}>
+                          <div
+                            className={`text-[10px] uppercase tracking-[0.2em] ${menuMuted}`}
+                            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                          >
+                            Practice
+                          </div>
+                          <div className="mt-1 text-sm font-semibold">{practiceCount}</div>
+                        </div>
+                        <div className={`rounded-lg border px-2 py-2 ${menuChip}`}>
+                          <div
+                            className={`text-[10px] uppercase tracking-[0.2em] ${menuMuted}`}
+                            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                          >
+                            Battles
+                          </div>
+                          <div className="mt-1 text-sm font-semibold">{battlesCount}</div>
                         </div>
                       </div>
                     </div>
@@ -336,7 +379,7 @@ export default function App() {
                         </div>
                         <div className="flex-1">
                           <div className="font-semibold">Profile</div>
-                          <div className={`text-xs ${menuMuted}`}>Avatar, stats, and recent tests.</div>
+                          <div className={`text-xs ${menuMuted}`}>Avatar, stats, and recent sessions.</div>
                         </div>
                       </Link>
                       <Link
@@ -531,6 +574,7 @@ export default function App() {
           </Routes>
         </main>
       </div>
+      <ToastHost />
       {showSignIn && <SignIn onClose={() => setShowSignIn(false)} onSwitch={() => { setShowSignIn(false); setShowSignUp(true); }} />}
       {showSignUp && <SignUp onClose={() => setShowSignUp(false)} onSwitch={() => { setShowSignUp(false); setShowSignIn(true); }} />}
     </div>
