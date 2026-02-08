@@ -22,6 +22,16 @@ export const register = createAsyncThunk('auth/register', async (payload: { emai
   }
 });
 
+export const googleAuth = createAsyncThunk('auth/googleAuth', async (payload: { credential?: string; accessToken?: string }, { rejectWithValue }) => {
+  try {
+    const { data } = await api.post('/auth/google', payload);
+    if (data?.token) localStorage.setItem('token', data.token);
+    return data;
+  } catch (err: any) {
+    return rejectWithValue(err.response?.data || { error: 'Google authentication failed' });
+  }
+});
+
 export const loadUser = createAsyncThunk('auth/loadUser', async () => {
   const { data } = await api.get('/users/me');
   return data.user;
@@ -49,6 +59,14 @@ const slice = createSlice({
       .addCase(register.pending, state => { state.status = 'loading'; })
       .addCase(register.fulfilled, state => { state.status = 'idle'; })
       .addCase(register.rejected, state => { state.status = 'idle'; })
+      .addCase(googleAuth.pending, state => { state.status = 'loading'; })
+      .addCase(googleAuth.fulfilled, (state, action: any) => {
+        state.status = 'idle';
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.isAuthChecked = true;
+      })
+      .addCase(googleAuth.rejected, state => { state.status = 'idle'; })
       .addCase(loadUser.pending, state => { state.status = 'loading'; })
       .addCase(loadUser.fulfilled, (state, action: any) => { state.user = action.payload; state.status = 'idle'; state.isAuthChecked = true; })
       .addCase(loadUser.rejected, state => { state.status = 'idle'; state.isAuthChecked = true; });
