@@ -10,8 +10,17 @@ import {
   normalizeAvatarId
 } from '../../../utils/avatars';
 import axios from 'axios';
-import { Award, BarChart3, Crown, Facebook, Flame, Linkedin, Link, Medal, Pencil, Rocket, Sparkles, Swords, Twitter, Zap } from 'lucide-react';
+import { Award, BarChart3, Crown, Download, Facebook, Flame, Linkedin, Link, Medal, Pencil, Rocket, Share2, Sparkles, Swords, Twitter, Zap } from 'lucide-react';
 import { getStreakSnapshot } from '../../../utils/streaks';
+import CertificateCard from '../../../components/CertificateCard';
+import {
+  CertificateData,
+  downloadCertificateSvg,
+  getCertificateShareLinks,
+  getCertificateShareText,
+  loadCertificate,
+  shareCertificate
+} from '../../../utils/certificates';
 
 function initials(name?: string) {
   if (!name) return 'U';
@@ -47,8 +56,11 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
   const [sessions, setSessions] = useState<any[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [certificate, setCertificate] = useState<CertificateData | null>(null);
+  const [certificateCopied, setCertificateCopied] = useState(false);
   const avatarMenuRef = useRef<HTMLDivElement>(null);
   const copyTimerRef = useRef<number | null>(null);
+  const certificateCopyTimerRef = useRef<number | null>(null);
   const avatarImages = getAvatarImages();
 
   useEffect(() => {
@@ -91,6 +103,10 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
       setSelectedAvatarId(normalizeAvatarId(profile.user.avatarId));
     }
   }, [profile.user?.avatarId]);
+
+  useEffect(() => {
+    setCertificate(loadCertificate());
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -145,6 +161,13 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
     twitter: `https://twitter.com/intent/tweet?text=${encodedText}${shareUrl ? `&url=${encodedUrl}` : ''}`,
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`
   };
+  const certificateShareText = certificate ? getCertificateShareText(certificate) : '';
+  const certificateShareTextForClipboard = certificate
+    ? [certificateShareText, shareUrl].filter(Boolean).join(' ')
+    : '';
+  const certificateShareLinks = certificate
+    ? getCertificateShareLinks(certificateShareText, shareUrl)
+    : { linkedin: '', twitter: '', facebook: '' };
 
   const surface = isDark
     ? 'bg-slate-900/70 border-slate-700/60 text-slate-100 backdrop-blur-xl'
@@ -182,10 +205,43 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
     }
   };
 
+  const handleCertificateCopy = async () => {
+    if (!certificateShareTextForClipboard) return;
+    if (typeof navigator === 'undefined' || !navigator.clipboard) return;
+    try {
+      await navigator.clipboard.writeText(certificateShareTextForClipboard);
+      setCertificateCopied(true);
+      if (certificateCopyTimerRef.current) {
+        window.clearTimeout(certificateCopyTimerRef.current);
+      }
+      certificateCopyTimerRef.current = window.setTimeout(() => {
+        setCertificateCopied(false);
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy certificate share text', err);
+    }
+  };
+
+  const handleCertificateShare = async () => {
+    if (!certificate) return;
+    const shared = await shareCertificate(certificate, shareUrl);
+    if (!shared) {
+      await handleCertificateCopy();
+    }
+  };
+
+  const handleCertificateDownload = () => {
+    if (!certificate) return;
+    downloadCertificateSvg(certificate);
+  };
+
   useEffect(() => {
     return () => {
       if (copyTimerRef.current) {
         window.clearTimeout(copyTimerRef.current);
+      }
+      if (certificateCopyTimerRef.current) {
+        window.clearTimeout(certificateCopyTimerRef.current);
       }
     };
   }, []);
@@ -526,6 +582,119 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
             </button>
           </div>
         </div>
+      </section>
+
+      <section className={`rounded-3xl border p-6 md:p-8 ${surface}`}>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <div
+              className={`text-xs uppercase tracking-[0.3em] ${mutedText}`}
+              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+            >
+              Certificate
+            </div>
+            <h2 className="mt-2 text-2xl font-semibold">Course completion</h2>
+            <p className={`mt-2 ${mutedText}`}>Showcase your TypingAI learning achievement.</p>
+          </div>
+          {certificate && (
+            <div
+              className={`rounded-full border px-4 py-2 text-xs font-semibold ${
+                isDark
+                  ? 'border-emerald-400/40 bg-emerald-500/15 text-emerald-200'
+                  : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+              }`}
+            >
+              Certified
+            </div>
+          )}
+        </div>
+
+        {certificate ? (
+          <div className="mt-6 space-y-4">
+            <CertificateCard certificate={certificate} />
+            <div className="flex flex-wrap gap-3">
+              <a
+                href={certificateShareLinks.linkedin}
+                target="_blank"
+                rel="noreferrer"
+                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${
+                  isDark
+                    ? 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-cyan-400/60 hover:text-cyan-200'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-700'
+                }`}
+              >
+                <Linkedin className="h-4 w-4" />
+                LinkedIn
+              </a>
+              <a
+                href={certificateShareLinks.twitter}
+                target="_blank"
+                rel="noreferrer"
+                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${
+                  isDark
+                    ? 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-cyan-400/60 hover:text-cyan-200'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-700'
+                }`}
+              >
+                <Twitter className="h-4 w-4" />
+                X
+              </a>
+              <a
+                href={certificateShareLinks.facebook}
+                target="_blank"
+                rel="noreferrer"
+                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${
+                  isDark
+                    ? 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-cyan-400/60 hover:text-cyan-200'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-700'
+                }`}
+              >
+                <Facebook className="h-4 w-4" />
+                Facebook
+              </a>
+              <button
+                onClick={handleCertificateCopy}
+                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${
+                  isDark
+                    ? 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-cyan-400/60 hover:text-cyan-200'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-700'
+                }`}
+              >
+                <Link className="h-4 w-4" />
+                {certificateCopied ? 'Copied' : 'Copy text'}
+              </button>
+              <button
+                onClick={handleCertificateShare}
+                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${
+                  isDark
+                    ? 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-emerald-400/60 hover:text-emerald-200'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:text-emerald-700'
+                }`}
+              >
+                <Share2 className="h-4 w-4" />
+                Share
+              </button>
+              <button
+                onClick={handleCertificateDownload}
+                className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${
+                  isDark
+                    ? 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-emerald-400/60 hover:text-emerald-200'
+                    : 'border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:text-emerald-700'
+                }`}
+              >
+                <Download className="h-4 w-4" />
+                Download
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className={`mt-6 rounded-2xl border p-5 ${surfaceSoft}`}>
+            <div className="text-lg font-semibold">Complete the learning path to unlock your certificate.</div>
+            <p className={`mt-1 text-sm ${mutedText}`}>
+              Finish all lessons in the Learn tab to generate a shareable certificate.
+            </p>
+          </div>
+        )}
       </section>
 
       {stats && (

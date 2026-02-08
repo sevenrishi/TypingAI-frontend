@@ -1,8 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { useTheme } from '../providers/ThemeProvider';
 import { CheckCircle, Keyboard, X, Trophy, Play, Zap } from 'lucide-react';
 import TextDisplay from '../features/typing/components/TextDisplay';
 import KeyboardFingerPlacement, { FINGER_LABELS, KEY_FINGER_MAP, SHIFT_BASE_MAP } from '../features/learn/components/KeyboardFingerPlacement';
+import CourseCompletionModal from '../features/learn/components/CourseCompletionModal';
+import { RootState } from '../store';
+import {
+  CertificateData,
+  downloadCertificateSvg,
+  getCertificateShareLinks,
+  getCertificateShareText,
+  issueCertificate,
+  loadCertificate,
+  shareCertificate
+} from '../utils/certificates';
 
 interface Lesson {
   id: number;
@@ -275,8 +287,12 @@ const lessons: Lesson[] = [
   }
 ];
 
+const TRACKED_LESSON_IDS = lessons.filter((lesson) => lesson.id !== 0).map((lesson) => lesson.id);
+const TOTAL_TRACKED_LESSONS = TRACKED_LESSON_IDS.length;
+
 export default function LearnPage() {
   const { theme } = useTheme();
+  const profile = useSelector((state: RootState) => state.profile);
   const [selectedLesson, setSelectedLesson] = useState<number>(0);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
   const [isPracticing, setIsPracticing] = useState(false);
@@ -289,8 +305,12 @@ export default function LearnPage() {
   const [placementTargetKey, setPlacementTargetKey] = useState('');
   const [placementLastKey, setPlacementLastKey] = useState('');
   const [placementStatus, setPlacementStatus] = useState<'idle' | 'correct' | 'wrong'>('idle');
+  const [certificate, setCertificate] = useState<CertificateData | null>(null);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [certificateCopied, setCertificateCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const placementInputRef = useRef<HTMLInputElement>(null);
+  const certificateCopyTimerRef = useRef<number | null>(null);
 
   // Load completed lessons from localStorage
   useEffect(() => {
@@ -298,6 +318,18 @@ export default function LearnPage() {
     if (saved) {
       setCompletedLessons(new Set(JSON.parse(saved)));
     }
+    const storedCertificate = loadCertificate();
+    if (storedCertificate) {
+      setCertificate(storedCertificate);
+    }
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (certificateCopyTimerRef.current) {
+        window.clearTimeout(certificateCopyTimerRef.current);
+      }
+    };
   }, []);
 
   // Close practice screen when lesson changes
@@ -314,7 +346,10 @@ export default function LearnPage() {
 
   const currentLesson = lessons.find(l => l.id === selectedLesson);
   const currentText = currentLesson?.content[currentLineIndex] || '';
-  const progressPercentage = Math.round((completedLessons.size / lessons.length) * 100);
+  const completedTrackedCount = TRACKED_LESSON_IDS.filter((id) => completedLessons.has(id)).length;
+  const progressPercentage = TOTAL_TRACKED_LESSONS > 0
+    ? Math.round((completedTrackedCount / TOTAL_TRACKED_LESSONS) * 100)
+    : 0;
   const showFingerPlacement = Boolean(
     currentLesson?.phase === 'Phase 1: Keyboard Mastery' && currentLesson?.focusKeys?.length
   );
@@ -427,13 +462,52 @@ export default function LearnPage() {
   const handleCompleteLesson = () => {
     const updated = new Set(completedLessons);
     updated.add(selectedLesson);
+    const wasComplete = TRACKED_LESSON_IDS.every((id) => completedLessons.has(id));
+    const willComplete = TRACKED_LESSON_IDS.every((id) => updated.has(id));
     setCompletedLessons(updated);
     localStorage.setItem('completedLessons', JSON.stringify([...updated]));
+    if (!wasComplete && willComplete) {
+      const displayName =
+        profile.user?.displayName || profile.user?.name || profile.user?.email || 'TypingAI Learner';
+      const issued = issueCertificate(displayName, TOTAL_TRACKED_LESSONS);
+      setCertificate(issued);
+      setShowCompletionModal(true);
+    }
     setIsPracticing(false);
     setShowPracticeDetails(false);
     setTyped('');
     setCurrentLineIndex(0);
     setActiveKey('');
+  };
+
+  const handleCertificateCopy = async () => {
+    if (!certificate || !certificateShareTextForClipboard) return;
+    if (typeof navigator === 'undefined' || !navigator.clipboard) return;
+    try {
+      await navigator.clipboard.writeText(certificateShareTextForClipboard);
+      setCertificateCopied(true);
+      if (certificateCopyTimerRef.current) {
+        window.clearTimeout(certificateCopyTimerRef.current);
+      }
+      certificateCopyTimerRef.current = window.setTimeout(() => {
+        setCertificateCopied(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to copy certificate share text', error);
+    }
+  };
+
+  const handleCertificateShare = async () => {
+    if (!certificate) return;
+    const shared = await shareCertificate(certificate, shareUrl);
+    if (!shared) {
+      await handleCertificateCopy();
+    }
+  };
+
+  const handleCertificateDownload = () => {
+    if (!certificate) return;
+    downloadCertificateSvg(certificate);
   };
 
   const handleClosePractice = () => {
@@ -454,6 +528,14 @@ export default function LearnPage() {
   const sidebarClass = theme === 'dark' ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200';
   const contentClass = theme === 'dark' ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200';
   const progressBarBgClass = theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200';
+  const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://typingai.app';
+  const certificateShareText = certificate ? getCertificateShareText(certificate) : '';
+  const certificateShareTextForClipboard = certificate
+    ? [certificateShareText, shareUrl].filter(Boolean).join(' ')
+    : '';
+  const certificateShareLinks = certificate
+    ? getCertificateShareLinks(certificateShareText, shareUrl)
+    : { linkedin: '', twitter: '', facebook: '' };
 
   // Group lessons by phase
   const gettingStarted = lessons.filter(l => l.id === 0);
@@ -805,8 +887,8 @@ export default function LearnPage() {
                       onClick={handleStartPractice}
                       className={`w-full py-4 rounded-lg font-bold text-lg transition-all duration-200 flex items-center justify-center gap-3 ${
                         theme === 'dark'
-                          ? 'bg-green-600 hover:bg-green-700 text-white'
-                          : 'bg-green-600 hover:bg-green-700 text-white'
+                          ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 text-slate-900 shadow-[0_18px_40px_rgba(34,211,238,0.35)] hover:shadow-[0_22px_48px_rgba(34,211,238,0.45)]'
+                          : 'bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 text-white shadow-[0_18px_40px_rgba(14,165,233,0.25)] hover:shadow-[0_22px_48px_rgba(14,165,233,0.35)]'
                       }`}
                     >
                       <Play className="w-6 h-6" />
@@ -823,7 +905,15 @@ export default function LearnPage() {
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6">
                   {currentLesson.id === 0 && (
                     <button
-                      onClick={() => handleLessonSelect(1)}
+                      onClick={() => {
+                        if (!completedLessons.has(0)) {
+                          const updated = new Set(completedLessons);
+                          updated.add(0);
+                          setCompletedLessons(updated);
+                          localStorage.setItem('completedLessons', JSON.stringify([...updated]));
+                        }
+                        handleLessonSelect(1);
+                      }}
                       className={`flex-1 py-3 rounded-lg font-semibold transition-colors duration-200 ${
                         theme === 'dark'
                           ? 'bg-gray-800 hover:bg-gray-700 text-gray-200'
@@ -1056,6 +1146,17 @@ export default function LearnPage() {
           </div>
         </div>
       </div>
+      <CourseCompletionModal
+        visible={showCompletionModal && Boolean(certificate)}
+        certificate={certificate!}
+        shareLinks={certificateShareLinks}
+        shareText={certificateShareText}
+        copied={certificateCopied}
+        onCopy={handleCertificateCopy}
+        onShare={handleCertificateShare}
+        onDownload={handleCertificateDownload}
+        onClose={() => setShowCompletionModal(false)}
+      />
     </div>
   );
 }
