@@ -11,61 +11,105 @@ interface ScriptReviewProps {
 
 export default function ScriptReview({ text, isGenerating, onGenerate, onUseScript, onCancel }: ScriptReviewProps) {
   const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [topic, setTopic] = React.useState('');
   const [length, setLength] = React.useState<'short'|'medium'|'long'>('short');
+  const isGenerateDisabled = isGenerating || topic.trim().length === 0;
+  const surface = isDark
+    ? 'bg-slate-900/70 border-slate-700/60 text-slate-100 backdrop-blur-xl'
+    : 'bg-white/80 border-slate-200 text-slate-900 backdrop-blur-xl';
+  const surfaceSoft = isDark
+    ? 'bg-slate-900/45 border-slate-700/50 text-slate-100'
+    : 'bg-white/60 border-slate-200/80 text-slate-900';
+  const inputBase = isDark
+    ? 'bg-slate-900/60 border-slate-700 text-slate-100 placeholder-slate-500'
+    : 'bg-white border-slate-200 text-slate-900 placeholder-slate-500';
+  const primaryButton = isDark
+    ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 text-slate-900'
+    : 'bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 text-white';
+  const ghostButton = isDark
+    ? 'bg-slate-800 text-slate-200 hover:bg-slate-700'
+    : 'bg-slate-200 text-slate-700 hover:bg-slate-300';
+  const disabledButton = isDark
+    ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+    : 'bg-slate-200 text-slate-500 cursor-not-allowed';
 
   return (
-    <div className={`min-h-screen p-4 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className="min-h-[75vh] p-4">
       <div className="container mx-auto">
-        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg`}> 
-          <h2 className={`text-2xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Generated Script</h2>
+        <div className={`p-6 rounded-[28px] border shadow-lg ${surface}`}> 
+          <div className="space-y-2 mb-6">
+            <div
+              className={`text-[11px] uppercase tracking-[0.35em] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}
+              style={{ fontFamily: "'JetBrains Mono', monospace" }}
+            >
+              Host Tools
+            </div>
+            <h2 className="text-2xl font-semibold" style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}>
+              Generated script
+            </h2>
+          </div>
 
-          <div className="mb-4">
+          <div className="mb-4 space-y-3">
             <input
               value={topic}
               onChange={e => setTopic(e.target.value)}
               placeholder="Enter a prompt or topic to generate script"
-              className={`w-full p-3 rounded-md border mb-3 transition-colors duration-200 ${
-                theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'
-              }`}
+              className={`w-full p-3 rounded-xl border transition-colors duration-200 ${inputBase}`}
             />
 
-            <div className="flex items-center gap-3">
-              <select value={length} onChange={e => setLength(e.target.value as any)} className={`p-2 rounded-md border transition-colors duration-200 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'}`}>
+            <div className="flex flex-wrap items-center gap-3">
+              <select
+                value={length}
+                onChange={e => setLength(e.target.value as any)}
+                className={`p-3 rounded-xl border transition-colors duration-200 ${inputBase}`}
+              >
                 <option value="short">Short</option>
                 <option value="medium">Medium</option>
                 <option value="long">Long</option>
               </select>
 
               <button
+                disabled={isGenerateDisabled}
                 onClick={() => onGenerate(topic, length)}
-                className={`px-4 py-2 rounded-md font-semibold ${isGenerating ? 'bg-gray-600 text-gray-200 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}>
+                className={`px-4 py-3 rounded-xl font-semibold transition-colors duration-200 ${
+                  isGenerateDisabled
+                    ? isDark
+                      ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                      : 'bg-slate-200 text-slate-500 cursor-not-allowed'
+                    : primaryButton
+                }`}
+              >
                 {isGenerating ? 'Generating...' : 'Generate'}
               </button>
             </div>
           </div>
 
-          <div className={`mb-4 p-4 rounded-md ${theme === 'dark' ? 'bg-gray-700 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
+          <div className={`mb-4 p-4 rounded-2xl border ${surfaceSoft}`}>
             {isGenerating ? (
-              <div>⏳ Generating...</div>
+              <div>Generating...</div>
             ) : text ? (
               <pre className="whitespace-pre-wrap">{text}</pre>
             ) : (
-              <div className="text-sm text-gray-500">No script generated yet.</div>
+              <div className="text-sm text-slate-400">No script generated yet.</div>
             )}
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             <button
               onClick={() => onUseScript(text)}
               disabled={!text}
-              className={`px-4 py-2 rounded-md font-semibold ${!text ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 text-white'}`}>
+              className={`px-4 py-3 rounded-xl font-semibold ${
+                !text ? disabledButton : primaryButton
+              }`}
+            >
               Use this script
             </button>
 
             <button
               onClick={onCancel}
-              className={`px-4 py-2 rounded-md font-medium ${theme === 'dark' ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>
+              className={`px-4 py-3 rounded-xl font-medium ${ghostButton}`}
+            >
               Cancel
             </button>
           </div>

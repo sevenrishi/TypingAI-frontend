@@ -9,6 +9,7 @@ import StatsPanel from '../../typing/components/StatsPanel';
 import ResultsPage from './ResultsPage';
 import { useTheme } from '../../../providers/ThemeProvider';
 import { generatePracticeText, clear } from '../../ai/aiPracticeSlice';
+import { useSaveSession } from '../../../hooks/useSaveSession';
 
 const TIMER_OPTIONS = [
   { label: '1 min', value: 60000, length: 'short' as const },
@@ -55,16 +56,48 @@ const SCRIPT_LIBRARY = {
 
 export default function PracticeMode() {
   const dispatch = useDispatch();
+  const { saveSession } = useSaveSession();
   const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const practice = useSelector((s: RootState) => s.practice);
   const aiText = useSelector((s: RootState) => s.aiPractice.text);
-  const { typed, text, stats, handleChange, handleReset: resetTyping } = useTyping();
+  const { typed, text, stats, handleChange } = useTyping();
+
+  const surface = isDark
+    ? 'bg-slate-900/70 border-slate-700/60 text-slate-100 backdrop-blur-xl'
+    : 'bg-white/80 border-slate-200 text-slate-900 backdrop-blur-xl';
+  const surfaceSoft = isDark
+    ? 'bg-slate-900/45 border-slate-700/50 text-slate-100'
+    : 'bg-white/60 border-slate-200/80 text-slate-900';
+  const mutedText = isDark ? 'text-slate-300' : 'text-slate-600';
+  const inputBase = isDark
+    ? 'bg-slate-900/60 border-slate-700 text-slate-100 placeholder-slate-500'
+    : 'bg-white border-slate-200 text-slate-900 placeholder-slate-500';
+  const primaryButton = isDark
+    ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 text-slate-900 shadow-[0_18px_40px_rgba(34,211,238,0.35)] hover:shadow-[0_22px_48px_rgba(34,211,238,0.45)]'
+    : 'bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 text-white shadow-[0_18px_40px_rgba(14,165,233,0.25)] hover:shadow-[0_22px_48px_rgba(14,165,233,0.35)]';
+  const secondaryButton = isDark
+    ? 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-cyan-400/60 hover:text-cyan-200'
+    : 'border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-700';
+  const ghostButton = isDark
+    ? 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+    : 'bg-slate-200 hover:bg-slate-300 text-slate-700';
+  const disabledButton = isDark
+    ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+    : 'bg-slate-200 text-slate-500 cursor-not-allowed';
+  const timerSelected = isDark
+    ? 'border-cyan-400/70 bg-cyan-500/15 text-cyan-200'
+    : 'border-sky-300 bg-sky-100 text-sky-700';
+  const timerDefault = isDark
+    ? 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-slate-500'
+    : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300';
   
   const [showGenerateUI, setShowGenerateUI] = useState(false);
   const [topic, setTopic] = useState('');
   const [error, setError] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const savedRef = useRef(false);
 
   // Load default script when selected
   useEffect(() => {
@@ -110,6 +143,25 @@ export default function PracticeMode() {
       dispatch(endPractice());
     }
   }, [typingStatus, practice.started, practice.timeRemaining, dispatch]);
+
+  useEffect(() => {
+    if (!practice.started || practice.timeRemaining > 0 || savedRef.current || !text) return;
+    savedRef.current = true;
+
+    const durationFromTimer = practice.selectedTime ? (practice.selectedTime - practice.timeRemaining) : stats.elapsed;
+    const duration = stats.elapsed > 0 ? stats.elapsed : durationFromTimer;
+
+    saveSession({
+      type: 'practice',
+      wpm: stats.wpm,
+      cpm: stats.cpm,
+      accuracy: stats.accuracy,
+      errors: stats.errors,
+      duration,
+      text,
+      mode: practice.scriptMode
+    });
+  }, [practice.started, practice.timeRemaining, practice.selectedTime, text, stats.wpm, stats.cpm, stats.accuracy, stats.errors, stats.elapsed, practice.scriptMode, saveSession]);
 
   const handleSelectTime = (timeMs: number) => {
     dispatch(selectTime(timeMs));
@@ -162,6 +214,7 @@ export default function PracticeMode() {
 
   const handleResetPractice = () => {
     if (timerRef.current) clearInterval(timerRef.current);
+    savedRef.current = false;
     dispatch(reset());
     dispatch(resetTypingAction());
     setTopic('');
@@ -174,32 +227,31 @@ export default function PracticeMode() {
   // Step 1: Timer Selection (Always shown first)
   if (!practice.selectedTime) {
     return (
-      <div className={`p-6 rounded-lg shadow-lg transition-colors duration-300 ${
-        theme === 'dark'
-          ? 'bg-gray-800/40 backdrop-blur-md'
-          : 'bg-white border border-gray-300'
-      }`}>
-        <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>
-          Practice Mode
-        </h2>
+      <section className={`rounded-[28px] border p-6 md:p-8 shadow-lg transition-colors duration-300 ${surface}`}>
+        <div className="space-y-2">
+          <div
+            className={`text-[11px] uppercase tracking-[0.35em] ${mutedText}`}
+            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+          >
+            Practice Mode
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}>
+            Choose your session length
+          </h2>
+          <p className={mutedText}>Pick a timer and let the AI build a focused drill around it.</p>
+        </div>
 
-        <div className="mb-6">
-          <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-900'}`}>
-            Select Timer Duration
+        <div className="mt-6">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-slate-400">
+            Select Timer
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
             {TIMER_OPTIONS.map(option => (
               <button
                 key={option.value}
                 onClick={() => handleSelectTime(option.value)}
-                className={`p-4 rounded-lg border-2 transition-colors duration-200 text-2xl font-bold ${
-                  practice.selectedTime === option.value
-                    ? theme === 'dark'
-                      ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300'
-                      : 'border-indigo-600 bg-indigo-100 text-indigo-700'
-                    : theme === 'dark'
-                    ? 'border-gray-600 bg-gray-700 hover:border-gray-500 text-gray-300'
-                    : 'border-gray-300 bg-gray-100 hover:border-gray-400 text-gray-900'
+                className={`p-4 rounded-2xl border transition-colors duration-200 text-lg font-semibold ${
+                  practice.selectedTime === option.value ? timerSelected : timerDefault
                 }`}
               >
                 {option.label}
@@ -207,84 +259,68 @@ export default function PracticeMode() {
             ))}
           </div>
         </div>
-      </div>
+      </section>
     );
   }
 
   // Step 2: Script Selection
   if (!practice.scriptSelected) {
     return (
-      <div className={`p-6 rounded-lg shadow-lg transition-colors duration-300 ${
-        theme === 'dark'
-          ? 'bg-gray-800/40 backdrop-blur-md'
-          : 'bg-white border border-gray-300'
-      }`}>
-        <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>
-          Select Script
-        </h2>
+      <section className={`rounded-[28px] border p-6 md:p-8 shadow-lg transition-colors duration-300 ${surface}`}>
+        <div className="space-y-2">
+          <div
+            className={`text-[11px] uppercase tracking-[0.35em] ${mutedText}`}
+            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+          >
+            Script Selection
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}>
+            Pick your drill script
+          </h2>
+          <p className={mutedText}>Choose a curated prompt or generate a fresh one with AI.</p>
+        </div>
 
-        <div className="flex gap-3 mb-6">
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3">
           <button
             onClick={handleSelectDefaultScript}
-            className={`flex-1 px-4 py-3 rounded-md font-semibold transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-            }`}
+            className={`px-4 py-4 rounded-2xl font-semibold transition-colors duration-200 border ${secondaryButton}`}
           >
-            Default Script
+            Use curated script
           </button>
           <button
             onClick={handleSelectGenerateScript}
-            className={`flex-1 px-4 py-3 rounded-md font-semibold transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                : 'bg-purple-600 hover:bg-purple-700 text-white'
-            }`}
+            className={`px-4 py-4 rounded-2xl font-semibold transition-colors duration-200 ${primaryButton}`}
           >
-            Generate Script
+            Generate with AI
           </button>
         </div>
 
         {showGenerateUI && (
-          <div className="mb-6 p-4 rounded-lg border" style={{
-            borderColor: theme === 'dark' ? '#4B5563' : '#d1d5db',
-            backgroundColor: theme === 'dark' ? '#374151' : '#f9fafb',
-          }}>
+          <div className={`mt-6 p-4 rounded-2xl border ${surfaceSoft}`}>
             <div className="mb-4">
               <input
                 value={topic}
                 onChange={e => setTopic(e.target.value)}
                 placeholder="Enter topic for script generation..."
-                className={`w-full p-3 rounded-md border transition-colors duration-200 ${
-                  theme === 'dark'
-                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400'
-                    : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
-                }`}
+                className={`w-full p-3 rounded-xl border transition-colors duration-200 ${inputBase}`}
               />
             </div>
 
             <button
               onClick={handleGenerateScript}
               disabled={!topic.trim()}
-              className={`w-full px-4 py-2 rounded-md font-semibold transition-colors duration-200 ${
-                !topic.trim()
-                  ? theme === 'dark'
-                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50'
-                    : 'bg-gray-400 text-gray-600 cursor-not-allowed opacity-50'
-                  : theme === 'dark'
-                  ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                  : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+              className={`w-full px-4 py-3 rounded-xl font-semibold transition-colors duration-200 ${
+                !topic.trim() ? disabledButton : primaryButton
               }`}
             >
-              Generate
+              Generate script
             </button>
 
             {error && (
-              <div className={`p-3 rounded-md text-sm font-medium mt-3 ${
-                theme === 'dark'
-                  ? 'bg-red-900/30 border border-red-700 text-red-300'
-                  : 'bg-red-100 border border-red-400 text-red-800'
+              <div className={`mt-3 p-3 rounded-xl text-sm font-medium border ${
+                isDark
+                  ? 'border-rose-500/30 bg-rose-500/10 text-rose-300'
+                  : 'border-rose-200 bg-rose-50 text-rose-600'
               }`}>
                 {error}
               </div>
@@ -292,72 +328,64 @@ export default function PracticeMode() {
           </div>
         )}
 
-        <div className="flex gap-3">
+        <div className="mt-6 flex gap-3">
           <button
             onClick={handleResetPractice}
-            className={`px-4 py-2 rounded-md transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'bg-gray-700 hover:bg-gray-600 text-gray-200'
-                : 'bg-gray-300 hover:bg-gray-400 text-gray-900'
-            }`}
+            className={`px-4 py-2 rounded-xl transition-colors duration-200 ${ghostButton}`}
           >
             Back
           </button>
         </div>
-      </div>
+      </section>
     );
   }
 
   // Step 3: Preview & Start (if practice hasn't started)
   if (!practice.started) {
     return (
-      <div className={`p-6 rounded-lg shadow-lg transition-colors duration-300 ${
-        theme === 'dark'
-          ? 'bg-gray-800/40 backdrop-blur-md'
-          : 'bg-white border border-gray-300'
-      }`}>
-        <h2 className={`text-2xl font-bold mb-4 ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>
-          Ready to Practice?
-        </h2>
-
-        <div className={`mb-4 p-2 rounded text-sm ${
-          theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
-        }`}>
-          Duration: <span className="font-semibold">{formatTime(practice.selectedTime!)}</span> | 
-          Mode: <span className="font-semibold">{practice.scriptMode === 'default' ? 'Default Script' : 'Generated Script'}</span>
+      <section className={`rounded-[28px] border p-6 md:p-8 shadow-lg transition-colors duration-300 ${surface}`}>
+        <div className="space-y-2">
+          <div
+            className={`text-[11px] uppercase tracking-[0.35em] ${mutedText}`}
+            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+          >
+            Practice Preview
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold" style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}>
+            Ready to practice?
+          </h2>
+          <p className={mutedText}>Confirm the session settings and begin when you’re ready.</p>
         </div>
 
-        <div className={`rounded-md overflow-hidden border p-4 h-48 mb-6 transition-colors duration-300 ${
-          theme === 'dark'
-            ? 'border-gray-700 bg-gradient-to-b from-gray-900 to-gray-800'
-            : 'border-gray-300 bg-gray-50'
-        }`}>
+        <div className={`mt-6 flex flex-wrap gap-3 rounded-2xl border px-4 py-3 text-sm ${surfaceSoft}`}>
+          <span>
+            Duration: <span className="font-semibold">{formatTime(practice.selectedTime!)}</span>
+          </span>
+          <span className="text-slate-400">•</span>
+          <span>
+            Mode: <span className="font-semibold">{practice.scriptMode === 'default' ? 'Curated Script' : 'AI Script'}</span>
+          </span>
+        </div>
+
+        <div className={`mt-6 rounded-2xl overflow-hidden border p-4 h-52 ${surfaceSoft}`}>
           <TextDisplay text={text} typed="" />
         </div>
 
-        <div className="flex gap-3">
+        <div className="mt-6 flex flex-col sm:flex-row gap-3">
           <button
             onClick={handleResetPractice}
-            className={`px-4 py-3 rounded-md transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'bg-gray-700 hover:bg-gray-600 text-gray-200'
-                : 'bg-gray-300 hover:bg-gray-400 text-gray-900'
-            }`}
+            className={`px-4 py-3 rounded-xl transition-colors duration-200 ${ghostButton}`}
           >
             Back
           </button>
           <button
             onClick={handleStartPractice}
-            className={`flex-1 px-6 py-3 rounded-md font-semibold transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'bg-green-600 hover:bg-green-700 text-white'
-                : 'bg-green-600 hover:bg-green-700 text-white'
-            }`}
+            className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-colors duration-200 ${primaryButton}`}
           >
             Start Practice
           </button>
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -379,42 +407,32 @@ export default function PracticeMode() {
 
   // Step 4: Practice Active
   return (
-    <div className={`p-6 rounded-lg shadow-lg transition-colors duration-300 ${
-      theme === 'dark'
-        ? 'bg-gray-800/40 backdrop-blur-md'
-        : 'bg-white border border-gray-300'
-    }`}>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-gray-100' : 'text-gray-900'}`}>
-          Practice in Progress
-        </h2>
-        <div className={`text-4xl font-bold ${
-          practice.timeRemaining > 0
-            ? theme === 'dark'
-              ? 'text-indigo-400'
-              : 'text-indigo-600'
-            : theme === 'dark'
-            ? 'text-red-400'
-            : 'text-red-600'
-        }`}>
+    <section className={`rounded-[28px] border p-6 md:p-8 shadow-lg transition-colors duration-300 ${surface}`}>
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
+        <div>
+          <div
+            className={`text-[11px] uppercase tracking-[0.35em] ${mutedText}`}
+            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+          >
+            Live Practice
+          </div>
+          <h2 className="text-2xl font-bold" style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}>
+            Practice in progress
+          </h2>
+        </div>
+        <div className={`text-4xl font-bold ${practice.timeRemaining > 0 ? 'text-cyan-300' : 'text-rose-400'}`}>
           {formatTime(practice.timeRemaining)}
         </div>
       </div>
 
-      <div className={`h-2 rounded-full mb-6 overflow-hidden ${
-        theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'
-      }`}>
+      <div className={`h-2 rounded-full mb-6 overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}>
         <div
-          className="h-full bg-indigo-600 transition-all duration-250"
+          className="h-full bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 transition-all duration-250"
           style={{ width: `${(practice.timeRemaining / practice.selectedTime!) * 100}%` }}
         />
       </div>
 
-      <div className={`rounded-md overflow-hidden border p-4 h-48 mb-4 transition-colors duration-300 ${
-        theme === 'dark'
-          ? 'border-gray-700 bg-gradient-to-b from-gray-900 to-gray-800'
-          : 'border-gray-300 bg-gray-50'
-      }`}>
+      <div className={`rounded-2xl overflow-hidden border p-4 h-52 mb-4 ${surfaceSoft}`}>
         <TextDisplay text={text} typed={typed} />
       </div>
 
@@ -425,14 +443,8 @@ export default function PracticeMode() {
         onPaste={e => e.preventDefault()}
         onCopy={e => e.preventDefault()}
         disabled={practice.timeRemaining <= 0}
-        className={`w-full p-3 rounded-md border transition-colors duration-200 mb-4 ${
-          practice.timeRemaining <= 0
-            ? theme === 'dark'
-              ? 'border-gray-600 bg-gray-700 text-gray-400 placeholder-gray-500 cursor-not-allowed'
-              : 'border-gray-300 bg-gray-100 text-gray-500 placeholder-gray-400 cursor-not-allowed'
-            : theme === 'dark'
-            ? 'border-gray-600 bg-gray-800 text-white placeholder-gray-400'
-            : 'border-gray-300 bg-white text-gray-900 placeholder-gray-500'
+        className={`w-full p-3 rounded-xl border transition-colors duration-200 mb-4 ${
+          practice.timeRemaining <= 0 ? `${inputBase} opacity-60 cursor-not-allowed` : inputBase
         }`}
         placeholder="Start typing..."
         autoFocus
@@ -448,14 +460,10 @@ export default function PracticeMode() {
 
       <button
         onClick={handleResetPractice}
-        className={`w-full px-6 py-3 rounded-md font-semibold transition-colors duration-200 mt-4 ${
-          theme === 'dark'
-            ? 'bg-gray-700 hover:bg-gray-600 text-gray-200'
-            : 'bg-gray-300 hover:bg-gray-400 text-gray-900'
-        }`}
+        className={`w-full px-6 py-3 rounded-xl font-semibold transition-colors duration-200 mt-5 ${ghostButton}`}
       >
         Exit Practice
       </button>
-    </div>
+    </section>
   );
 }

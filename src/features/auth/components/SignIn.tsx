@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { login, loadUser, googleAuth } from '../authSlice';
 import { useTheme } from '../../../providers/ThemeProvider';
 import { useGoogleLogin } from '@react-oauth/google';
+import { Loader2 } from 'lucide-react';
 
 export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onSwitch?: () => void }) {
   const dispatch = useDispatch();
@@ -70,12 +71,12 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
   });
 
   return (
-    <div className={`fixed inset-0 flex items-center justify-center z-50 transition-colors duration-300 ${
+    <div className={`fixed inset-0 flex items-center justify-center z-50 transition-colors duration-300 overflow-auto max-md:px-4 max-md:py-6 ${
       theme === 'dark'
         ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'
         : 'bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200'
     }`}>
-      <form onSubmit={handleSubmit} className={`p-8 rounded-lg w-96 shadow-2xl border transition-colors duration-300 ${
+      <form onSubmit={handleSubmit} className={`p-8 rounded-lg w-full max-w-[24rem] shadow-2xl border transition-colors duration-300 ${
         theme === 'dark'
           ? 'bg-gradient-to-b from-gray-800 to-gray-900 text-white border-gray-700'
           : 'bg-gradient-to-b from-white to-gray-50 text-gray-900 border-gray-300'
@@ -121,13 +122,13 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
               emailError
                 ? `border-red-500 focus:border-red-400 ${
                     theme === 'dark'
-                      ? 'bg-gray-700/50'
+                      ? 'bg-slate-900/50'
                       : 'bg-red-50'
                   }`
                 : `${
                     theme === 'dark'
-                      ? 'bg-gray-700/50 border-gray-600 focus:border-indigo-500'
-                      : 'bg-gray-50 border-gray-300 focus:border-indigo-600'
+                      ? 'bg-slate-900/50 border-slate-700 focus:border-cyan-400'
+                      : 'bg-white border-slate-200 focus:border-sky-500'
                   }`
             }`}
             placeholder="your@email.com"
@@ -145,13 +146,12 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
             <button
               type="button"
               onClick={() => {
-                onClose();
                 navigate('/reset-password');
               }}
-              className={`text-xs ${
+              className={`no-key text-xs ${
                 theme === 'dark'
-                  ? 'text-indigo-400 hover:text-indigo-300'
-                  : 'text-indigo-600 hover:text-indigo-700'
+                  ? 'text-cyan-300 hover:text-cyan-200'
+                  : 'text-sky-600 hover:text-sky-700'
               }`}
             >
               Forgot Password?
@@ -163,8 +163,8 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
             type="password"
             className={`w-full p-3 rounded-lg border mt-1 outline-none transition ${
               theme === 'dark'
-                ? 'bg-gray-700/50 border-gray-600 focus:border-indigo-500'
-                : 'bg-gray-50 border-gray-300 focus:border-indigo-600'
+                ? 'bg-slate-900/50 border-slate-700 focus:border-cyan-400'
+                : 'bg-white border-slate-200 focus:border-sky-500'
             }`}
             placeholder="••••••••"
           />
@@ -223,13 +223,14 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
           disabled={loading || !email || !password || !!emailError}
           className={`w-full px-4 py-2.5 rounded-lg font-semibold transition shadow-lg ${
             theme === 'dark'
-              ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 disabled:from-gray-600 disabled:to-gray-600 text-white'
-              : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 disabled:from-gray-400 disabled:to-gray-400 text-white'
+              ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 hover:from-cyan-300 hover:via-sky-300 hover:to-emerald-300 disabled:from-gray-600 disabled:to-gray-600 text-slate-900'
+              : 'bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 hover:from-sky-600 hover:via-cyan-600 hover:to-emerald-600 disabled:from-gray-400 disabled:to-gray-400 text-white'
           }`}
         >
           {loading ? (
             <span className="flex items-center justify-center">
-              <span className="inline-block animate-spin">⟳</span> Signing in...
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="ml-2">Signing in...</span>
             </span>
           ) : (
             'Sign In'
@@ -243,10 +244,10 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
           <button
             type="button"
             onClick={() => onSwitch && onSwitch()}
-            className={`font-semibold ${
+            className={`no-key font-semibold ${
               theme === 'dark'
-                ? 'text-indigo-400 hover:text-indigo-300'
-                : 'text-indigo-600 hover:text-indigo-700'
+                ? 'text-cyan-300 hover:text-cyan-200'
+                : 'text-sky-600 hover:text-sky-700'
             }`}
           >
             Sign up

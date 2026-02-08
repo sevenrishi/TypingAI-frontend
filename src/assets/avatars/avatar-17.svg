@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="64" fill="#DCFCE7"/>
+  <circle cx="128" cy="128" r="112" fill="#DCFCE7"/>
+  <circle cx="128" cy="128" r="108" fill="none" stroke="#10B981" stroke-width="6" opacity="0.25"/>
+  <g transform="rotate(221 128 128)">
+    <circle cx="40" cy="210" r="6" fill="#10B981" opacity="0.35"/>
+    <circle cx="216" cy="52" r="4" fill="#10B981" opacity="0.35"/>
+  </g>
+  <polygon points="78,92 108,44 138,92" fill="#34D399" stroke="#0F172A" stroke-width="6"/>
+<polygon points="178,92 148,44 118,92" fill="#34D399" stroke="#0F172A" stroke-width="6"/>
+  <ellipse cx="128" cy="196" rx="52" ry="44" fill="#34D399" stroke="#0F172A" stroke-width="6"/>
+<ellipse cx="128" cy="204" rx="30" ry="24" fill="#A7F3D0" stroke="#0F172A" stroke-width="4"/>
+<circle cx="86" cy="220" r="14" fill="#A7F3D0" stroke="#0F172A" stroke-width="4"/>
+<circle cx="170" cy="220" r="14" fill="#A7F3D0" stroke="#0F172A" stroke-width="4"/>
+  <circle cx="128" cy="144" r="70" fill="#34D399" stroke="#0F172A" stroke-width="6"/>
+<circle cx="128" cy="166" r="40" fill="#A7F3D0" stroke="#0F172A" stroke-width="4" opacity="0.95"/>
+  <polygon points="128,114 120,98 136,98" fill="#1F2937"/>
+<polygon points="98,122 92,110 108,112" fill="#1F2937"/>
+<polygon points="158,122 148,112 164,110" fill="#1F2937"/>
+  <circle cx="104" cy="140" r="10" fill="#FFFFFF"/>
+<circle cx="152" cy="140" r="10" fill="#FFFFFF"/>
+<circle cx="104" cy="140" r="5" fill="#0F172A"/>
+<circle cx="152" cy="140" r="5" fill="#0F172A"/>
+<circle cx="100" cy="136" r="2" fill="#FFFFFF"/>
+<circle cx="148" cy="136" r="2" fill="#FFFFFF"/>
+<circle cx="128" cy="152" r="6" fill="#0F172A"/>
+<path d="M118 162 Q128 170 138 162" stroke="#0F172A" stroke-width="4" fill="none" stroke-linecap="round"/>
+<circle cx="90" cy="164" r="6" fill="#FBCFE8" opacity="0.6"/>
+<circle cx="166" cy="164" r="6" fill="#FBCFE8" opacity="0.6"/>
+  <rect x="96" y="190" width="64" height="24" rx="12" fill="#10B981" stroke="#0F172A" stroke-width="4"/>
+<circle cx="112" cy="202" r="4" fill="#0F172A"/>
+<circle cx="144" cy="202" r="4" fill="#0F172A"/>
+  <path d="M64 96 Q128 26 192 96" stroke="#10B981" stroke-width="10" fill="none" stroke-linecap="round"/>
+<circle cx="64" cy="130" r="18" fill="#10B981" stroke="#0F172A" stroke-width="5"/>
+<circle cx="192" cy="130" r="18" fill="#10B981" stroke="#0F172A" stroke-width="5"/>
+<path d="M196 136 Q210 142 214 156" stroke="#10B981" stroke-width="5" fill="none" stroke-linecap="round"/>
+<circle cx="216" cy="158" r="4" fill="#10B981"/>
+</svg>
