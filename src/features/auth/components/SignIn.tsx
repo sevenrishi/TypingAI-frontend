@@ -47,6 +47,11 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
     }
   };
 
+  const handleCancel = () => {
+    onClose();
+    navigate('/');
+  };
+
   const googleLogin = useGoogleLogin({
     onSuccess: async tokenResponse => {
       setLoading(true);
@@ -76,13 +81,13 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
         ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'
         : 'bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200'
     }`}>
-      <form onSubmit={handleSubmit} className={`p-8 rounded-lg w-full max-w-[24rem] shadow-2xl border transition-colors duration-300 ${
+      <form onSubmit={handleSubmit} className={`p-6 rounded-lg w-full max-w-[22rem] shadow-2xl border transition-colors duration-300 ${
         theme === 'dark'
           ? 'bg-gradient-to-b from-gray-800 to-gray-900 text-white border-gray-700'
           : 'bg-gradient-to-b from-white to-gray-50 text-gray-900 border-gray-300'
       }`}>
-        <div className="text-center mb-6">
-          <h3 className="text-2xl font-bold">Welcome Back</h3>
+        <div className="text-center mb-4">
+          <h3 className="text-xl font-bold">Welcome Back</h3>
           <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             Sign in to continue typing
           </p>
@@ -108,7 +113,7 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
           </div>
         )}
 
-        <div className="mb-4">
+        <div className="mb-3">
           <label className={`text-xs font-medium ${
             theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
           }`}>
@@ -118,7 +123,7 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
             value={email}
             onChange={e => { setEmail(e.target.value); validateEmail(e.target.value); }}
             type="email"
-            className={`w-full p-3 rounded-lg border mt-1 outline-none transition ${
+            className={`w-full p-2.5 rounded-lg border mt-1 outline-none transition ${
               emailError
                 ? `border-red-500 focus:border-red-400 ${
                     theme === 'dark'
@@ -136,7 +141,7 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
           {emailError && <div className="text-xs text-red-500 mt-1">{emailError}</div>}
         </div>
 
-        <div className="mb-6">
+        <div className="mb-4">
           <div className="flex justify-between items-center">
             <label className={`text-xs font-medium ${
               theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
@@ -161,7 +166,7 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
             value={password}
             onChange={e => setPassword(e.target.value)}
             type="password"
-            className={`w-full p-3 rounded-lg border mt-1 outline-none transition ${
+            className={`w-full p-2.5 rounded-lg border mt-1 outline-none transition ${
               theme === 'dark'
                 ? 'bg-slate-900/50 border-slate-700 focus:border-cyan-400'
                 : 'bg-white border-slate-200 focus:border-sky-500'
@@ -170,18 +175,18 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
           />
         </div>
 
-        <div className="mb-5">
+        <div className="mb-4">
           <div className="flex items-center gap-3">
             <div className={`h-px flex-1 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`} />
             <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>or</span>
             <div className={`h-px flex-1 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`} />
           </div>
-          <div className="mt-3 flex justify-center">
+          <div className="mt-2 flex justify-center">
             {isGoogleConfigured ? (
               <button
                 type="button"
                 onClick={() => googleLogin()}
-                className={`w-full max-w-[320px] px-4 py-2.5 rounded-md border text-sm font-semibold transition flex items-center justify-center gap-3 shadow-sm ${
+                className={`w-full max-w-[320px] px-4 py-2 rounded-md border text-sm font-semibold transition flex items-center justify-center gap-3 shadow-sm ${
                   theme === 'dark'
                     ? 'bg-gray-900 text-gray-100 border-gray-700 hover:bg-gray-800'
                     : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-50'
@@ -201,7 +206,7 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
               <button
                 type="button"
                 disabled
-                className={`w-full max-w-[320px] px-4 py-2.5 rounded-md border text-sm font-medium transition ${
+                className={`w-full max-w-[320px] px-4 py-2 rounded-md border text-sm font-medium transition ${
                   theme === 'dark'
                     ? 'bg-gray-800 text-gray-400 border-gray-700'
                     : 'bg-gray-100 text-gray-500 border-gray-300'
@@ -221,7 +226,7 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
 
         <button
           disabled={loading || !email || !password || !!emailError}
-          className={`w-full px-4 py-2.5 rounded-lg font-semibold transition shadow-lg ${
+          className={`w-full px-4 py-2 rounded-lg font-semibold transition shadow-lg ${
             theme === 'dark'
               ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 hover:from-cyan-300 hover:via-sky-300 hover:to-emerald-300 disabled:from-gray-600 disabled:to-gray-600 text-slate-900'
               : 'bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 hover:from-sky-600 hover:via-cyan-600 hover:to-emerald-600 disabled:from-gray-400 disabled:to-gray-400 text-white'
@@ -237,7 +242,7 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
           )}
         </button>
 
-        <div className={`mt-4 text-center text-sm ${
+        <div className={`mt-3 text-center text-sm ${
           theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
         }`}>
           <span>Don't have an account? </span>
@@ -256,8 +261,8 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
 
         <button
           type="button"
-          onClick={onClose}
-          className={`w-full mt-3 px-4 py-2 text-sm rounded-lg border transition ${
+          onClick={handleCancel}
+          className={`w-full mt-2 px-4 py-2 text-sm rounded-lg border transition ${
             theme === 'dark'
               ? 'text-gray-400 hover:text-gray-300 border-gray-600 hover:border-gray-500'
               : 'text-gray-700 hover:text-gray-900 border-gray-300 hover:border-gray-400'
