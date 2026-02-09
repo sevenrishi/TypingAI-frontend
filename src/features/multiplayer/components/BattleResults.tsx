@@ -9,9 +9,10 @@ interface BattleResultsProps {
   finishedPlayerIds: string[];
   onPlayAgain: () => void;
   onLeave: () => void;
+  textLength: number;
 }
 
-export default function BattleResults({ players, finishedPlayerIds, onPlayAgain, onLeave }: BattleResultsProps) {
+export default function BattleResults({ players, finishedPlayerIds, onPlayAgain, onLeave, textLength }: BattleResultsProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const surface = isDark
@@ -27,6 +28,13 @@ export default function BattleResults({ players, finishedPlayerIds, onPlayAgain,
   const ghostButton = isDark
     ? 'bg-slate-800 hover:bg-slate-700 text-slate-200'
     : 'bg-slate-200 hover:bg-slate-300 text-slate-700';
+  const errorAccent = isDark ? 'text-rose-300' : 'text-rose-600';
+
+  const getErrorCount = (accuracy?: number) => {
+    if (!textLength || accuracy === undefined) return null;
+    const errors = Math.round(textLength * (1 - accuracy));
+    return Math.max(0, errors);
+  };
 
   useEffect(() => {
     void recordStreakActivity();
@@ -105,13 +113,10 @@ export default function BattleResults({ players, finishedPlayerIds, onPlayAgain,
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <div className={`p-2 rounded-xl text-center ${surfaceSoft}`}>
                   <p className={`text-xs ${mutedText}`}>
-                    Speed
+                    CPM
                   </p>
                   <p className={`text-lg font-bold ${isDark ? 'text-cyan-300' : 'text-sky-600'}`}>
-                    {Math.round(player.wpm || 0)}
-                  </p>
-                  <p className={`text-xs ${mutedText}`}>
-                    WPM
+                    {Math.round((player.wpm || 0) * 5)}
                   </p>
                 </div>
 
@@ -126,10 +131,10 @@ export default function BattleResults({ players, finishedPlayerIds, onPlayAgain,
 
                 <div className={`p-2 rounded-xl text-center ${surfaceSoft}`}>
                   <p className={`text-xs ${mutedText}`}>
-                    Progress
+                    Errors
                   </p>
-                  <p className={`text-lg font-bold ${isDark ? 'text-cyan-300' : 'text-sky-600'}`}>
-                    100%
+                  <p className={`text-lg font-bold ${errorAccent}`}>
+                    {getErrorCount(player.accuracy) ?? '—'}
                   </p>
                 </div>
               </div>

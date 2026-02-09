@@ -318,13 +318,13 @@ export default function BattlegroundPage() {
 
   if (room.workflowStage === 'race-active') {
     return (
-      <div className="space-y-6 p-4 container mx-auto">
+      <div className="space-y-6 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {room.raceStart && <BattleCountdown startAt={room.raceStart} />}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <div className="xl:col-span-8 2xl:col-span-9">
             <TypingBattleground />
           </div>
-          <div className="lg:col-span-1">
+          <div className="xl:col-span-4 2xl:col-span-3">
             <BattleProgress
               players={room.players}
               finishedPlayerIds={room.finishedPlayers}
@@ -340,6 +340,7 @@ export default function BattlegroundPage() {
               finishedPlayerIds={room.finishedPlayers}
               onPlayAgain={handlePlayAgain}
               onLeave={handleLeaveRoom}
+              textLength={room.text.length}
             />
           </div>
         )}
