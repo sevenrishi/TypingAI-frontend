@@ -329,7 +329,7 @@ export default function HomePage() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-lg font-semibold">Multiplayer arenas</h3>
-                <p className={`mt-3 ${mutedText}`}>Race live opponents and climb the global ladder.</p>
+                <p className={`mt-3 ${mutedText}`}>Battle live opponents and climb the global ladder.</p>
               </div>
               <span className={accentText}>
                 <Users className="w-6 h-6" strokeWidth={1.6} />

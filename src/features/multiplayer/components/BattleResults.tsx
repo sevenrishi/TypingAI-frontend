@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react';
+import { RotateCcw } from 'lucide-react';
 import { useTheme } from '../../../providers/ThemeProvider';
 import type { PlayerState } from '../roomSlice';
 import { recordStreakActivity } from '../../../utils/streaks';
 
-interface RaceResultsProps {
+interface BattleResultsProps {
   players: PlayerState[];
   finishedPlayerIds: string[];
   onPlayAgain: () => void;
   onLeave: () => void;
 }
 
-export default function RaceResults({ players, finishedPlayerIds, onPlayAgain, onLeave }: RaceResultsProps) {
+export default function BattleResults({ players, finishedPlayerIds, onPlayAgain, onLeave }: BattleResultsProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const surface = isDark
@@ -58,7 +59,7 @@ export default function RaceResults({ players, finishedPlayerIds, onPlayAgain, o
             className={`text-[11px] uppercase tracking-[0.35em] ${mutedText}`}
             style={{ fontFamily: "'JetBrains Mono', monospace" }}
           >
-            Race Complete
+            Battle Complete
           </div>
           <h1 className="text-4xl font-bold" style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}>
             Final standings
@@ -142,7 +143,10 @@ export default function RaceResults({ players, finishedPlayerIds, onPlayAgain, o
             onClick={onPlayAgain}
             className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 text-lg ${primaryButton}`}
           >
-            🔄 Play Again
+            <span className="inline-flex items-center justify-center gap-2">
+              <RotateCcw className="h-5 w-5" aria-hidden="true" />
+              Play Again
+            </span>
           </button>
 
           <button

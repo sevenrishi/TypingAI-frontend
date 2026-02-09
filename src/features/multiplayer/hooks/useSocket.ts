@@ -77,11 +77,11 @@ export function useSocket(
     sharedSocket?.emit('player:ready', { room, ready });
   }, []);
 
-  const startRace = useCallback((room: string) => {
+  const startBattle = useCallback((room: string) => {
     sharedSocket?.emit('race:start', { room });
   }, []);
 
-  const resetRace = useCallback((room: string) => {
+  const resetBattle = useCallback((room: string) => {
     sharedSocket?.emit('race:reset', { room });
   }, []);
 
@@ -89,7 +89,7 @@ export function useSocket(
     sharedSocket?.emit('room:leave', { room });
   }, []);
 
-  return { createRoom, joinRoom, sendProgress, setReady, startRace, resetRace, leaveRoom, setRoomText, socket: sharedSocket };
+  return { createRoom, joinRoom, sendProgress, setReady, startBattle, resetBattle, leaveRoom, setRoomText, socket: sharedSocket };
 }
 
 

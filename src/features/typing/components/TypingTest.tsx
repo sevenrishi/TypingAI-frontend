@@ -211,7 +211,7 @@ export default function TypingTest() {
           <>
             {raceLocked && typeof countdown === 'number' && (
               <div className="text-center text-sm text-amber-400">
-                Race starts in {countdown}s
+                Battle starts in {countdown}s
               </div>
             )}
 
