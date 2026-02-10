@@ -12,13 +12,21 @@ function initSocket() {
     sharedSocket = (window as any).__TYPING_SOCKET as Socket;
     return sharedSocket;
   }
-  const url = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const envUrl = import.meta.env.VITE_API_URL;
+  const isLocalhost = typeof window !== 'undefined'
+    && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  const fallbackUrl = isLocalhost ? 'http://localhost:5000' : window.location.origin;
+  const url = envUrl || fallbackUrl;
   sharedSocket = io(url, { autoConnect: true });
   sharedSocket.on('connect_error', (err: any) => console.warn('socket connect error', err));
   return sharedSocket;
 }
 
-export function useSocket(onRoomState?: (state: any) => void, onRoomError?: (error: string) => void) {
+export function useSocket(
+  onRoomState?: (state: any) => void,
+  onRoomError?: (error: string) => void,
+  onRoomClosed?: (payload: { room: string; reason?: string }) => void
+) {
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
@@ -32,16 +40,22 @@ export function useSocket(onRoomState?: (state: any) => void, onRoomError?: (err
       onRoomError?.(e?.error || 'Room error');
     };
     socket.on('room:error', handleRoomError);
+    if (onRoomClosed) {
+      socket.on('room:closed', onRoomClosed);
+    }
 
     return () => {
       if (onRoomState) {
         socket.off('room:state', onRoomState);
       }
       socket.off('room:error', handleRoomError);
+      if (onRoomClosed) {
+        socket.off('room:closed', onRoomClosed);
+      }
       socketRef.current = null;
       // do not disconnect sharedSocket here to allow reuse across app
     };
-  }, [onRoomState, onRoomError]);
+  }, [onRoomState, onRoomError, onRoomClosed]);
 
   const createRoom = useCallback((room: string, text: string, name?: string) => {
     sharedSocket?.emit('room:create', { room, text, name });

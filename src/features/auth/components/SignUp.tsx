@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux';
 import { register, loadUser, googleAuth } from '../authSlice';
 import { useTheme } from '../../../providers/ThemeProvider';
 import { useGoogleLogin } from '@react-oauth/google';
+import { showToast } from '../../../utils/toast';
+import { Loader2 } from 'lucide-react';
 
 function getPasswordStrength(pwd: string) {
   if (!pwd) return { score: 0, label: '', color: 'bg-gray-400' };
@@ -17,8 +19,8 @@ function getPasswordStrength(pwd: string) {
     : score === 2
     ? { score, label: 'Fair', color: 'bg-yellow-500' }
     : score === 3
-    ? { score, label: 'Good', color: 'bg-blue-500' }
-    : { score, label: 'Strong', color: 'bg-green-500' };
+    ? { score, label: 'Good', color: 'bg-cyan-500' }
+    : { score, label: 'Strong', color: 'bg-emerald-500' };
 }
 
 export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onSwitch?: () => void }) {
@@ -32,7 +34,6 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [emailError, setEmailError] = useState('');
   const [confirmError, setConfirmError] = useState('');
 
@@ -54,14 +55,18 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
     if (!displayName || !validateEmail(email) || !password || confirmPassword !== password) return;
     setLoading(true);
     setError(null);
-    setSuccess(null);
+    let successMessage: string | null = null;
     try {
       const result = await dispatch(register({ email, password, displayName }) as any).unwrap();
-      setSuccess(result.message || 'Registration successful! Please check your email to activate your account.');
+      successMessage = result.message || 'Registration successful! Please check your email to activate your account.';
     } catch (err: any) {
       setError(err?.error || err?.message || 'Registration failed. Email may already exist.');
     } finally {
       setLoading(false);
+    }
+    if (successMessage) {
+      showToast({ message: successMessage, tone: 'success' });
+      onSwitch?.();
     }
   };
 
@@ -92,12 +97,12 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
   const isFormValid = displayName && email && !emailError && password && confirmPassword === password && !confirmError;
 
   return (
-    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-auto transition-colors duration-300 ${
+    <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-auto transition-colors duration-300 max-md:px-4 max-md:py-6 ${
       theme === 'dark'
         ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'
         : 'bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200'
     }`}>
-      <form onSubmit={handleSubmit} className={`p-8 rounded-lg w-96 shadow-2xl border my-4 transition-colors duration-300 ${
+      <form onSubmit={handleSubmit} className={`p-8 rounded-lg w-full max-w-[24rem] shadow-2xl border my-4 transition-colors duration-300 ${
         theme === 'dark'
           ? 'bg-gradient-to-b from-gray-800 to-gray-900 text-white border-gray-700'
           : 'bg-gradient-to-b from-white to-gray-50 text-gray-900 border-gray-300'
@@ -119,16 +124,6 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
           </div>
         )}
 
-        {success && (
-          <div className={`mb-4 p-3 border rounded text-sm ${
-            theme === 'dark'
-              ? 'bg-green-500/20 border-green-500/50 text-green-300'
-              : 'bg-green-100 border-green-300 text-green-700'
-          }`}>
-            {success}
-          </div>
-        )}
-
         <div className="mb-4">
           <label className={`text-xs font-medium ${
             theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
@@ -140,8 +135,8 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
             onChange={e => setDisplayName(e.target.value)}
             className={`w-full p-3 rounded-lg border mt-1 outline-none transition ${
               theme === 'dark'
-                ? 'bg-gray-700/50 border-gray-600 focus:border-green-500'
-                : 'bg-gray-50 border-gray-300 focus:border-green-600'
+                ? 'bg-slate-900/50 border-slate-700 focus:border-emerald-400'
+                : 'bg-white border-slate-200 focus:border-emerald-500'
             }`}
             placeholder="John Doe"
           />
@@ -161,13 +156,13 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
               emailError
                 ? `border-red-500 focus:border-red-400 ${
                     theme === 'dark'
-                      ? 'bg-gray-700/50'
+                      ? 'bg-slate-900/50'
                       : 'bg-red-50'
                   }`
                 : `${
                     theme === 'dark'
-                      ? 'bg-gray-700/50 border-gray-600 focus:border-green-500'
-                      : 'bg-gray-50 border-gray-300 focus:border-green-600'
+                      ? 'bg-slate-900/50 border-slate-700 focus:border-emerald-400'
+                      : 'bg-white border-slate-200 focus:border-emerald-500'
                   }`
             }`}
             placeholder="your@email.com"
@@ -187,8 +182,8 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
             type="password"
             className={`w-full p-3 rounded-lg border mt-1 outline-none transition ${
               theme === 'dark'
-                ? 'bg-gray-700/50 border-gray-600 focus:border-green-500'
-                : 'bg-gray-50 border-gray-300 focus:border-green-600'
+                ? 'bg-slate-900/50 border-slate-700 focus:border-emerald-400'
+                : 'bg-white border-slate-200 focus:border-emerald-500'
             }`}
             placeholder="••••••••"
           />
@@ -203,9 +198,9 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
                     ? 'text-red-500'
                     : strength.color === 'bg-yellow-500'
                     ? 'text-yellow-500'
-                    : strength.color === 'bg-blue-500'
-                    ? 'text-blue-500'
-                    : 'text-green-500'
+                    : strength.color === 'bg-cyan-500'
+                    ? 'text-cyan-500'
+                    : 'text-emerald-500'
                 }`}>
                   {strength.label}
                 </span>
@@ -233,13 +228,13 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
               confirmError
                 ? `border-red-500 focus:border-red-400 ${
                     theme === 'dark'
-                      ? 'bg-gray-700/50'
+                      ? 'bg-slate-900/50'
                       : 'bg-red-50'
                   }`
                 : `${
                     theme === 'dark'
-                      ? 'bg-gray-700/50 border-gray-600 focus:border-green-500'
-                      : 'bg-gray-50 border-gray-300 focus:border-green-600'
+                      ? 'bg-slate-900/50 border-slate-700 focus:border-emerald-400'
+                      : 'bg-white border-slate-200 focus:border-emerald-500'
                   }`
             }`}
             placeholder="••••••••"
@@ -300,11 +295,12 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
           disabled={loading || !isFormValid}
           className={`w-full px-4 py-2.5 rounded-lg font-semibold transition shadow-lg ${
             theme === 'dark'
-              ? 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 disabled:from-gray-600 disabled:to-gray-600 text-white'
-              : 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 disabled:from-gray-400 disabled:to-gray-400 text-white'
+              ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 hover:from-cyan-300 hover:via-sky-300 hover:to-emerald-300 disabled:from-gray-600 disabled:to-gray-600 text-slate-900'
+              : 'bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 hover:from-sky-600 hover:via-cyan-600 hover:to-emerald-600 disabled:from-gray-400 disabled:to-gray-400 text-white'
           }`}
         >
           {loading ? (
+<<<<<<< HEAD
             <span className="flex items-center justify-center gap-1">
               Creating
               <span className="flex items-center gap-[3px] ml-1">
@@ -312,6 +308,11 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
                 <span className="w-[5px] h-[5px] bg-white rounded-full animate-[wave_1.2s_ease-in-out_infinite]" style={{ animationDelay: '0.2s' }} />
                 <span className="w-[5px] h-[5px] bg-white rounded-full animate-[wave_1.2s_ease-in-out_infinite]" style={{ animationDelay: '0.4s' }} />
               </span>
+=======
+            <span className="flex items-center justify-center">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span className="ml-2">Creating...</span>
+>>>>>>> 8cc8d2970d8b0e14f2c65f117f8c9b9a29f0348b
             </span>
           ) : (
             'Create Account'
@@ -325,10 +326,10 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
           <button
             type="button"
             onClick={() => onSwitch && onSwitch()}
-            className={`font-semibold ${
+            className={`no-key font-semibold ${
               theme === 'dark'
-                ? 'text-indigo-400 hover:text-indigo-300'
-                : 'text-indigo-600 hover:text-indigo-700'
+                ? 'text-cyan-300 hover:text-cyan-200'
+                : 'text-sky-600 hover:text-sky-700'
             }`}
           >
             Sign in

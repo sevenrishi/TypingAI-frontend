@@ -4,6 +4,7 @@ import { useTheme } from '../../../providers/ThemeProvider';
 export default function TextDisplay({ text, typed }: { text: string; typed: string }) {
   const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const isDark = theme === 'dark';
 
   useEffect(() => {
     // auto-scroll to current char
@@ -18,30 +19,37 @@ export default function TextDisplay({ text, typed }: { text: string; typed: stri
   return (
     <div 
       ref={containerRef}
-      className={`border rounded p-4 h-40 overflow-auto transition-colors duration-300 ${
-        theme === 'dark'
-          ? 'bg-gray-800'
-          : 'bg-white'
+      className={`border rounded-2xl p-4 h-40 overflow-auto transition-colors duration-300 ${
+        isDark
+          ? 'bg-slate-900/70 border-slate-700/60 text-slate-100'
+          : 'bg-white/80 border-slate-200 text-slate-900'
       }`}
       role="region"
       aria-label="Typing text"
     >
-      <p className="leading-7 text-lg" role="text" aria-live="polite">
+      <p
+        className="leading-7 text-lg"
+        style={{ fontFamily: "'JetBrains Mono', monospace" }}
+        role="text"
+        aria-live="polite"
+      >
         {chars.map((ch, i) => {
           const typedChar = typed[i];
           const isCurrent = i === typed.length;
           const correct = typedChar == null ? null : typedChar === ch;
           const className = correct == null
             ? isCurrent
-              ? theme === 'dark'
-                ? 'underline bg-yellow-900/30'
-                : 'underline bg-yellow-100'
+              ? isDark
+                ? 'underline decoration-cyan-400/70 bg-cyan-500/15'
+                : 'underline decoration-sky-400 bg-sky-100'
               : ''
             : correct
-              ? theme === 'dark'
-                ? 'text-green-500'
-                : 'text-green-600'
-              : 'text-red-500';
+              ? isDark
+                ? 'text-emerald-400'
+                : 'text-emerald-600'
+              : isDark
+              ? 'text-rose-400'
+              : 'text-rose-600';
           const ariaCurrent = isCurrent ? { 'aria-current': 'true' } : {};
           return (
             <span key={i} className={className + (isCurrent ? ' cursor' : '')} {...ariaCurrent}>

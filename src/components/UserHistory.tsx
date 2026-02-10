@@ -72,12 +72,12 @@ export default function UserHistory() {
     switch (type) {
       case 'test':
         return theme === 'dark'
-          ? 'bg-blue-900/40 text-blue-300'
-          : 'bg-blue-100 text-blue-700';
+          ? 'bg-cyan-500/20 text-cyan-200'
+          : 'bg-sky-100 text-sky-700';
       case 'practice':
         return theme === 'dark'
-          ? 'bg-purple-900/40 text-purple-300'
-          : 'bg-purple-100 text-purple-700';
+          ? 'bg-emerald-500/20 text-emerald-200'
+          : 'bg-emerald-100 text-emerald-700';
       case 'battle':
         return theme === 'dark'
           ? 'bg-orange-900/40 text-orange-300'
@@ -113,7 +113,7 @@ export default function UserHistory() {
             <div className={`rounded-lg p-4 ${
               theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
             }`}>
-              <div className="text-3xl font-black mb-2 text-blue-500">{stats.user.bestWPM || 0}</div>
+              <div className="text-3xl font-black mb-2 text-sky-600 dark:text-cyan-300">{stats.user.bestWPM || 0}</div>
               <div className={`text-sm font-semibold ${
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}>Best WPM</div>
@@ -122,7 +122,7 @@ export default function UserHistory() {
             <div className={`rounded-lg p-4 ${
               theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
             }`}>
-              <div className="text-3xl font-black mb-2 text-purple-500">{stats.user.averageAccuracy || 0}%</div>
+              <div className="text-3xl font-black mb-2 text-emerald-500 dark:text-emerald-300">{stats.user.averageAccuracy || 0}%</div>
               <div className={`text-sm font-semibold ${
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}>Avg Accuracy</div>
@@ -141,7 +141,7 @@ export default function UserHistory() {
           {/* Category Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Tests */}
-            <div className={`rounded-lg p-4 border-l-4 border-blue-500 ${
+            <div className={`rounded-lg p-4 border-l-4 border-sky-500 ${
               theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
             }`}>
               <div className="text-sm font-semibold mb-2">Tests</div>
@@ -152,7 +152,7 @@ export default function UserHistory() {
             </div>
 
             {/* Practice */}
-            <div className={`rounded-lg p-4 border-l-4 border-purple-500 ${
+            <div className={`rounded-lg p-4 border-l-4 border-emerald-500 ${
               theme === 'dark' ? 'bg-gray-700/50' : 'bg-gray-50'
             }`}>
               <div className="text-sm font-semibold mb-2">Practice</div>
@@ -185,8 +185,8 @@ export default function UserHistory() {
             className={`px-4 py-2 rounded-lg font-semibold transition-all ${
               selectedType === type
                 ? theme === 'dark'
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-indigo-600 text-white'
+                  ? 'bg-cyan-400 text-slate-900'
+                  : 'bg-sky-600 text-white'
                 : theme === 'dark'
                   ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -215,7 +215,7 @@ export default function UserHistory() {
           {sessions.map((session) => (
             <div
               key={session._id}
-              className={`rounded-lg p-4 flex items-center justify-between transition-all hover:shadow-md ${
+              className={`rounded-lg p-4 flex items-center justify-between transition-all hover:shadow-md max-sm:flex-col max-sm:items-start max-sm:gap-3 ${
                 theme === 'dark'
                   ? 'bg-gray-800/50 border border-gray-700 hover:border-gray-600'
                   : 'bg-white border border-gray-200 hover:border-gray-300'
