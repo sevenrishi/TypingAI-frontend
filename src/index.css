@@ -53,6 +53,11 @@ body {
   to { transform: rotate(360deg); }
 }
 
+@keyframes wave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
 /* Utility classes */
 .animate-shimmer { animation: shimmer 2s infinite; }
 .animate-glow { animation: glow 3s ease-in-out infinite; }

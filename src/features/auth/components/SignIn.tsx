@@ -228,8 +228,13 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
           }`}
         >
           {loading ? (
-            <span className="flex items-center justify-center">
-              <span className="inline-block animate-spin">⟳</span> Signing in...
+            <span className="flex items-center justify-center gap-1">
+              Signing in
+              <span className="flex items-center gap-[3px] ml-1">
+                <span className="w-[5px] h-[5px] bg-white rounded-full animate-[wave_1.2s_ease-in-out_infinite]" style={{ animationDelay: '0s' }} />
+                <span className="w-[5px] h-[5px] bg-white rounded-full animate-[wave_1.2s_ease-in-out_infinite]" style={{ animationDelay: '0.2s' }} />
+                <span className="w-[5px] h-[5px] bg-white rounded-full animate-[wave_1.2s_ease-in-out_infinite]" style={{ animationDelay: '0.4s' }} />
+              </span>
             </span>
           ) : (
             'Sign In'
