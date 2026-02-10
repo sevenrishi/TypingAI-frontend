@@ -34,7 +34,24 @@ export default function RoomWaiting({
   onLeave,
 }: RoomWaitingProps) {
   const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [copied, setCopied] = useState(false);
+  const surface = isDark
+    ? 'bg-slate-900/70 border-slate-700/60 text-slate-100 backdrop-blur-xl'
+    : 'bg-white/80 border-slate-200 text-slate-900 backdrop-blur-xl';
+  const surfaceSoft = isDark
+    ? 'bg-slate-900/45 border-slate-700/50 text-slate-100'
+    : 'bg-white/60 border-slate-200/80 text-slate-900';
+  const mutedText = isDark ? 'text-slate-300' : 'text-slate-600';
+  const primaryButton = isDark
+    ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 text-slate-900'
+    : 'bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 text-white';
+  const ghostButton = isDark
+    ? 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+    : 'bg-slate-200 hover:bg-slate-300 text-slate-700';
+  const disabledButton = isDark
+    ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+    : 'bg-slate-200 text-slate-500 cursor-not-allowed';
 
   // derive current player's ready flag from players prop (keep single source of truth)
   const currentPlayer = players.find(p => p.id === currentPlayerId);
@@ -81,20 +98,20 @@ export default function RoomWaiting({
   }, [raceStart]);
 
   return (
-    <div className={`min-h-screen p-4 ${
-      theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'
-    }`}>
+    <div className="min-h-[75vh] p-4">
       <div className="container mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className={`text-3xl font-bold mb-2 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
-            {isHost ? 'Room Created' : 'Joined Room'}
+        <div className="mb-6 space-y-2">
+          <div
+            className={`text-[11px] uppercase tracking-[0.35em] ${mutedText}`}
+            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+          >
+            Battleground Lobby
+          </div>
+          <h1 className="text-3xl font-bold" style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}>
+            {isHost ? 'Room created' : 'Joined room'}
           </h1>
-          <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Waiting for players...
-          </p>
+          <p className={mutedText}>Waiting for players to lock in.</p>
         </div>
 
         {/* Two Column Layout */}
@@ -104,131 +121,111 @@ export default function RoomWaiting({
           <div className="lg:col-span-1 space-y-4">
             
             {/* Room Code Section - Always visible */}
-            <div className={`p-4 rounded-lg ${
-              theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'
-            }`}>
-              <p className={`text-sm font-semibold mb-3 ${
-                theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-              }`}>
+            <div className={`p-4 rounded-2xl border ${surfaceSoft}`}>
+              <p
+                className={`text-[11px] uppercase tracking-[0.28em] ${mutedText}`}
+                style={{ fontFamily: "'JetBrains Mono', monospace" }}
+              >
                 Room Code
               </p>
-              <div className="flex flex-col gap-2">
-                <div className={`p-3 rounded-md text-center text-2xl font-bold tracking-widest ${
-                  theme === 'dark'
-                    ? 'bg-gray-800 text-blue-400'
-                    : 'bg-gray-50 text-blue-600 border border-gray-300'
-                }`}>
+              <div className="flex flex-col gap-2 mt-3">
+                <div
+                  className={`p-3 rounded-xl text-center text-2xl font-bold tracking-widest border ${
+                    isDark
+                      ? 'bg-slate-950/70 text-cyan-200 border-slate-800'
+                      : 'bg-white text-sky-600 border-slate-200'
+                  }`}
+                  style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                >
                   {roomCode}
                 </div>
                 <button
                   onClick={handleCopyCode}
-                  className={`px-4 py-2 rounded-md font-semibold transition-all duration-200 text-sm ${
-                    copied
-                      ? 'bg-green-600 text-white'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  className={`px-4 py-2 rounded-xl font-semibold transition-all duration-200 text-sm ${
+                    copied ? 'bg-emerald-400 text-slate-900' : primaryButton
                   }`}
                 >
-                  {copied ? '✓ Copied' : '📋 Copy'}
+                  {copied ? '✓ Copied' : 'Copy Code'}
                 </button>
               </div>
             </div>
 
             {/* Script Generation Section */}
             {isHost ? (
-              <div className={`p-4 rounded-lg border-2 ${
-                theme === 'dark'
-                  ? 'bg-gray-800 border-indigo-600'
-                  : 'bg-indigo-50 border-indigo-200'
-              }`}>
+              <div className={`p-4 rounded-2xl border ${surfaceSoft}`}>
                 <div className="flex items-center justify-between mb-3">
-                  <p className={`text-sm font-semibold ${
-                    theme === 'dark' ? 'text-indigo-300' : 'text-indigo-700'
-                  }`}>
+                  <p
+                    className={`text-[11px] uppercase tracking-[0.28em] ${mutedText}`}
+                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                  >
                     Typing Script
                   </p>
                   <span className={`text-xs px-2 py-1 rounded-full ${
                     textGenerated
-                      ? theme === 'dark'
-                        ? 'bg-green-600/30 text-green-300'
-                        : 'bg-green-200 text-green-800'
-                      : theme === 'dark'
-                      ? 'bg-yellow-600/30 text-yellow-300'
-                      : 'bg-yellow-200 text-yellow-800'
+                      ? isDark
+                        ? 'bg-emerald-500/30 text-emerald-200'
+                        : 'bg-emerald-100 text-emerald-700'
+                      : isDark
+                      ? 'bg-amber-500/30 text-amber-200'
+                      : 'bg-amber-100 text-amber-700'
                   }`}>
                     {textGenerated ? 'Ready' : 'Not Ready'}
                   </span>
                 </div>
-                <p className={`text-xs mb-4 ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Generated the script for this room. All players will receive the same text.
+                <p className={`text-xs mb-4 ${mutedText}`}>
+                  Generate the script for this room. Everyone will race on the same text.
                 </p>
                 <button
                   onClick={onGenerateScript}
                   disabled={isGenerating || textGenerated}
-                  className={`w-full py-2.5 rounded-md font-semibold text-sm transition-all duration-200 ${
-                    isGenerating || textGenerated
-                      ? theme === 'dark'
-                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                        : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                      : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                  className={`w-full py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 ${
+                    isGenerating || textGenerated ? disabledButton : primaryButton
                   }`}
                 >
-                  {isGenerating ? '⏳ Generating...' : textGenerated ? '✓ Script Ready' : 'Generate Script'}
+                  {isGenerating ? 'Generating...' : textGenerated ? 'Script Ready' : 'Generate Script'}
                 </button>
               </div>
             ) : (
-              <div className={`p-4 rounded-lg border-2 ${
-                theme === 'dark'
-                  ? 'bg-gray-800 border-gray-600'
-                  : 'bg-white border border-gray-200'
-              }`}>
+              <div className={`p-4 rounded-2xl border ${surfaceSoft}`}>
                 <div className="flex items-center justify-between mb-3">
-                  <p className={`text-sm font-semibold ${
-                    theme === 'dark' ? 'text-indigo-300' : 'text-indigo-700'
-                  }`}>
+                  <p
+                    className={`text-[11px] uppercase tracking-[0.28em] ${mutedText}`}
+                    style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                  >
                     Typing Script
                   </p>
                   <span className={`text-xs px-2 py-1 rounded-full ${
                     textGenerated
-                      ? theme === 'dark'
-                        ? 'bg-green-600/30 text-green-300'
-                        : 'bg-green-200 text-green-800'
-                      : theme === 'dark'
-                      ? 'bg-gray-700 text-gray-300'
-                      : 'bg-gray-200 text-gray-700'
+                      ? isDark
+                        ? 'bg-emerald-500/30 text-emerald-200'
+                        : 'bg-emerald-100 text-emerald-700'
+                      : isDark
+                      ? 'bg-slate-800 text-slate-300'
+                      : 'bg-slate-200 text-slate-600'
                   }`}>
                     {textGenerated ? 'Ready' : 'Pending'}
                   </span>
                 </div>
-                <div className={`w-full py-2.5 rounded-md font-semibold text-sm text-center ${
-                  theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-50 text-gray-600'
-                }`}>
-                  {isGenerating ? 'Host is generating the script...' : textGenerated ? '✓ Script Ready' : 'Waiting for host to generate script'}
+                <div className={`w-full py-2.5 rounded-xl font-semibold text-sm text-center ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-600'}`}>
+                  {isGenerating ? 'Host is generating the script...' : textGenerated ? 'Script Ready' : 'Waiting for host to generate script'}
                 </div>
-                <p className={`text-xs mt-3 ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
+                <p className={`text-xs mt-3 ${mutedText}`}>
                   You’ll start typing as soon as the host starts the race.
                 </p>
               </div>
             )}
 
             {/* Ready Button - All Players */}
-            <div className={`p-4 rounded-lg ${
-              theme === 'dark' ? 'bg-gray-800' : 'bg-blue-50 border border-blue-200'
-            }`}>
+            <div className={`p-4 rounded-2xl border ${surfaceSoft}`}>
               <button
                 onClick={handleToggleReady}
-                className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 ${
+                className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 ${
                   currentPlayerReady
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : theme === 'dark'
-                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                    : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
+                    ? 'bg-emerald-400 text-slate-900 hover:bg-emerald-300'
+                    : ghostButton
                 }`}
               >
-                {currentPlayerReady ? '✓ Ready to Race' : '❓ Ready?'}
+                {currentPlayerReady ? 'Ready to Race' : 'Mark Ready'}
               </button>
             </div>
           </div>
@@ -237,34 +234,24 @@ export default function RoomWaiting({
           <div className="lg:col-span-2 space-y-4">
             
             {/* Players Section */}
-            <div className={`p-4 rounded-lg ${
-              theme === 'dark'
-                ? 'bg-gradient-to-b from-gray-800 to-gray-700'
-                : 'bg-gradient-to-b from-white to-gray-50 border border-gray-300'
-            }`}>
-              <h3 className={`text-lg font-semibold mb-4 ${
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
-              }`}>
+            <div className={`p-4 rounded-2xl border ${surface}`}>
+              <h3 className="text-lg font-semibold mb-4">
                 Players ({players.length})
               </h3>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {players.map((player) => (
                   <div
                     key={player.id}
-                    className={`p-3 rounded-lg flex items-center justify-between ${
-                      theme === 'dark'
-                        ? 'bg-gray-700 border border-gray-600'
-                        : 'bg-gray-100 border border-gray-300'
-                    }`}
+                    className={`p-3 rounded-xl flex items-center justify-between border ${surfaceSoft}`}
                   >
                     <div className="flex items-center gap-3 flex-1">
-                      <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-bold text-white">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${
+                        isDark ? 'bg-cyan-500 text-slate-900' : 'bg-sky-500 text-white'
+                      }`}>
                         {(player.name || 'P')[0].toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`font-medium truncate ${
-                          theme === 'dark' ? 'text-white' : 'text-gray-900'
-                        }`}>
+                        <p className="font-medium truncate">
                           {player.name}
                         </p>
                       </div>
@@ -273,26 +260,26 @@ export default function RoomWaiting({
                       {/* Show Host badge only for the actual host player */}
                       {player.id === hostId && (
                         <span className={`text-xs px-2 py-1 rounded whitespace-nowrap ${
-                          theme === 'dark'
-                            ? 'bg-yellow-600/50 text-yellow-300'
-                            : 'bg-yellow-200 text-yellow-900'
+                          isDark
+                            ? 'bg-amber-500/30 text-amber-200'
+                            : 'bg-amber-100 text-amber-700'
                         }`}>
                           Host
                         </span>
                       )}
                       {player.ready ? (
                         <span className={`text-xs px-2 py-1 rounded whitespace-nowrap ${
-                          theme === 'dark'
-                            ? 'bg-green-600/50 text-green-300'
-                            : 'bg-green-200 text-green-900'
+                          isDark
+                            ? 'bg-emerald-500/30 text-emerald-200'
+                            : 'bg-emerald-100 text-emerald-700'
                         }`}>
                           ✓ Ready
                         </span>
                       ) : (
                         <span className={`text-xs px-2 py-1 rounded whitespace-nowrap ${
-                          theme === 'dark'
-                            ? 'bg-gray-600 text-gray-300'
-                            : 'bg-gray-300 text-gray-700'
+                          isDark
+                            ? 'bg-slate-800 text-slate-300'
+                            : 'bg-slate-200 text-slate-600'
                         }`}>
                           Waiting
                         </span>
@@ -309,12 +296,8 @@ export default function RoomWaiting({
               <button
                 onClick={isHost ? onStartRace : undefined}
                 disabled={!isHost || !canStartRace}
-                className={`w-full py-3 rounded-lg font-semibold transition-all duration-200 text-lg ${
-                  (!isHost || !canStartRace)
-                    ? theme === 'dark'
-                      ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                      : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                    : 'bg-red-600 hover:bg-red-700 text-white'
+                className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 text-lg ${
+                  (!isHost || !canStartRace) ? disabledButton : primaryButton
                 }`}
               >
                 {isHost ? '🚀 Start Race' : '🚀 Start Race'}
@@ -322,17 +305,17 @@ export default function RoomWaiting({
 
               {/* Status Messages */}
               {!isHost && (
-                <p className={`text-sm text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                <p className={`text-sm text-center ${mutedText}`}>
                   Waiting for the host to start the race
                 </p>
               )}
               {isHost && !textGenerated && (
-                <p className={`text-sm text-center ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-700'}`}>
+                <p className={`text-sm text-center ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
                   Generate script first
                 </p>
               )}
               {isHost && textGenerated && !allPlayersReady && (
-                <p className={`text-sm text-center ${theme === 'dark' ? 'text-blue-400' : 'text-blue-700'}`}>
+                <p className={`text-sm text-center ${isDark ? 'text-cyan-300' : 'text-sky-600'}`}>
                   Waiting for all players to be ready
                 </p>
               )}
@@ -340,11 +323,7 @@ export default function RoomWaiting({
               {/* Leave Button */}
               <button
                 onClick={onLeave}
-                className={`w-full py-2 rounded-lg font-medium transition-colors duration-200 ${
-                  theme === 'dark'
-                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
-                    : 'bg-gray-300 hover:bg-gray-400 text-gray-700'
-                }`}
+                className={`w-full py-2 rounded-xl font-medium transition-colors duration-200 ${ghostButton}`}
               >
                 Leave Room
               </button>
@@ -356,10 +335,10 @@ export default function RoomWaiting({
       {/* Countdown overlay for race start (visible to all when raceStart is set) */}
       {countdown !== null && (
         <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-          <div className="bg-black/60 w-full h-full absolute" />
+          <div className="bg-slate-950/70 w-full h-full absolute" />
           <div className="relative text-center pointer-events-auto">
-            <div className="mx-auto p-8 rounded-lg bg-white/90 dark:bg-gray-900/90">
-              <p className="text-6xl font-extrabold text-gray-900 dark:text-white">
+            <div className="mx-auto p-8 rounded-3xl border bg-slate-950/80 border-slate-800">
+              <p className="text-6xl font-extrabold text-cyan-300">
                 {countdown > 0 ? countdown : 'Go!'}
               </p>
             </div>

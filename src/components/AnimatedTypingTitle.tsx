@@ -37,11 +37,11 @@ export default function AnimatedTypingTitle() {
   return (
     <div className="relative inline-block">
       <h2 className={`text-6xl font-black tracking-wider ${
-        theme === 'dark' ? 'text-cyan-300' : 'text-indigo-600'
+        theme === 'dark' ? 'text-cyan-300' : 'text-sky-600'
       }`}>
         {displayText}
         <span className={`animate-pulse ml-1 ${
-          theme === 'dark' ? 'text-cyan-400' : 'text-indigo-500'
+          theme === 'dark' ? 'text-cyan-400' : 'text-sky-500'
         }`}>
           |
         </span>
@@ -50,8 +50,8 @@ export default function AnimatedTypingTitle() {
       {/* Glow effect */}
       <div className={`absolute inset-0 blur-lg opacity-50 -z-10 ${
         theme === 'dark' 
-          ? 'bg-gradient-to-r from-cyan-500/20 to-cyan-400/20' 
-          : 'bg-gradient-to-r from-indigo-500/30 to-indigo-400/30'
+          ? 'bg-gradient-to-r from-cyan-500/20 to-emerald-400/20' 
+          : 'bg-gradient-to-r from-sky-400/30 to-emerald-300/30'
       }`}></div>
     </div>
   );
