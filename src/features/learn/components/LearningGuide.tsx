@@ -45,10 +45,10 @@ export default function LearningGuide() {
   const [expandedLesson, setExpandedLesson] = React.useState<number | null>(null);
 
   return (
-    <div className={`rounded-lg shadow-lg p-6 transition-colors duration-300 ${
+    <div className={`rounded-2xl shadow-lg p-6 transition-colors duration-300 ${
       theme === 'dark'
-        ? 'bg-gray-800/40 backdrop-blur-md'
-        : 'bg-white border border-gray-300'
+        ? 'bg-slate-900/70 border border-slate-700/60 backdrop-blur-xl'
+        : 'bg-white/80 border border-slate-200'
     }`}>
       <h3 className="text-2xl font-bold mb-6">Learning Lessons</h3>
       <div className="space-y-3">
@@ -58,11 +58,11 @@ export default function LearningGuide() {
             className={`rounded-lg p-4 cursor-pointer transition-colors duration-200 ${
               theme === 'dark'
                 ? expandedLesson === lesson.id
-                  ? 'bg-indigo-600/20 border border-indigo-500/30'
-                  : 'bg-gray-700/50 hover:bg-gray-700/70'
+                  ? 'bg-cyan-500/15 border border-cyan-400/40'
+                  : 'bg-slate-900/50 hover:bg-slate-900/70 border border-slate-700/60'
                 : expandedLesson === lesson.id
-                ? 'bg-indigo-50 border border-indigo-300'
-                : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                ? 'bg-sky-50 border border-sky-200'
+                : 'bg-white hover:bg-slate-50 border border-slate-200'
             }`}
             onClick={() => setExpandedLesson(expandedLesson === lesson.id ? null : lesson.id)}
           >
@@ -72,7 +72,7 @@ export default function LearningGuide() {
                 <div>
                   <h4 className="font-bold text-lg">{lesson.title}</h4>
                   {expandedLesson === lesson.id && (
-                    <p className={`mt-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <p className={`mt-2 ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
                       {lesson.description}
                     </p>
                   )}
@@ -80,8 +80,8 @@ export default function LearningGuide() {
               </div>
               <span className={`text-sm px-2 py-1 rounded ${
                 theme === 'dark'
-                  ? 'bg-gray-600 text-gray-200'
-                  : 'bg-gray-200 text-gray-700'
+                  ? 'bg-slate-800 text-slate-200'
+                  : 'bg-slate-200 text-slate-700'
               }`}>
                 {lesson.duration}
               </span>

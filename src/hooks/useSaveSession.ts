@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
+import api from '../api/axios';
 
 export type SessionType = 'practice' | 'test' | 'battle';
 
@@ -30,11 +30,7 @@ export function useSaveSession() {
       }
 
       try {
-        const response = await axios.post('/api/sessions/create', sessionData, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        });
+        const response = await api.post('/sessions/create', sessionData);
         return response.data;
       } catch (error) {
         console.error('Failed to save session:', error);
