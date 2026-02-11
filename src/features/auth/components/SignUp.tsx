@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { register, loadUser, googleAuth } from '../authSlice';
+import { fetchProfile } from '../../user/profileSlice';
 import { useTheme } from '../../../providers/ThemeProvider';
 import { useGoogleLogin } from '@react-oauth/google';
 import { showToast } from '../../../utils/toast';
@@ -25,6 +27,7 @@ function getPasswordStrength(pwd: string) {
 
 export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onSwitch?: () => void }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { theme } = useTheme();
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
   const isGoogleConfigured = Boolean(googleClientId);
@@ -74,13 +77,13 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
     onSuccess: async tokenResponse => {
       setLoading(true);
       setError(null);
-      setSuccess(null);
       try {
         const result = await dispatch(googleAuth({ accessToken: tokenResponse.access_token }) as any).unwrap();
         if (result?.token) {
           localStorage.setItem('token', result.token);
         }
         await dispatch(loadUser() as any);
+        dispatch(fetchProfile() as any);
         onClose();
       } catch (err: any) {
         setError(err?.error || err?.message || 'Google sign-in failed');
@@ -96,19 +99,24 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
 
   const isFormValid = displayName && email && !emailError && password && confirmPassword === password && !confirmError;
 
+  const handleCancel = () => {
+    onClose();
+    navigate('/');
+  };
+
   return (
     <div className={`fixed inset-0 flex items-center justify-center z-50 overflow-auto transition-colors duration-300 max-md:px-4 max-md:py-6 ${
       theme === 'dark'
         ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'
         : 'bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200'
     }`}>
-      <form onSubmit={handleSubmit} className={`p-8 rounded-lg w-full max-w-[24rem] shadow-2xl border my-4 transition-colors duration-300 ${
+      <form onSubmit={handleSubmit} className={`p-6 rounded-lg w-full max-w-[22rem] shadow-2xl border my-3 transition-colors duration-300 ${
         theme === 'dark'
           ? 'bg-gradient-to-b from-gray-800 to-gray-900 text-white border-gray-700'
           : 'bg-gradient-to-b from-white to-gray-50 text-gray-900 border-gray-300'
       }`}>
-        <div className="text-center mb-6">
-          <h3 className="text-2xl font-bold">Create Account</h3>
+        <div className="text-center mb-4">
+          <h3 className="text-xl font-bold">Create Account</h3>
           <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             Join the typing revolution
           </p>
@@ -124,7 +132,7 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
           </div>
         )}
 
-        <div className="mb-4">
+        <div className="mb-3">
           <label className={`text-xs font-medium ${
             theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
           }`}>
@@ -133,7 +141,7 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
           <input
             value={displayName}
             onChange={e => setDisplayName(e.target.value)}
-            className={`w-full p-3 rounded-lg border mt-1 outline-none transition ${
+            className={`w-full p-2.5 rounded-lg border mt-1 outline-none transition ${
               theme === 'dark'
                 ? 'bg-slate-900/50 border-slate-700 focus:border-emerald-400'
                 : 'bg-white border-slate-200 focus:border-emerald-500'
@@ -142,7 +150,7 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
           />
         </div>
 
-        <div className="mb-4">
+        <div className="mb-3">
           <label className={`text-xs font-medium ${
             theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
           }`}>
@@ -152,7 +160,7 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
             value={email}
             onChange={e => { setEmail(e.target.value); validateEmail(e.target.value); }}
             type="email"
-            className={`w-full p-3 rounded-lg border mt-1 outline-none transition ${
+            className={`w-full p-2.5 rounded-lg border mt-1 outline-none transition ${
               emailError
                 ? `border-red-500 focus:border-red-400 ${
                     theme === 'dark'
@@ -170,7 +178,7 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
           {emailError && <div className="text-xs text-red-500 mt-1">{emailError}</div>}
         </div>
 
-        <div className="mb-4">
+        <div className="mb-3">
           <label className={`text-xs font-medium ${
             theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
           }`}>
@@ -180,7 +188,7 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
             value={password}
             onChange={e => setPassword(e.target.value)}
             type="password"
-            className={`w-full p-3 rounded-lg border mt-1 outline-none transition ${
+            className={`w-full p-2.5 rounded-lg border mt-1 outline-none transition ${
               theme === 'dark'
                 ? 'bg-slate-900/50 border-slate-700 focus:border-emerald-400'
                 : 'bg-white border-slate-200 focus:border-emerald-500'
@@ -205,7 +213,7 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
                   {strength.label}
                 </span>
               </div>
-              <div className={`h-1.5 rounded-full overflow-hidden ${
+              <div className={`h-1 rounded-full overflow-hidden ${
                 theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'
               }`}>
                 <div className={`h-full ${strength.color} transition`} style={{ width: `${(strength.score / 5) * 100}%` }} />
@@ -214,7 +222,7 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
           )}
         </div>
 
-        <div className="mb-6">
+        <div className="mb-4">
           <label className={`text-xs font-medium ${
             theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
           }`}>
@@ -224,7 +232,7 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
             value={confirmPassword}
             onChange={e => handleConfirmChange(e.target.value)}
             type="password"
-            className={`w-full p-3 rounded-lg border mt-1 outline-none transition ${
+            className={`w-full p-2.5 rounded-lg border mt-1 outline-none transition ${
               confirmError
                 ? `border-red-500 focus:border-red-400 ${
                     theme === 'dark'
@@ -242,18 +250,18 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
           {confirmError && <div className="text-xs text-red-500 mt-1">{confirmError}</div>}
         </div>
 
-        <div className="mb-5">
+        <div className="mb-4">
           <div className="flex items-center gap-3">
             <div className={`h-px flex-1 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`} />
             <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>or</span>
             <div className={`h-px flex-1 ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`} />
           </div>
-          <div className="mt-3 flex justify-center">
+          <div className="mt-2 flex justify-center">
             {isGoogleConfigured ? (
               <button
                 type="button"
                 onClick={() => googleLogin()}
-                className={`w-full max-w-[320px] px-4 py-2.5 rounded-md border text-sm font-semibold transition flex items-center justify-center gap-3 shadow-sm ${
+                className={`w-full max-w-[320px] px-4 py-2 rounded-md border text-sm font-semibold transition flex items-center justify-center gap-3 shadow-sm ${
                   theme === 'dark'
                     ? 'bg-gray-900 text-gray-100 border-gray-700 hover:bg-gray-800'
                     : 'bg-white text-gray-800 border-gray-300 hover:bg-gray-50'
@@ -273,7 +281,7 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
               <button
                 type="button"
                 disabled
-                className={`w-full max-w-[320px] px-4 py-2.5 rounded-md border text-sm font-medium transition ${
+                className={`w-full max-w-[320px] px-4 py-2 rounded-md border text-sm font-medium transition ${
                   theme === 'dark'
                     ? 'bg-gray-800 text-gray-400 border-gray-700'
                     : 'bg-gray-100 text-gray-500 border-gray-300'
@@ -293,33 +301,23 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
 
         <button
           disabled={loading || !isFormValid}
-          className={`w-full px-4 py-2.5 rounded-lg font-semibold transition shadow-lg ${
+          className={`w-full px-4 py-2 rounded-lg font-semibold transition shadow-lg ${
             theme === 'dark'
               ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 hover:from-cyan-300 hover:via-sky-300 hover:to-emerald-300 disabled:from-gray-600 disabled:to-gray-600 text-slate-900'
               : 'bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 hover:from-sky-600 hover:via-cyan-600 hover:to-emerald-600 disabled:from-gray-400 disabled:to-gray-400 text-white'
           }`}
         >
           {loading ? (
-<<<<<<< HEAD
-            <span className="flex items-center justify-center gap-1">
-              Creating
-              <span className="flex items-center gap-[3px] ml-1">
-                <span className="w-[5px] h-[5px] bg-white rounded-full animate-[wave_1.2s_ease-in-out_infinite]" style={{ animationDelay: '0s' }} />
-                <span className="w-[5px] h-[5px] bg-white rounded-full animate-[wave_1.2s_ease-in-out_infinite]" style={{ animationDelay: '0.2s' }} />
-                <span className="w-[5px] h-[5px] bg-white rounded-full animate-[wave_1.2s_ease-in-out_infinite]" style={{ animationDelay: '0.4s' }} />
-              </span>
-=======
             <span className="flex items-center justify-center">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span className="ml-2">Creating...</span>
->>>>>>> 8cc8d2970d8b0e14f2c65f117f8c9b9a29f0348b
             </span>
           ) : (
             'Create Account'
           )}
         </button>
 
-        <div className={`mt-4 text-center text-sm ${
+        <div className={`mt-3 text-center text-sm ${
           theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
         }`}>
           <span>Already have an account? </span>
@@ -338,8 +336,8 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
 
         <button
           type="button"
-          onClick={onClose}
-          className={`w-full mt-3 px-4 py-2 text-sm rounded-lg border transition ${
+          onClick={handleCancel}
+          className={`w-full mt-2 px-4 py-2 text-sm rounded-lg border transition ${
             theme === 'dark'
               ? 'text-gray-400 hover:text-gray-300 border-gray-600 hover:border-gray-500'
               : 'text-gray-700 hover:text-gray-900 border-gray-300 hover:border-gray-400'

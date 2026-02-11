@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTheme } from '../../../providers/ThemeProvider';
 import { recordStreakActivity } from '../../../utils/streaks';
 import {
@@ -83,6 +83,53 @@ export default function ResultsPage({
     wpm: '#22d3ee',
     cpm: '#38bdf8',
   };
+  const tooltipTextColor = isDark ? '#ffffff' : '#0f172a';
+
+  const buildAccuracyTrend = (typedText: string, targetText: string) => {
+    const len = Math.min(typedText.length, targetText.length);
+    if (len === 0) {
+      return [{ name: '0%', value: 100 }];
+    }
+    const cumulative: { index: number; accuracy: number }[] = [];
+    let correct = 0;
+    for (let i = 0; i < len; i += 1) {
+      if (typedText[i] === targetText[i]) {
+        correct += 1;
+      }
+      const accuracyValue = Math.round((correct / (i + 1)) * 100);
+      cumulative.push({ index: i + 1, accuracy: accuracyValue });
+    }
+    const maxPoints = 24;
+    if (cumulative.length <= maxPoints) {
+      return cumulative.map((point) => ({
+        name: `${Math.round((point.index / len) * 100)}%`,
+        value: point.accuracy,
+      }));
+    }
+    const bucketSize = Math.ceil(cumulative.length / maxPoints);
+    const buckets: { name: string; value: number }[] = [];
+    for (let i = 0; i < cumulative.length; i += bucketSize) {
+      const slice = cumulative.slice(i, i + bucketSize);
+      const last = slice[slice.length - 1];
+      buckets.push({
+        name: `${Math.round((last.index / len) * 100)}%`,
+        value: last.accuracy,
+      });
+    }
+    return buckets;
+  };
+
+  const renderSpeedTooltip = ({ active, payload }: any) => {
+    if (!active || !payload?.length) return null;
+    const entry = payload[0];
+    const name = entry?.payload?.name ?? entry?.name ?? '';
+    const value = entry?.value ?? '';
+    return (
+      <div className={`text-xs font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
+        {`${name}:${value}`}
+      </div>
+    );
+  };
 
   const MetricCard = ({ label, value, helper }: { label: string; value: string; helper: string }) => (
     <div className={`rounded-2xl border p-5 ${surfaceSoft}`}>
@@ -96,6 +143,8 @@ export default function ResultsPage({
       <div className={`mt-2 text-xs ${mutedText}`}>{helper}</div>
     </div>
   );
+
+  const accuracyTrend = useMemo(() => buildAccuracyTrend(typed, text), [typed, text]);
 
   return (
     <div className="space-y-10">
@@ -137,12 +186,8 @@ export default function ResultsPage({
               <XAxis dataKey="name" stroke={isDark ? '#94a3b8' : '#64748b'} />
               <YAxis stroke={isDark ? '#94a3b8' : '#64748b'} />
               <Tooltip
-                contentStyle={{
-                  backgroundColor: isDark ? '#0f172a' : '#ffffff',
-                  border: `1px solid ${isDark ? '#1e293b' : '#e2e8f0'}`,
-                  borderRadius: '10px',
-                  color: isDark ? '#f8fafc' : '#0f172a',
-                }}
+                cursor={false}
+                content={renderSpeedTooltip}
               />
               <Bar dataKey="value" radius={[10, 10, 0, 0]}>
                 <Cell fill={chartColors.wpm} />
@@ -179,9 +224,12 @@ export default function ResultsPage({
                 contentStyle={{
                   backgroundColor: isDark ? '#0f172a' : '#ffffff',
                   border: `1px solid ${isDark ? '#1e293b' : '#e2e8f0'}`,
-                  color: isDark ? '#f8fafc' : '#0f172a',
+                  color: tooltipTextColor,
                   borderRadius: '10px',
                 }}
+                itemStyle={{ color: tooltipTextColor }}
+                labelStyle={{ color: tooltipTextColor }}
+                separator=": "
               />
             </PieChart>
           </ResponsiveContainer>
@@ -190,13 +238,7 @@ export default function ResultsPage({
         <div className={`rounded-3xl border p-6 ${surface}`}>
           <h2 className="text-lg font-semibold mb-4">Accuracy trend</h2>
           <ResponsiveContainer width="100%" height={280}>
-            <LineChart
-              data={[
-                { name: 'Start', value: Math.max(70, accuracyPercent - 8) },
-                { name: 'Mid', value: Math.max(75, accuracyPercent - 4) },
-                { name: 'End', value: accuracyPercent },
-              ]}
-            >
+            <LineChart data={accuracyTrend}>
               <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#334155' : '#e2e8f0'} />
               <XAxis dataKey="name" stroke={isDark ? '#94a3b8' : '#64748b'} />
               <YAxis stroke={isDark ? '#94a3b8' : '#64748b'} />

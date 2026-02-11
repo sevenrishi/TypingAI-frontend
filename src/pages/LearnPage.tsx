@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useTheme } from '../providers/ThemeProvider';
-import { CheckCircle, Keyboard, X, Trophy, Play, Zap } from 'lucide-react';
+import { CheckCircle, Keyboard, X, Trophy, Play, Zap, Target, TrendingUp, Sparkles } from 'lucide-react';
 import TextDisplay from '../features/typing/components/TextDisplay';
 import KeyboardFingerPlacement, { FINGER_LABELS, KEY_FINGER_MAP, SHIFT_BASE_MAP } from '../features/learn/components/KeyboardFingerPlacement';
 import CourseCompletionModal from '../features/learn/components/CourseCompletionModal';
@@ -796,26 +796,38 @@ export default function LearnPage() {
                     <h3 className="text-xl font-bold mb-3">How to Use This Course:</h3>
                     <div className="space-y-3">
                       <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
-                        <h4 className={`font-semibold mb-2 text-sky-600 dark:text-cyan-300`}>🎯 Finger Placement</h4>
+                        <h4 className={`font-semibold mb-2 text-sky-600 dark:text-cyan-300 flex items-center gap-2`}>
+                          <Target className="w-4 h-4" aria-hidden="true" />
+                          Finger Placement
+                        </h4>
                         <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                           Study the highlighted keys and learn which finger to use for each key. Practice with the target key checker.
                         </p>
                       </div>
                       <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
-                        <h4 className={`font-semibold mb-2 text-emerald-500 dark:text-emerald-300`}>📝 Practice Mode</h4>
+                        <h4 className={`font-semibold mb-2 text-emerald-500 dark:text-emerald-300 flex items-center gap-2`}>
+                          <Keyboard className="w-4 h-4" aria-hidden="true" />
+                          Practice Mode
+                        </h4>
                         <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                           Type the provided text exercises to master each lesson. Focus on accuracy over speed.
                         </p>
                       </div>
                       <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-900/60' : 'bg-white'}`}>
-                        <h4 className={`font-semibold mb-2 text-yellow-500`}>📈 Progress Tracking</h4>
+                        <h4 className={`font-semibold mb-2 text-yellow-500 flex items-center gap-2`}>
+                          <TrendingUp className="w-4 h-4" aria-hidden="true" />
+                          Progress Tracking
+                        </h4>
                         <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                           Complete lessons to track your progress and unlock advanced features. Each lesson builds on the previous one.
                         </p>
                       </div>
                     </div>
                     <div className={`mt-5 p-3 rounded-lg ${theme === 'dark' ? 'bg-cyan-500/10 border border-cyan-500/30' : 'bg-sky-50 border border-sky-200'}`}>
-                      <h4 className={`font-semibold mb-2 text-sky-600 dark:text-cyan-300`}>💡 Pro Tips</h4>
+                      <h4 className={`font-semibold mb-2 text-sky-600 dark:text-cyan-300 flex items-center gap-2`}>
+                        <Sparkles className="w-4 h-4" aria-hidden="true" />
+                        Pro Tips
+                      </h4>
                       <ul className={`text-sm grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                         <li>• Focus on accuracy first - speed will come naturally</li>
                         <li>• Keep your fingers on the home row (ASDF JKL;)</li>

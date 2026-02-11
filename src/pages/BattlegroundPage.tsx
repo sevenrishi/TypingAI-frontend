@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
-import { setRoom, setRoomState, setWorkflowStage, leaveRoom, markPlayerFinished, resetRaceState, setRoomIdentity } from '../features/multiplayer/roomSlice';
+import { setRoom, setRoomState, setWorkflowStage, leaveRoom, markPlayerFinished, resetBattleState, setRoomIdentity } from '../features/multiplayer/roomSlice';
 import { generateMultiplayerText } from '../features/ai/aiMultiplayerSlice';
 import { loadText as loadTextAction, reset as resetTyping } from '../features/typing/typingSlice';
 import { useSocket } from '../features/multiplayer/hooks/useSocket';
@@ -14,9 +14,9 @@ import RoomSelection from '../features/multiplayer/components/RoomSelection';
 import JoinRoom from '../features/multiplayer/components/JoinRoom';
 import RoomWaiting from '../features/multiplayer/components/RoomWaiting';
 import ScriptReview from '../features/multiplayer/components/ScriptReview';
-import RaceProgress from '../features/multiplayer/components/RaceProgress';
-import RaceResults from '../features/multiplayer/components/RaceResults';
-import RaceCountdown from '../features/multiplayer/components/RaceCountdown';
+import BattleProgress from '../features/multiplayer/components/BattleProgress';
+import BattleResults from '../features/multiplayer/components/BattleResults';
+import BattleCountdown from '../features/multiplayer/components/BattleCountdown';
 import TypingBattleground from '../features/typing/components/TypingBattleground';
 
 function genRoomCode() {
@@ -80,7 +80,7 @@ export default function BattlegroundPage() {
     setPlayerName('');
   }, [dispatch]);
 
-  const { createRoom, joinRoom, sendProgress, setReady, startRace, resetRace, leaveRoom: socketLeaveRoom, socket, setRoomText } = useSocket(
+  const { createRoom, joinRoom, sendProgress, setReady, startBattle, resetBattle, leaveRoom: socketLeaveRoom, socket, setRoomText } = useSocket(
     onRoomState,
     (error) => {
       if (room.workflowStage === 'join-room') {
@@ -225,9 +225,9 @@ export default function BattlegroundPage() {
     joinRoom(roomCode, playerName);
   };
 
-  const handleStartRace = () => {
+  const handleStartBattle = () => {
     if (room.roomId) {
-      startRace(room.roomId);
+      startBattle(room.roomId);
     }
   };
 
@@ -249,9 +249,9 @@ export default function BattlegroundPage() {
   const handlePlayAgain = () => {
     // Reset typing/race state and go back to room waiting (same room)
     dispatch(resetTyping());
-    dispatch(resetRaceState());
+    dispatch(resetBattleState());
     if (room.roomId) {
-      resetRace(room.roomId);
+      resetBattle(room.roomId);
     }
     dispatch(setWorkflowStage('room-waiting'));
   };
@@ -297,7 +297,7 @@ export default function BattlegroundPage() {
         isGenerating={isGenerating}
         raceStart={room.raceStart}
         onGenerateScript={handleGenerateScript}
-        onStartRace={handleStartRace}
+        onStartBattle={handleStartBattle}
         onReady={handleToggleReady}
         onLeave={handleLeaveRoom}
       />
@@ -318,14 +318,14 @@ export default function BattlegroundPage() {
 
   if (room.workflowStage === 'race-active') {
     return (
-      <div className="space-y-6 p-4 container mx-auto">
-        {room.raceStart && <RaceCountdown startAt={room.raceStart} />}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
+      <div className="space-y-6 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {room.raceStart && <BattleCountdown startAt={room.raceStart} />}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <div className="xl:col-span-8 2xl:col-span-9">
             <TypingBattleground />
           </div>
-          <div className="lg:col-span-1">
-            <RaceProgress
+          <div className="xl:col-span-4 2xl:col-span-3">
+            <BattleProgress
               players={room.players}
               finishedPlayerIds={room.finishedPlayers}
               raceActive={true}
@@ -335,11 +335,12 @@ export default function BattlegroundPage() {
 
         {room.allPlayersFinished && (
           <div className="mt-6">
-            <RaceResults
+            <BattleResults
               players={room.players}
               finishedPlayerIds={room.finishedPlayers}
               onPlayAgain={handlePlayAgain}
               onLeave={handleLeaveRoom}
+              textLength={room.text.length}
             />
           </div>
         )}

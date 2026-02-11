@@ -74,7 +74,7 @@ const slice = createSlice({
         state.allPlayersFinished = true;
       }
     },
-    resetRaceState(state) {
+    resetBattleState(state) {
       state.finishedPlayers = [];
       state.allPlayersFinished = false;
       state.raceStart = null;
@@ -86,5 +86,5 @@ const slice = createSlice({
   }
 });
 
-export const { setPlayerName, setWorkflowStage, setRoom, setRoomIdentity, setRoomState, markPlayerFinished, resetRaceState, leaveRoom } = slice.actions;
+export const { setPlayerName, setWorkflowStage, setRoom, setRoomIdentity, setRoomState, markPlayerFinished, resetBattleState, leaveRoom } = slice.actions;
 export default slice.reducer;

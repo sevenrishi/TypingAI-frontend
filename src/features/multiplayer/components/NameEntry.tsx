@@ -26,24 +26,6 @@ export default function NameEntry({ onNext }: NameEntryProps) {
   };
 
   return (
-    <div className={`min-h-[81vh] flex items-center justify-center p-4 ${
-      theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'
-    }`}>
-      <div className={`w-full max-w-md rounded-lg shadow-lg p-6 ${
-        theme === 'dark'
-          ? 'bg-gradient-to-b from-gray-800 to-gray-700'
-          : 'bg-gradient-to-b from-white to-gray-50 border border-gray-300'
-      }`}>
-        <h1 className={`text-3xl font-bold mb-2 text-center ${
-          theme === 'dark' ? 'text-white' : 'text-gray-900'
-        }`}>
-          Typing Battleground
-        </h1>
-        <p className={`text-center mb-6 ${
-          theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-        }`}>
-          Enter your name to get started
-        </p>
     <div className="min-h-[75vh] flex items-center justify-center p-4">
       <div className={`w-full max-w-md rounded-[28px] border shadow-lg p-6 ${surface}`}>
         <div className="text-center space-y-2">

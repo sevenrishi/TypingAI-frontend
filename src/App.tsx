@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link, NavLink } from 'react-router-dom';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Routes, Route, Link, NavLink, useLocation } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -52,6 +50,7 @@ export default function App() {
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
   const mobileNavRef = useRef<HTMLDivElement | null>(null);
   const mobileNavButtonRef = useRef<HTMLButtonElement | null>(null);
+  const openSignIn = useCallback(() => setShowSignIn(true), []);
 
   const displayName = profile.user?.displayName || auth.user?.displayName || 'Member';
   const email = profile.user?.email || auth.user?.email || 'No email on file';
@@ -564,13 +563,13 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
-            <Route path="/typing" element={<ProtectedRoute element={<TypingPage />} onShowSignIn={() => setShowSignIn(true)} />} />
-            <Route path="/practice" element={<ProtectedRoute element={<PracticePage />} onShowSignIn={() => setShowSignIn(true)} />} />
-            <Route path="/learn" element={<ProtectedRoute element={<LearnPage />} onShowSignIn={() => setShowSignIn(true)} />} />
-            <Route path="/battleground" element={<ProtectedRoute element={<BattlegroundPage />} onShowSignIn={() => setShowSignIn(true)} />} />
-            <Route path="/profile" element={<ProtectedRoute element={<UserProfilePage />} onShowSignIn={() => setShowSignIn(true)} />} />
-            <Route path="/account" element={<ProtectedRoute element={<AccountSettingsPage />} onShowSignIn={() => setShowSignIn(true)} />} />
-            <Route path="/help" element={<ProtectedRoute element={<HelpCenterPage />} onShowSignIn={() => setShowSignIn(true)} />} />
+            <Route path="/typing" element={<ProtectedRoute element={<TypingPage />} onShowSignIn={openSignIn} />} />
+            <Route path="/practice" element={<ProtectedRoute element={<PracticePage />} onShowSignIn={openSignIn} />} />
+            <Route path="/learn" element={<ProtectedRoute element={<LearnPage />} onShowSignIn={openSignIn} />} />
+            <Route path="/battleground" element={<ProtectedRoute element={<BattlegroundPage />} onShowSignIn={openSignIn} />} />
+            <Route path="/profile" element={<ProtectedRoute element={<UserProfilePage />} onShowSignIn={openSignIn} />} />
+            <Route path="/account" element={<ProtectedRoute element={<AccountSettingsPage />} onShowSignIn={openSignIn} />} />
+            <Route path="/help" element={<ProtectedRoute element={<HelpCenterPage />} onShowSignIn={openSignIn} />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/activate" element={<ActivationPage />} />
           </Routes>
