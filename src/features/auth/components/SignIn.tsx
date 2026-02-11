@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { login, loadUser, googleAuth } from '../authSlice';
+import { fetchProfile } from '../../user/profileSlice';
 import { useTheme } from '../../../providers/ThemeProvider';
 import { useGoogleLogin } from '@react-oauth/google';
 import { Loader2 } from 'lucide-react';
@@ -37,6 +38,7 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
         localStorage.setItem('token', loginResult.token);
       }
       await dispatch(loadUser() as any);
+      dispatch(fetchProfile() as any);
       onClose();
     } catch (err: any) {
       // Extract error message from API response
@@ -62,6 +64,7 @@ export default function SignIn({ onClose, onSwitch }: { onClose: () => void; onS
           localStorage.setItem('token', result.token);
         }
         await dispatch(loadUser() as any);
+        dispatch(fetchProfile() as any);
         onClose();
       } catch (err: any) {
         setError(err?.error || err?.message || 'Google sign-in failed');

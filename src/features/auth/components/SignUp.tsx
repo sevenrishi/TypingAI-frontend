@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { register, loadUser, googleAuth } from '../authSlice';
+import { fetchProfile } from '../../user/profileSlice';
 import { useTheme } from '../../../providers/ThemeProvider';
 import { useGoogleLogin } from '@react-oauth/google';
 import { showToast } from '../../../utils/toast';
@@ -76,13 +77,13 @@ export default function SignUp({ onClose, onSwitch }: { onClose: () => void; onS
     onSuccess: async tokenResponse => {
       setLoading(true);
       setError(null);
-      setSuccess(null);
       try {
         const result = await dispatch(googleAuth({ accessToken: tokenResponse.access_token }) as any).unwrap();
         if (result?.token) {
           localStorage.setItem('token', result.token);
         }
         await dispatch(loadUser() as any);
+        dispatch(fetchProfile() as any);
         onClose();
       } catch (err: any) {
         setError(err?.error || err?.message || 'Google sign-in failed');
