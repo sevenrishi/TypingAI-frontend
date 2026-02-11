@@ -1,16 +1,18 @@
 import React, { useEffect } from 'react';
+import { RotateCcw } from 'lucide-react';
 import { useTheme } from '../../../providers/ThemeProvider';
 import type { PlayerState } from '../roomSlice';
 import { recordStreakActivity } from '../../../utils/streaks';
 
-interface RaceResultsProps {
+interface BattleResultsProps {
   players: PlayerState[];
   finishedPlayerIds: string[];
   onPlayAgain: () => void;
   onLeave: () => void;
+  textLength: number;
 }
 
-export default function RaceResults({ players, finishedPlayerIds, onPlayAgain, onLeave }: RaceResultsProps) {
+export default function BattleResults({ players, finishedPlayerIds, onPlayAgain, onLeave, textLength }: BattleResultsProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const surface = isDark
@@ -26,6 +28,13 @@ export default function RaceResults({ players, finishedPlayerIds, onPlayAgain, o
   const ghostButton = isDark
     ? 'bg-slate-800 hover:bg-slate-700 text-slate-200'
     : 'bg-slate-200 hover:bg-slate-300 text-slate-700';
+  const errorAccent = isDark ? 'text-rose-300' : 'text-rose-600';
+
+  const getErrorCount = (accuracy?: number) => {
+    if (!textLength || accuracy === undefined) return null;
+    const errors = Math.round(textLength * (1 - accuracy));
+    return Math.max(0, errors);
+  };
 
   useEffect(() => {
     void recordStreakActivity();
@@ -58,7 +67,7 @@ export default function RaceResults({ players, finishedPlayerIds, onPlayAgain, o
             className={`text-[11px] uppercase tracking-[0.35em] ${mutedText}`}
             style={{ fontFamily: "'JetBrains Mono', monospace" }}
           >
-            Race Complete
+            Battle Complete
           </div>
           <h1 className="text-4xl font-bold" style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}>
             Final standings
@@ -104,13 +113,10 @@ export default function RaceResults({ players, finishedPlayerIds, onPlayAgain, o
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <div className={`p-2 rounded-xl text-center ${surfaceSoft}`}>
                   <p className={`text-xs ${mutedText}`}>
-                    Speed
+                    CPM
                   </p>
                   <p className={`text-lg font-bold ${isDark ? 'text-cyan-300' : 'text-sky-600'}`}>
-                    {Math.round(player.wpm || 0)}
-                  </p>
-                  <p className={`text-xs ${mutedText}`}>
-                    WPM
+                    {Math.round((player.wpm || 0) * 5)}
                   </p>
                 </div>
 
@@ -125,10 +131,10 @@ export default function RaceResults({ players, finishedPlayerIds, onPlayAgain, o
 
                 <div className={`p-2 rounded-xl text-center ${surfaceSoft}`}>
                   <p className={`text-xs ${mutedText}`}>
-                    Progress
+                    Errors
                   </p>
-                  <p className={`text-lg font-bold ${isDark ? 'text-cyan-300' : 'text-sky-600'}`}>
-                    100%
+                  <p className={`text-lg font-bold ${errorAccent}`}>
+                    {getErrorCount(player.accuracy) ?? '—'}
                   </p>
                 </div>
               </div>
@@ -142,7 +148,10 @@ export default function RaceResults({ players, finishedPlayerIds, onPlayAgain, o
             onClick={onPlayAgain}
             className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 text-lg ${primaryButton}`}
           >
-            🔄 Play Again
+            <span className="inline-flex items-center justify-center gap-2">
+              <RotateCcw className="h-5 w-5" aria-hidden="true" />
+              Play Again
+            </span>
           </button>
 
           <button
