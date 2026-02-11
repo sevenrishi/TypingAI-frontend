@@ -18,7 +18,7 @@ export default function ResetPasswordPage() {
     }`}>
       {step === 'forgot' ? (
         <ForgotPassword
-          onClose={() => navigate('/')}
+          onClose={() => navigate('/login')}
           onVerifyCode={(email: string) => {
             setResetEmail(email);
             setStep('reset');
@@ -27,7 +27,7 @@ export default function ResetPasswordPage() {
       ) : (
         <ResetPassword
           email={resetEmail}
-          onClose={() => navigate('/')}
+          onClose={() => navigate('/login')}
           onSuccess={() => {
             navigate('/login');
           }}

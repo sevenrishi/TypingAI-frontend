@@ -8,6 +8,7 @@ interface RaceCountdownProps {
 
 export default function RaceCountdown({ startAt, onCountdownEnd }: RaceCountdownProps) {
   const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
 
@@ -46,17 +47,17 @@ export default function RaceCountdown({ startAt, onCountdownEnd }: RaceCountdown
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center pointer-events-none z-50 ${
-        theme === 'dark' ? 'bg-black/50' : 'bg-white/50'
+        isDark ? 'bg-slate-950/70' : 'bg-slate-900/20'
       }`}
     >
       <div className="flex flex-col items-center">
         <div className={`text-7xl font-bold tabular-nums ${
-          theme === 'dark' ? 'text-blue-400' : 'text-blue-600'
+          isDark ? 'text-cyan-300' : 'text-sky-600'
         }`}>
           {secondsLeft}
         </div>
         <p className={`text-xl font-semibold mt-4 ${
-          theme === 'dark' ? 'text-white' : 'text-gray-900'
+          isDark ? 'text-slate-100' : 'text-slate-900'
         }`}>
           Race Starting...
         </p>

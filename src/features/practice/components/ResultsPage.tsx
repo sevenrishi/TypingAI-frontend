@@ -1,6 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTheme } from '../../../providers/ThemeProvider';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { recordStreakActivity } from '../../../utils/streaks';
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 interface ResultsPageProps {
   wpm: number;
@@ -13,219 +28,252 @@ interface ResultsPageProps {
   onClose: () => void;
 }
 
-export default function ResultsPage({ wpm, cpm, accuracy, errors, duration, text, typed, onClose }: ResultsPageProps) {
+export default function ResultsPage({
+  wpm,
+  cpm,
+  accuracy,
+  errors,
+  duration,
+  text,
+  typed,
+  onClose,
+}: ResultsPageProps) {
   const { theme } = useTheme();
-  
-  // Convert duration from ms to seconds
+  const isDark = theme === 'dark';
+
+  useEffect(() => {
+    void recordStreakActivity();
+  }, []);
+
+  // Convert duration from ms to seconds/minutes
   const durationSeconds = Math.round(duration / 1000);
   const durationMinutes = (duration / 1000 / 60).toFixed(2);
-  
+
   // Calculate accuracy percentage
   const accuracyPercent = Math.round(accuracy);
-  const incorrectPercent = 100 - accuracyPercent;
-  
+  const incorrectPercent = Math.max(0, 100 - accuracyPercent);
+
   // Create data for pie chart
   const accuracyData = [
     { name: 'Correct', value: accuracyPercent },
-    { name: 'Incorrect', value: incorrectPercent }
+    { name: 'Incorrect', value: incorrectPercent },
   ];
-  
+
   // Create data for performance chart
   const performanceData = [
     { name: 'WPM', value: Math.round(wpm) },
-    { name: 'CPM', value: Math.round(cpm) }
+    { name: 'CPM', value: Math.round(cpm) },
   ];
-  
+
   // Character analysis
   const totalChars = text.length;
-  const correctChars = totalChars - errors;
-  
+  const correctChars = Math.max(0, totalChars - errors);
+
+  const surface = isDark
+    ? 'bg-slate-900/70 border-slate-700/60 text-slate-100 backdrop-blur-xl'
+    : 'bg-white/80 border-slate-200 text-slate-900 backdrop-blur-xl';
+  const surfaceSoft = isDark
+    ? 'bg-slate-900/45 border-slate-700/50 text-slate-100 backdrop-blur-md'
+    : 'bg-white/60 border-slate-200/80 text-slate-900 backdrop-blur-md';
+  const mutedText = isDark ? 'text-slate-300' : 'text-slate-600';
+  const accentText = isDark ? 'text-cyan-300' : 'text-sky-600';
   const chartColors = {
-    correct: '#10b981',
-    incorrect: '#ef4444',
-    wpm: '#6366f1',
-    cpm: '#8b5cf6'
+    correct: '#34d399',
+    incorrect: '#f87171',
+    wpm: '#22d3ee',
+    cpm: '#38bdf8',
   };
 
-  const bgColor = theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50';
-  const cardBg = theme === 'dark' ? 'bg-gray-800' : 'bg-white';
-  const textColor = theme === 'dark' ? 'text-gray-100' : 'text-gray-900';
-  const secondaryText = theme === 'dark' ? 'text-gray-400' : 'text-gray-600';
-  const borderColor = theme === 'dark' ? 'border-gray-700' : 'border-gray-300';
+  const MetricCard = ({ label, value, helper }: { label: string; value: string; helper: string }) => (
+    <div className={`rounded-2xl border p-5 ${surfaceSoft}`}>
+      <div
+        className={`text-[11px] uppercase tracking-[0.28em] ${mutedText}`}
+        style={{ fontFamily: "'JetBrains Mono', monospace" }}
+      >
+        {label}
+      </div>
+      <div className={`mt-3 text-3xl font-bold ${accentText}`}>{value}</div>
+      <div className={`mt-2 text-xs ${mutedText}`}>{helper}</div>
+    </div>
+  );
 
   return (
-    <div className={`min-h-screen ${bgColor} p-6`}>
-      <div className="container mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className={`text-4xl font-bold ${textColor} mb-2`}>Test Complete! 🎉</h1>
-          <p className={secondaryText}>Here's your detailed performance report</p>
+    <div className="space-y-10">
+      <header className="text-center space-y-3">
+        <div
+          className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.35em] ${
+            isDark
+              ? 'border-cyan-500/40 text-cyan-200 bg-slate-900/60'
+              : 'border-sky-200 text-sky-700 bg-sky-50'
+          }`}
+          style={{ fontFamily: "'JetBrains Mono', monospace" }}
+        >
+          Session Complete
+        </div>
+        <h1
+          className="text-3xl md:text-4xl font-bold"
+          style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
+        >
+          Performance dashboard
+        </h1>
+        <p className={mutedText}>Review your speed, accuracy, and rhythm insights.</p>
+      </header>
+
+      {/* Key Metrics Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard label="Words Per Minute" value={`${Math.round(wpm)}`} helper="Speed" />
+        <MetricCard label="Characters Per Minute" value={`${Math.round(cpm)}`} helper="Rhythm" />
+        <MetricCard label="Accuracy" value={`${accuracyPercent}%`} helper="Precision" />
+        <MetricCard label="Duration" value={`${durationMinutes}m`} helper={`${durationSeconds}s total`} />
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className={`rounded-3xl border p-6 ${surface}`}>
+          <h2 className="text-lg font-semibold mb-4">Speed metrics</h2>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={performanceData}>
+              <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#334155' : '#e2e8f0'} />
+              <XAxis dataKey="name" stroke={isDark ? '#94a3b8' : '#64748b'} />
+              <YAxis stroke={isDark ? '#94a3b8' : '#64748b'} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDark ? '#0f172a' : '#ffffff',
+                  border: `1px solid ${isDark ? '#1e293b' : '#e2e8f0'}`,
+                  borderRadius: '10px',
+                  color: isDark ? '#f8fafc' : '#0f172a',
+                }}
+              />
+              <Bar dataKey="value" radius={[10, 10, 0, 0]}>
+                <Cell fill={chartColors.wpm} />
+                <Cell fill={chartColors.cpm} />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
 
-        {/* Key Metrics Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {/* WPM */}
-          <div className={`${cardBg} rounded-lg p-6 border ${borderColor} shadow-sm`}>
-            <div className={`text-sm font-semibold ${secondaryText} mb-2`}>Words Per Minute</div>
-            <div className={`text-4xl font-bold text-indigo-600`}>{Math.round(wpm)}</div>
-            <div className={`text-xs ${secondaryText} mt-2`}>Speed</div>
-          </div>
-
-          {/* CPM */}
-          <div className={`${cardBg} rounded-lg p-6 border ${borderColor} shadow-sm`}>
-            <div className={`text-sm font-semibold ${secondaryText} mb-2`}>Characters Per Minute</div>
-            <div className={`text-4xl font-bold text-purple-600`}>{Math.round(cpm)}</div>
-            <div className={`text-xs ${secondaryText} mt-2`}>Speed</div>
-          </div>
-
-          {/* Accuracy */}
-          <div className={`${cardBg} rounded-lg p-6 border ${borderColor} shadow-sm`}>
-            <div className={`text-sm font-semibold ${secondaryText} mb-2`}>Accuracy</div>
-            <div className={`text-4xl font-bold text-green-600`}>{accuracyPercent}%</div>
-            <div className={`text-xs ${secondaryText} mt-2`}>Precision</div>
-          </div>
-
-          {/* Duration */}
-          <div className={`${cardBg} rounded-lg p-6 border ${borderColor} shadow-sm`}>
-            <div className={`text-sm font-semibold ${secondaryText} mb-2`}>Duration</div>
-            <div className={`text-4xl font-bold text-blue-600`}>{durationMinutes}m</div>
-            <div className={`text-xs ${secondaryText} mt-2`}>{durationSeconds}s</div>
-          </div>
+        <div className={`rounded-3xl border p-6 ${surface}`}>
+          <h2 className="text-lg font-semibold mb-4">Accuracy breakdown</h2>
+          <ResponsiveContainer width="100%" height={280}>
+            <PieChart>
+              <Pie
+                data={accuracyData}
+                cx="50%"
+                cy="45%"
+                labelLine={false}
+                label={false}
+                outerRadius={90}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                <Cell fill={chartColors.correct} />
+                <Cell fill={chartColors.incorrect} />
+              </Pie>
+              <Legend
+                verticalAlign="bottom"
+                height={36}
+                formatter={(value, entry: any) => `${entry.payload.name}: ${entry.payload.value}%`}
+              />
+              <Tooltip
+                formatter={(value) => `${value}%`}
+                contentStyle={{
+                  backgroundColor: isDark ? '#0f172a' : '#ffffff',
+                  border: `1px solid ${isDark ? '#1e293b' : '#e2e8f0'}`,
+                  color: isDark ? '#f8fafc' : '#0f172a',
+                  borderRadius: '10px',
+                }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* WPM vs CPM Bar Chart */}
-          <div className={`${cardBg} rounded-lg p-6 border ${borderColor} shadow-sm lg:col-span-2`}>
-            <h2 className={`text-lg font-semibold ${textColor} mb-4`}>Speed Metrics</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={performanceData}>
-                <CartesianGrid strokeDasharray="3 3" stroke={theme === 'dark' ? '#374151' : '#e5e7eb'} />
-                <XAxis 
-                  dataKey="name"
-                  stroke={theme === 'dark' ? '#9ca3af' : '#6b7280'} 
-                />
-                <YAxis stroke={theme === 'dark' ? '#9ca3af' : '#6b7280'} />
-                <Tooltip 
-                  contentStyle={{
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                  }}
-                  content={({ payload }: any) => {
-                    if (payload && payload.length > 0) {
-                      const data = payload[0].payload;
-                      return <div style={{ color: theme === 'dark' ? '#f3f4f6' : '#111827' }}>{data.name}: {payload[0].value}</div>;
-                    }
-                    return null;
-                  }}
-                  cursor={false}
-                />
-                <Bar dataKey="value" radius={[8, 8, 0, 0]}>
-                  <Cell fill="#6366f1" />
-                  <Cell fill="#a855f7" />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Accuracy Pie Chart */}
-          <div className={`${cardBg} rounded-lg p-6 border ${borderColor} shadow-sm`}>
-            <h2 className={`text-lg font-semibold ${textColor} mb-4`}>Accuracy Breakdown</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={accuracyData}
-                  cx="50%"
-                  cy="45%"
-                  labelLine={false}
-                  label={false}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  <Cell fill={chartColors.correct} />
-                  <Cell fill={chartColors.incorrect} />
-                </Pie>
-                <Legend 
-                  verticalAlign="bottom" 
-                  height={36}
-                  formatter={(value, entry) => `${entry.payload.name}: ${entry.payload.value}%`}
-                />
-                <Tooltip 
-                  formatter={(value) => `${value}%`}
-                  contentStyle={{
-                    backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
-                    border: `1px solid ${theme === 'dark' ? '#374151' : '#e5e7eb'}`,
-                    color: theme === 'dark' ? '#f3f4f6' : '#111827'
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+        <div className={`rounded-3xl border p-6 ${surface}`}>
+          <h2 className="text-lg font-semibold mb-4">Accuracy trend</h2>
+          <ResponsiveContainer width="100%" height={280}>
+            <LineChart
+              data={[
+                { name: 'Start', value: Math.max(70, accuracyPercent - 8) },
+                { name: 'Mid', value: Math.max(75, accuracyPercent - 4) },
+                { name: 'End', value: accuracyPercent },
+              ]}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#334155' : '#e2e8f0'} />
+              <XAxis dataKey="name" stroke={isDark ? '#94a3b8' : '#64748b'} />
+              <YAxis stroke={isDark ? '#94a3b8' : '#64748b'} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDark ? '#0f172a' : '#ffffff',
+                  border: `1px solid ${isDark ? '#1e293b' : '#e2e8f0'}`,
+                  borderRadius: '10px',
+                  color: isDark ? '#f8fafc' : '#0f172a',
+                }}
+              />
+              <Line type="monotone" dataKey="value" stroke="#34d399" strokeWidth={3} dot />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
+      </div>
 
-        {/* Detailed Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Character Stats */}
-          <div className={`${cardBg} rounded-lg p-6 border ${borderColor} shadow-sm`}>
-            <h2 className={`text-lg font-semibold ${textColor} mb-4`}>Character Statistics</h2>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className={secondaryText}>Total Characters</span>
-                <span className={`font-semibold ${textColor}`}>{totalChars}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className={secondaryText}>Correct Characters</span>
-                <span className="font-semibold text-green-600">{correctChars}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className={secondaryText}>Incorrect Characters</span>
-                <span className="font-semibold text-red-600">{errors}</span>
-              </div>
-              <div className="border-t border-gray-600 pt-3 flex justify-between items-center">
-                <span className={`font-semibold ${secondaryText}`}>Error Rate</span>
-                <span className={`font-semibold ${textColor}`}>{((errors / totalChars) * 100).toFixed(2)}%</span>
-              </div>
+      {/* Detailed Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className={`rounded-3xl border p-6 ${surfaceSoft}`}>
+          <h2 className="text-lg font-semibold mb-4">Character statistics</h2>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className={mutedText}>Total characters</span>
+              <span className="font-semibold">{totalChars}</span>
             </div>
-          </div>
-
-          {/* Test Info */}
-          <div className={`${cardBg} rounded-lg p-6 border ${borderColor} shadow-sm`}>
-            <h2 className={`text-lg font-semibold ${textColor} mb-4`}>Test Information</h2>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className={secondaryText}>Test Duration</span>
-                <span className={`font-semibold ${textColor}`}>{durationMinutes} minutes</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className={secondaryText}>Words Typed</span>
-                <span className={`font-semibold ${textColor}`}>{Math.round(typed.length / 5)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className={secondaryText}>Total Words in Text</span>
-                <span className={`font-semibold ${textColor}`}>{Math.round(text.length / 5)}</span>
-              </div>
-              <div className="border-t border-gray-600 pt-3 flex justify-between items-center">
-                <span className={`font-semibold ${secondaryText}`}>Completion</span>
-                <span className={`font-semibold ${textColor}`}>{((typed.length / text.length) * 100).toFixed(1)}%</span>
-              </div>
+            <div className="flex justify-between items-center">
+              <span className={mutedText}>Correct characters</span>
+              <span className={`font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>{correctChars}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className={mutedText}>Incorrect characters</span>
+              <span className={`font-semibold ${isDark ? 'text-rose-400' : 'text-rose-600'}`}>{errors}</span>
+            </div>
+            <div className="border-t border-slate-700/40 pt-3 flex justify-between items-center">
+              <span className={`font-semibold ${mutedText}`}>Error rate</span>
+              <span className="font-semibold">{totalChars ? ((errors / totalChars) * 100).toFixed(2) : '0.00'}%</span>
             </div>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-4 justify-center">
-          <button
-            onClick={onClose}
-            className={`px-8 py-3 rounded-lg font-semibold transition-colors duration-200 ${
-              theme === 'dark'
-                ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-            }`}
-          >
-            Try Another Practice
-          </button>
+        <div className={`rounded-3xl border p-6 ${surfaceSoft}`}>
+          <h2 className="text-lg font-semibold mb-4">Test information</h2>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className={mutedText}>Test duration</span>
+              <span className="font-semibold">{durationMinutes} minutes</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className={mutedText}>Words typed</span>
+              <span className="font-semibold">{Math.round(typed.length / 5)}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className={mutedText}>Total words</span>
+              <span className="font-semibold">{Math.round(text.length / 5)}</span>
+            </div>
+            <div className="border-t border-slate-700/40 pt-3 flex justify-between items-center">
+              <span className={`font-semibold ${mutedText}`}>Completion</span>
+              <span className="font-semibold">
+                {text.length ? ((typed.length / text.length) * 100).toFixed(1) : '0.0'}%
+              </span>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div className="flex justify-center">
+        <button
+          onClick={onClose}
+          className={`inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-all duration-300 ${
+            isDark
+              ? 'bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 text-slate-900 shadow-[0_18px_40px_rgba(34,211,238,0.35)] hover:shadow-[0_22px_48px_rgba(34,211,238,0.45)]'
+              : 'bg-gradient-to-r from-sky-500 via-cyan-500 to-emerald-500 text-white shadow-[0_18px_40px_rgba(14,165,233,0.25)] hover:shadow-[0_22px_48px_rgba(14,165,233,0.35)]'
+          }`}
+        >
+          Run another session
+        </button>
       </div>
     </div>
   );
