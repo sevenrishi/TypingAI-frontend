@@ -1,4 +1,4 @@
-# Typing AI — Fullstack Typing Practice App
+# Typing AI - Typing Practice App
 
 Lightweight, production-ready starter for an AI-powered typing practice app with single-player and multiplayer modes.
 
