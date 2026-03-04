@@ -12,7 +12,7 @@ export function useTyping() {
   const [showResults, setShowResults] = useState(false);
   const roomId = useSelector((s: RootState) => s.room.roomId);
   const { sendProgress, socket } = useSocket();
-  const [raceLocked, setRaceLocked] = useState(false);
+  const [raceLocked, setBattleLocked] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [startAt, setStartAt] = useState<number | null>(null);
   
@@ -21,7 +21,7 @@ export function useTyping() {
 
   useEffect(() => {
     // when joining a room, lock until race:start
-    setRaceLocked(!!roomId);
+    setBattleLocked(!!roomId);
   }, [roomId]);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export function useTyping() {
     const onStart = (payload: any) => {
       const start = (payload && typeof payload.startAt === 'number') ? payload.startAt : Date.now();
       setStartAt(start);
-      setRaceLocked(true);
+      setBattleLocked(true);
       // compute countdown and unlock at start
       const update = () => {
         const offset = (window as any).__TYPING_TIME_OFFSET || 0;
@@ -37,7 +37,7 @@ export function useTyping() {
         const remain = Math.max(0, Math.ceil((localStart - Date.now()) / 1000));
         setCountdown(remain);
         if (Date.now() >= localStart) {
-          setRaceLocked(false);
+          setBattleLocked(false);
           // Use server synced start time to set typing.startTime so elapsed is consistent
           try {
             dispatch(setStartTime(localStart));

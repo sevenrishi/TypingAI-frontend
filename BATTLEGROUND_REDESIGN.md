@@ -36,7 +36,7 @@ The typing battleground has been completely redesigned with a multi-stage workfl
 - **For Host**:
   - Display room code with copy button
   - Generate Script button (generates typing text via AI)
-  - Start Race button (enabled only when script is generated AND all players are ready)
+  - Start Battle button (enabled only when script is generated AND all players are ready)
   - View list of players
   
 - **For Non-Host Players**:
@@ -48,16 +48,16 @@ The typing battleground has been completely redesigned with a multi-stage workfl
 - **Actions**:
   - Generate Script (host only)
   - Toggle Ready (all players)
-  - Start Race (host only, when conditions met)
+  - Start Battle (host only, when conditions met)
   - Leave Room
   
 - **UI**: Full screen with room info, player list, and action buttons
 
-### 5. **Race Active** (`race-active`)
+### 5. **Battle Active** (`race-active`)
 - **Component**: `BattlegroundPage.tsx` (combined view)
 - **Sub-components**:
   - `TypingTest.tsx` - Main typing interface
-  - `RaceProgress.tsx` - Live progress for all players
+  - `BattleProgress.tsx` - Live progress for all players
 - **Description**: The actual typing race is happening
 - **Features**:
   - Real-time typing feedback
@@ -75,8 +75,8 @@ The typing battleground has been completely redesigned with a multi-stage workfl
   
 - **UI**: Split view with typing area and race leaderboard
 
-### 6. **Race Completed** (`race-completed`)
-- **Component**: `RaceResults.tsx`
+### 6. **Battle Completed** (`race-completed`)
+- **Component**: `BattleResults.tsx`
 - **Description**: Shows final standings and results
 - **Features**:
   - Ranked results with medals (🥇 🥈 🥉)
@@ -126,7 +126,7 @@ type PlayerState = {
 
 ### Server → Client
 - `room:state` - Complete room state update
-- `race:start` - Race is starting with countdown
+- `race:start` - Battle is starting with countdown
 - `room:error` - Error message
 
 ## Key Features
@@ -148,7 +148,7 @@ type PlayerState = {
 - Generated before race can start
 - Shows "Script Ready" status
 
-### Race Mechanics
+### Battle Mechanics
 - 5-second countdown before typing starts
 - Progress tracked on every keystroke
 - Automatic detection of completion (100% typed)
@@ -172,11 +172,11 @@ BattlegroundPage (Main orchestrator)
 ├── JoinRoom
 ├── RoomWaiting
 │   └── RoomWaiting.tsx
-├── Race Active
+├── Battle Active
 │   ├── TypingTest.tsx
-│   └── RaceProgress.tsx
-└── RaceResults
-    └── RaceResults.tsx
+│   └── BattleProgress.tsx
+└── BattleResults
+    └── BattleResults.tsx
 ```
 
 ## Flow Diagrams
@@ -188,7 +188,7 @@ NameEntry → RoomSelection → RoomWaiting (host)
   ↓ (other players join)
   ↓ (all ready)
   ↓ (start race)
-RaceActive → RaceResults
+BattleActive → BattleResults
 ```
 
 ### Happy Path - Join Room
@@ -196,7 +196,7 @@ RaceActive → RaceResults
 NameEntry → RoomSelection → JoinRoom → RoomWaiting (player)
   ↓ (mark ready)
   ↓ (wait for start)
-RaceActive → RaceResults
+BattleActive → BattleResults
 ```
 
 ## Backend Changes
@@ -232,7 +232,7 @@ The backend now tracks which players have finished typing:
 1. Room exists with multiple players
 2. Host disconnects
 3. New host assigned from remaining players
-4. Race can continue if started, or someone else can start
+4. Battle can continue if started, or someone else can start
 
 ### Scenario 4: Player Joins After Script Generated
 1. Host generates script

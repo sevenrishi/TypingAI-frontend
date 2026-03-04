@@ -11,7 +11,7 @@ function genCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
 }
 
-export default function RaceUI() {
+export default function BattleUI() {
   const dispatch = useDispatch();
   const { theme } = useTheme();
   const isDark = theme === 'dark';

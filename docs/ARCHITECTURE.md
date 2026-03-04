@@ -11,7 +11,7 @@ High-level components
   - React + Vite + TypeScript app.
   - Redux Toolkit store with slices: `auth`, `ai`, `typing`, `room`, `profile`.
   - Reusable hooks: `useTyping`, `useSocket` and a `SocketProvider` that performs time sync.
-  - Components: `TypingTest`, `TextDisplay`, `StatsPanel`, `ResultsModal`, and `RaceUI` for multiplayer.
+  - Components: `TypingTest`, `TextDisplay`, `StatsPanel`, `ResultsModal`, and `BattleUI` for multiplayer.
 
 Data flow
 - AI generation: user requests topic → backend calls OpenAI → returns text → dispatched to store → typing component loads text.

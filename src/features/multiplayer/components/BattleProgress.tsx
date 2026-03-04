@@ -2,13 +2,13 @@ import React from 'react';
 import { useTheme } from '../../../providers/ThemeProvider';
 import type { PlayerState } from '../roomSlice';
 
-interface RaceProgressProps {
+interface BattleProgressProps {
   players: PlayerState[];
   finishedPlayerIds: string[];
   raceActive: boolean;
 }
 
-export default function RaceProgress({ players, finishedPlayerIds, raceActive }: RaceProgressProps) {
+export default function BattleProgress({ players, finishedPlayerIds, raceActive }: BattleProgressProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const surface = isDark
@@ -30,7 +30,7 @@ export default function RaceProgress({ players, finishedPlayerIds, raceActive }:
 
   return (
     <div className={`p-6 rounded-2xl border shadow-lg ${surface}`}>
-      <h3 className="text-lg font-semibold mb-4">Race Progress</h3>
+      <h3 className="text-lg font-semibold mb-4">Battle Progress</h3>
 
       <div className="space-y-3">
         {sortedPlayers.map((player, index) => {

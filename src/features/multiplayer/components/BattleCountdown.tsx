@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../providers/ThemeProvider';
 
-interface RaceCountdownProps {
+interface BattleCountdownProps {
   startAt: number; // Unix timestamp when race starts
   onCountdownEnd?: () => void;
 }
 
-export default function RaceCountdown({ startAt, onCountdownEnd }: RaceCountdownProps) {
+export default function BattleCountdown({ startAt, onCountdownEnd }: BattleCountdownProps) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const [secondsLeft, setSecondsLeft] = useState(0);
@@ -59,7 +59,7 @@ export default function RaceCountdown({ startAt, onCountdownEnd }: RaceCountdown
         <p className={`text-xl font-semibold mt-4 ${
           isDark ? 'text-slate-100' : 'text-slate-900'
         }`}>
-          Race Starting...
+          Battle Starting...
         </p>
       </div>
     </div>

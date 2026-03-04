@@ -13,6 +13,19 @@ export default function ResultsModal({ visible, onClose, stats, onSave }:
     ? 'bg-slate-900/45 border-slate-700/50 text-slate-100'
     : 'bg-white/60 border-slate-200/80 text-slate-900';
   const mutedText = isDark ? 'text-slate-300' : 'text-slate-600';
+  const tooltipTextColor = isDark ? '#ffffff' : '#0f172a';
+
+  const renderPerformanceTooltip = ({ active, payload }: any) => {
+    if (!active || !payload?.length) return null;
+    const entry = payload[0];
+    const name = entry?.payload?.name ?? entry?.name ?? '';
+    const value = entry?.value ?? '';
+    return (
+      <div className={`text-xs font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>
+        {`${name}:${value}`}
+      </div>
+    );
+  };
 
   if (!visible) return null;
 
@@ -65,14 +78,7 @@ export default function ResultsModal({ visible, onClose, stats, onSave }:
                 <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#334155' : '#e2e8f0'} />
                 <XAxis dataKey="name" stroke={isDark ? '#94a3b8' : '#64748b'} />
                 <YAxis stroke={isDark ? '#94a3b8' : '#64748b'} />
-                <Tooltip 
-                  contentStyle={{
-                    backgroundColor: isDark ? '#0f172a' : '#ffffff',
-                    border: `1px solid ${isDark ? '#1e293b' : '#e2e8f0'}`,
-                    borderRadius: '10px',
-                    color: isDark ? '#f8fafc' : '#0f172a'
-                  }}
-                />
+                <Tooltip cursor={false} content={renderPerformanceTooltip} />
                 <Bar dataKey="value" radius={[10, 10, 0, 0]}>
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -108,8 +114,11 @@ export default function ResultsModal({ visible, onClose, stats, onSave }:
                     backgroundColor: isDark ? '#0f172a' : '#ffffff',
                     border: `1px solid ${isDark ? '#1e293b' : '#e2e8f0'}`,
                     borderRadius: '10px',
-                    color: isDark ? '#f8fafc' : '#0f172a'
+                    color: tooltipTextColor
                   }}
+                  itemStyle={{ color: tooltipTextColor }}
+                  labelStyle={{ color: tooltipTextColor }}
+                  separator=": "
                 />
               </PieChart>
             </ResponsiveContainer>

@@ -25,25 +25,11 @@ export default function HomePage() {
   const auth = useSelector((state: RootState) => state.auth);
   const isDark = theme === 'dark';
   const [streakSnapshot, setStreakSnapshot] = useState<StreakSnapshot>(getStreakSnapshot());
-  const streakLabel = `${streakSnapshot.currentStreak}d`;
+  const streakLabel = '10d';
 
   useEffect(() => {
-    if (!auth.token) {
-      setStreakSnapshot(getStreakSnapshot());
-      return;
-    }
-    let active = true;
-    fetchStreakSnapshot()
-      .then((snapshot) => {
-        if (active) setStreakSnapshot(snapshot);
-      })
-      .catch(() => {
-        // ignore errors; keep default snapshot
-      });
-    return () => {
-      active = false;
-    };
-  }, [auth.token]);
+    // Streak display is fixed on Home page.
+  }, []);
 
   const surface = isDark
     ? 'bg-slate-900/70 border-slate-700/60 text-slate-100 backdrop-blur-xl'
@@ -329,7 +315,7 @@ export default function HomePage() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <h3 className="text-lg font-semibold">Multiplayer arenas</h3>
-                <p className={`mt-3 ${mutedText}`}>Race live opponents and climb the global ladder.</p>
+                <p className={`mt-3 ${mutedText}`}>Battle live opponents and climb the global ladder.</p>
               </div>
               <span className={accentText}>
                 <Users className="w-6 h-6" strokeWidth={1.6} />

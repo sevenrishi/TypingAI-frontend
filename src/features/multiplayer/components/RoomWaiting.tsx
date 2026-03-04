@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Rocket } from 'lucide-react';
 import { useTheme } from '../../../providers/ThemeProvider';
 import type { PlayerState } from '../roomSlice';
 
@@ -13,7 +14,7 @@ interface RoomWaitingProps {
   isGenerating: boolean;
   raceStart?: number | null;      // server-provided start timestamp (ms) (new, optional)
   onGenerateScript: () => void;
-  onStartRace: () => void;
+  onStartBattle: () => void;
   onReady: (ready: boolean) => void;
   onLeave: () => void;
 }
@@ -29,7 +30,7 @@ export default function RoomWaiting({
   isGenerating,
   raceStart,
   onGenerateScript,
-  onStartRace,
+  onStartBattle,
   onReady,
   onLeave,
 }: RoomWaitingProps) {
@@ -69,7 +70,7 @@ export default function RoomWaiting({
 
   // Check if all players are ready (including host)
   const allPlayersReady = players.length > 0 && players.every(p => p.ready);
-  const canStartRace = isHost && textGenerated && allPlayersReady;
+  const canStartBattle = isHost && textGenerated && allPlayersReady;
 
   // Countdown overlay state (shows when raceStart provided)
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -225,7 +226,7 @@ export default function RoomWaiting({
                     : ghostButton
                 }`}
               >
-                {currentPlayerReady ? 'Ready to Race' : 'Mark Ready'}
+                {currentPlayerReady ? 'Ready to Battle' : 'Mark Ready'}
               </button>
             </div>
           </div>
@@ -292,15 +293,18 @@ export default function RoomWaiting({
 
             {/* Action Buttons */}
             <div className="space-y-3">
-              {/* Start Race Button - show for host; show disabled placeholder for non-hosts so layout matches */}
+              {/* Start Battle Button - show for host; show disabled placeholder for non-hosts so layout matches */}
               <button
-                onClick={isHost ? onStartRace : undefined}
-                disabled={!isHost || !canStartRace}
+                onClick={isHost ? onStartBattle : undefined}
+                disabled={!isHost || !canStartBattle}
                 className={`w-full py-3 rounded-xl font-semibold transition-all duration-200 text-lg ${
-                  (!isHost || !canStartRace) ? disabledButton : primaryButton
+                  (!isHost || !canStartBattle) ? disabledButton : primaryButton
                 }`}
               >
-                {isHost ? '🚀 Start Race' : '🚀 Start Race'}
+                <span className="inline-flex items-center justify-center gap-2">
+                  <Rocket className="h-5 w-5" aria-hidden="true" />
+                  Start Battle
+                </span>
               </button>
 
               {/* Status Messages */}
