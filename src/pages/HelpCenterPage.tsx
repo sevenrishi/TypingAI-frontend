@@ -165,7 +165,7 @@ export default function HelpCenterPage() {
           </div>
           <div className="mt-6 space-y-3 text-sm">
             <div className={`rounded-2xl border px-4 py-3 ${surfaceSoft}`}>
-              Email us: <span className="font-semibold">support@typingai.app</span>
+              Email us: <span className="font-semibold">support@typingai.live</span>
             </div>
             <div className={`rounded-2xl border px-4 py-3 ${surfaceSoft}`}>
               Response time: <span className="font-semibold">within 24 hours</span>
