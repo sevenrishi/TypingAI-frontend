@@ -277,7 +277,7 @@ export default function HomePage() {
             </div>
             <div className="mt-6 flex items-center gap-3 text-sm font-semibold">
               <span className={accentText}>Dynamic prompts</span>
-              <span className={mutedText}>Every 10 seconds</span>
+              <span className={mutedText}>AI-Powered Scripts</span>
             </div>
           </div>
 
@@ -294,8 +294,8 @@ export default function HomePage() {
               </span>
             </div>
             <div className="mt-6 flex items-center gap-4 text-sm font-semibold">
-              <span className={accentText}>Heatmaps</span>
-              <span className={mutedText}>Key accuracy</span>
+              <span className={accentText}>Interactive Charts</span>
+              <span className={mutedText}>Real-time performance</span>
             </div>
           </div>
 
