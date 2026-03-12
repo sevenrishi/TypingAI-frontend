@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { HelmetProvider } from 'react-helmet-async';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import App from './App';
 import './index.css';
 import { store } from './store';
@@ -39,6 +40,7 @@ createRoot(document.getElementById('root')!).render(
               <SocketProvider>
                 <App />
                 <Analytics />
+                <SpeedInsights />
               </SocketProvider>
             </ThemeProvider>
           </GoogleOAuthProvider>
