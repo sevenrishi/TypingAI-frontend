@@ -8,9 +8,9 @@ export type RouteSeo = {
 
 export const siteMeta = {
   name: 'TypingAI',
-  title: 'TypingAI | AI Typing Trainer for Speed, Accuracy, and Focus',
+  title: 'TypingAI | Typing Test & AI Typing Practice (WPM, Accuracy)',
   description:
-    'TypingAI is an AI-powered typing trainer with live WPM feedback, adaptive drills, and multiplayer races to boost speed and accuracy.',
+    'TypingAI is an AI-powered typing trainer with typing tests, personalized typing practice drills, live WPM and accuracy feedback, and multiplayer races.',
   locale: 'en_US',
   defaultImage: '/og-image.svg',
   fallbackUrl: 'https://typingai.app',
@@ -27,7 +27,7 @@ export const routeSeo: Record<string, RouteSeo> = {
   },
   '/practice': {
     title: 'TypingAI Practice | Personalized Drills for Speed and Accuracy',
-    description: 'Build custom practice sessions that target accuracy, rhythm, and real-world typing speed.',
+    description: 'Build custom typing practice sessions that target accuracy, rhythm, and real-world typing speed.',
   },
   '/typing': {
     title: 'TypingAI Typing Test | Real-Time WPM and Accuracy',

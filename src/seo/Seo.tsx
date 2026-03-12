@@ -11,8 +11,9 @@ export default function Seo() {
   const canonicalUrl = buildCanonical(pathname);
   const siteUrl = buildCanonical('/');
   const imageUrl = resolveImage(seo.image);
-  const robots = seo.robots || 'index,follow';
+  const robots = seo.robots || 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1';
   const ogType = seo.ogType || 'website';
+  const imageAlt = `${title}`;
 
   const jsonLd = [
     {
@@ -31,6 +32,24 @@ export default function Seo() {
       operatingSystem: 'Web',
       url: canonicalUrl,
       description,
+      image: imageUrl,
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: title,
+      url: canonicalUrl,
+      description,
+      inLanguage: 'en',
+      isPartOf: {
+        '@type': 'WebSite',
+        name: siteMeta.name,
+        url: siteUrl,
+      },
+      primaryImageOfPage: {
+        '@type': 'ImageObject',
+        url: imageUrl,
+      },
     },
   ];
 
@@ -46,11 +65,13 @@ export default function Seo() {
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:image" content={imageUrl} />
+      <meta property="og:image:alt" content={imageAlt} />
       <meta property="og:locale" content={siteMeta.locale} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />
+      <meta name="twitter:image:alt" content={imageAlt} />
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
     </Helmet>
   );
