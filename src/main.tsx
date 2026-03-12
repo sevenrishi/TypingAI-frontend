@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { HelmetProvider } from 'react-helmet-async';
+import { Analytics } from '@vercel/analytics/react';
 import App from './App';
 import './index.css';
 import { store } from './store';
@@ -37,6 +38,7 @@ createRoot(document.getElementById('root')!).render(
             <ThemeProvider>
               <SocketProvider>
                 <App />
+                <Analytics />
               </SocketProvider>
             </ThemeProvider>
           </GoogleOAuthProvider>
