@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { HelmetProvider } from 'react-helmet-async';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import App from './App';
 import './index.css';
 import { store } from './store';
@@ -29,17 +32,21 @@ const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
-        <GoogleOAuthProvider clientId={googleClientId}>
-          <ThemeProvider>
-            <SocketProvider>
-              <App />
-            </SocketProvider>
-          </ThemeProvider>
-        </GoogleOAuthProvider>
-      </BrowserRouter>
-    </Provider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <BrowserRouter>
+          <GoogleOAuthProvider clientId={googleClientId}>
+            <ThemeProvider>
+              <SocketProvider>
+                <App />
+                <Analytics />
+                <SpeedInsights />
+              </SocketProvider>
+            </ThemeProvider>
+          </GoogleOAuthProvider>
+        </BrowserRouter>
+      </Provider>
+    </HelmetProvider>
   </React.StrictMode>
 );
 

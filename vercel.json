@@ -1,4 +1,15 @@
 {
+  "headers": [
+    {
+      "source": "/(login|signup|reset-password|activate|account|profile)(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
