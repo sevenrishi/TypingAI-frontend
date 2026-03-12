@@ -16,6 +16,7 @@ import SignIn from './features/auth/components/SignIn';
 import SignUp from './features/auth/components/SignUp';
 import TypingLoader from './components/TypingLoader';
 import ProtectedRoute from './components/ProtectedRoute';
+import FeatureGate from './components/FeatureGate';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from './store';
 import { logout } from './features/auth/authSlice';
@@ -23,6 +24,7 @@ import { useTheme } from './providers/ThemeProvider';
 import { getAvatarColor, getAvatarImageSrc } from './utils/avatars';
 import api from './api/axios';
 import ToastHost from './components/ToastHost';
+import Seo from './seo/Seo';
 import { LifeBuoy, LogOut, Moon, Settings, Sun, User } from 'lucide-react';
 
 function initials(name?: string) {
@@ -51,6 +53,7 @@ export default function App() {
   const mobileNavRef = useRef<HTMLDivElement | null>(null);
   const mobileNavButtonRef = useRef<HTMLButtonElement | null>(null);
   const openSignIn = useCallback(() => setShowSignIn(true), []);
+  const gateCta = { label: 'Create free account', to: '/signup' };
 
   const displayName = profile.user?.displayName || auth.user?.displayName || 'Member';
   const email = profile.user?.email || auth.user?.email || 'No email on file';
@@ -139,6 +142,7 @@ export default function App() {
 
   return (
     <div>
+      <Seo />
       <TypingLoader isLoading={isLoading} duration={2500} />
       <div className={`min-h-screen transition-colors duration-300 ${
         theme === 'dark' 
@@ -563,13 +567,105 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
-            <Route path="/typing" element={<ProtectedRoute element={<TypingPage />} onShowSignIn={openSignIn} />} />
-            <Route path="/practice" element={<ProtectedRoute element={<PracticePage />} onShowSignIn={openSignIn} />} />
-            <Route path="/learn" element={<ProtectedRoute element={<LearnPage />} onShowSignIn={openSignIn} />} />
-            <Route path="/battleground" element={<ProtectedRoute element={<BattlegroundPage />} onShowSignIn={openSignIn} />} />
+            <Route
+              path="/typing"
+              element={(
+                <ProtectedRoute
+                  element={<TypingPage />}
+                  onShowSignIn={openSignIn}
+                  promptOnUnauth={false}
+                  fallback={(
+                    <FeatureGate
+                      title="Typing Test Mode"
+                      description="Run real-time typing tests with live WPM, accuracy, and rhythm feedback."
+                      highlights={[
+                        'Instant WPM and accuracy tracking',
+                        'AI-generated prompts tuned to your level',
+                        'Session history and performance insights',
+                      ]}
+                      onPrimaryAction={openSignIn}
+                      secondaryLink={gateCta}
+                      kicker="Typing test"
+                    />
+                  )}
+                />
+              )}
+            />
+            <Route
+              path="/practice"
+              element={(
+                <ProtectedRoute
+                  element={<PracticePage />}
+                  onShowSignIn={openSignIn}
+                  promptOnUnauth={false}
+                  fallback={(
+                    <FeatureGate
+                      title="Practice Drills"
+                      description="Build personalized drills that target weak keys, pacing, and consistent accuracy."
+                      highlights={[
+                        'Adaptive practice plans',
+                        'Accuracy and rhythm coaching',
+                        'Progress streaks and milestones',
+                      ]}
+                      onPrimaryAction={openSignIn}
+                      secondaryLink={gateCta}
+                      kicker="Practice lab"
+                    />
+                  )}
+                />
+              )}
+            />
+            <Route
+              path="/learn"
+              element={(
+                <ProtectedRoute
+                  element={<LearnPage />}
+                  onShowSignIn={openSignIn}
+                  promptOnUnauth={false}
+                  fallback={(
+                    <FeatureGate
+                      title="Guided Learning Path"
+                      description="Follow step-by-step lessons that build muscle memory, accuracy, and speed."
+                      highlights={[
+                        'Finger placement guidance',
+                        'Structured curriculum with checkpoints',
+                        'Certificates and shareable progress',
+                      ]}
+                      onPrimaryAction={openSignIn}
+                      secondaryLink={gateCta}
+                      kicker="Learning path"
+                    />
+                  )}
+                />
+              )}
+            />
+            <Route
+              path="/battleground"
+              element={(
+                <ProtectedRoute
+                  element={<BattlegroundPage />}
+                  onShowSignIn={openSignIn}
+                  promptOnUnauth={false}
+                  fallback={(
+                    <FeatureGate
+                      title="Battleground Races"
+                      description="Compete in live typing battles with dynamic scripts and real-time leaderboards."
+                      highlights={[
+                        'Multiplayer races with friends',
+                        'AI-generated battle scripts',
+                        'Live WPM and accuracy stats',
+                      ]}
+                      onPrimaryAction={openSignIn}
+                      secondaryLink={gateCta}
+                      kicker="Multiplayer"
+                    />
+                  )}
+                />
+              )}
+            />
             <Route path="/profile" element={<ProtectedRoute element={<UserProfilePage />} onShowSignIn={openSignIn} />} />
             <Route path="/account" element={<ProtectedRoute element={<AccountSettingsPage />} onShowSignIn={openSignIn} />} />
-            <Route path="/help" element={<ProtectedRoute element={<HelpCenterPage />} onShowSignIn={openSignIn} />} />
+            <Route path="/help" element={<HelpCenterPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/activate" element={<ActivationPage />} />
           </Routes>

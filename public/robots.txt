@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /account
+Disallow: /profile
+Disallow: /login
+Disallow: /signup
+Disallow: /reset-password
+Disallow: /activate
+
+Sitemap: https://typingai.app/sitemap.xml
