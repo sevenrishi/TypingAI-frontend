@@ -4,6 +4,7 @@ import type { StreakSnapshot } from '../utils/streaks';
 
 export type LearningProgress = {
   completedLessons: number[];
+  practiceCounts: Record<string, number>;
   certificate: CertificateData | null;
   updatedAt?: string | null;
 };
@@ -21,6 +22,7 @@ export async function fetchUserProgress(dateKey?: string): Promise<UserProgress>
 
 export async function updateLearningProgress(payload: {
   completedLessons?: number[];
+  practiceCounts?: Record<string, number>;
   certificate?: CertificateData | null;
 }) {
   const { data } = await api.put('/users/learning', payload);

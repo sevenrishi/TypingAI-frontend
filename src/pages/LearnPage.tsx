@@ -289,18 +289,21 @@ const lessons: Lesson[] = [
 
 const TRACKED_LESSON_IDS = lessons.filter((lesson) => lesson.id !== 0).map((lesson) => lesson.id);
 const TOTAL_TRACKED_LESSONS = TRACKED_LESSON_IDS.length;
+const REQUIRED_PRACTICE_REPETITIONS = 100;
 
 export default function LearnPage() {
   const { theme } = useTheme();
   const profile = useSelector((state: RootState) => state.profile);
   const [selectedLesson, setSelectedLesson] = useState<number>(0);
   const [completedLessons, setCompletedLessons] = useState<Set<number>>(new Set());
+  const [lessonPracticeCounts, setLessonPracticeCounts] = useState<Record<number, number>>({});
   const [isPracticing, setIsPracticing] = useState(false);
   const [showPracticeDetails, setShowPracticeDetails] = useState(false);
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [typed, setTyped] = useState('');
   const [startTime, setStartTime] = useState<number | null>(null);
   const [errors, setErrors] = useState(0);
+  const [totalKeystrokes, setTotalKeystrokes] = useState(0);
   const [activeKey, setActiveKey] = useState('');
   const [placementTargetKey, setPlacementTargetKey] = useState('');
   const [placementLastKey, setPlacementLastKey] = useState('');
@@ -322,7 +325,17 @@ export default function LearnPage() {
         const completed = Array.isArray(progress.learning?.completedLessons)
           ? progress.learning.completedLessons
           : [];
+        const practiceCountsRaw =
+          progress.learning?.practiceCounts && typeof progress.learning.practiceCounts === 'object'
+            ? progress.learning.practiceCounts
+            : {};
+        const parsedPracticeCounts = Object.fromEntries(
+          Object.entries(practiceCountsRaw)
+            .map(([lessonId, count]) => [Number(lessonId), Math.max(0, Math.floor(Number(count) || 0))])
+            .filter(([lessonId]) => Number.isFinite(lessonId))
+        ) as Record<number, number>;
         setCompletedLessons(new Set(completed));
+        setLessonPracticeCounts(parsedPracticeCounts);
         setCertificate(progress.learning?.certificate || null);
       } catch (error) {
         console.error('Failed to load learning progress', error);
@@ -351,11 +364,14 @@ export default function LearnPage() {
     setCurrentLineIndex(0);
     setStartTime(null);
     setErrors(0);
+    setTotalKeystrokes(0);
     setActiveKey('');
   };
 
   const currentLesson = lessons.find(l => l.id === selectedLesson);
   const currentText = currentLesson?.content[currentLineIndex] || '';
+  const selectedLessonPracticeCount = selectedLesson > 0 ? (lessonPracticeCounts[selectedLesson] || 0) : 0;
+  const selectedLessonRemainingCount = Math.max(0, REQUIRED_PRACTICE_REPETITIONS - selectedLessonPracticeCount);
   const completedTrackedCount = TRACKED_LESSON_IDS.filter((id) => completedLessons.has(id)).length;
   const progressPercentage = TOTAL_TRACKED_LESSONS > 0
     ? Math.round((completedTrackedCount / TOTAL_TRACKED_LESSONS) * 100)
@@ -413,6 +429,7 @@ export default function LearnPage() {
     setTyped('');
     setStartTime(Date.now());
     setErrors(0);
+    setTotalKeystrokes(0);
     setActiveKey('');
     setTimeout(() => inputRef.current?.focus(), 100);
   };
@@ -444,12 +461,27 @@ export default function LearnPage() {
 
   const handleChange = (value: string) => {
     if (!startTime) setStartTime(Date.now());
-    
-    // Check for errors
-    const currentChar = currentText[typed.length];
-    const typedChar = value[value.length - 1];
-    if (typedChar && currentChar && typedChar !== currentChar) {
-      setErrors(prev => prev + 1);
+
+    if (value.length < typed.length) {
+      const backspaceCount = typed.length - value.length;
+      // Backspace is treated as a penalty keystroke.
+      setErrors(prev => prev + backspaceCount);
+      setTotalKeystrokes(prev => prev + backspaceCount);
+    } else if (value.length > typed.length) {
+      const addedChars = value.slice(typed.length);
+      let mismatchCount = 0;
+
+      for (let i = 0; i < addedChars.length; i += 1) {
+        const expectedChar = currentText[typed.length + i];
+        if (addedChars[i] !== expectedChar) {
+          mismatchCount += 1;
+        }
+      }
+
+      if (mismatchCount > 0) {
+        setErrors(prev => prev + mismatchCount);
+      }
+      setTotalKeystrokes(prev => prev + addedChars.length);
     }
 
     setTyped(value);
@@ -469,10 +501,21 @@ export default function LearnPage() {
     }
   };
 
-  const persistLearningProgress = async (nextCompleted: Set<number>, nextCertificate?: CertificateData | null) => {
+  const persistLearningProgress = async (
+    nextCompleted: Set<number>,
+    nextPracticeCounts: Record<number, number>,
+    nextCertificate?: CertificateData | null
+  ) => {
     try {
-      const payload: { completedLessons: number[]; certificate?: CertificateData } = {
-        completedLessons: Array.from(nextCompleted)
+      const payload: {
+        completedLessons: number[];
+        practiceCounts: Record<string, number>;
+        certificate?: CertificateData;
+      } = {
+        completedLessons: Array.from(nextCompleted),
+        practiceCounts: Object.fromEntries(
+          Object.entries(nextPracticeCounts).map(([lessonId, count]) => [lessonId, Math.max(0, Math.floor(count || 0))])
+        )
       };
       if (nextCertificate) {
         payload.certificate = nextCertificate;
@@ -484,10 +527,23 @@ export default function LearnPage() {
   };
 
   const handleCompleteLesson = async () => {
+    const updatedPracticeCounts = { ...lessonPracticeCounts };
+    if (selectedLesson > 0) {
+      updatedPracticeCounts[selectedLesson] = Math.min(
+        REQUIRED_PRACTICE_REPETITIONS,
+        (updatedPracticeCounts[selectedLesson] || 0) + 1
+      );
+    }
+
+    const lessonCount = selectedLesson > 0 ? (updatedPracticeCounts[selectedLesson] || 0) : 0;
+    const meetsPracticeRequirement = selectedLesson === 0 || lessonCount >= REQUIRED_PRACTICE_REPETITIONS;
     const updated = new Set(completedLessons);
-    updated.add(selectedLesson);
+    if (meetsPracticeRequirement) {
+      updated.add(selectedLesson);
+    }
     const wasComplete = TRACKED_LESSON_IDS.every((id) => completedLessons.has(id));
     const willComplete = TRACKED_LESSON_IDS.every((id) => updated.has(id));
+    setLessonPracticeCounts(updatedPracticeCounts);
     setCompletedLessons(updated);
     let issuedCertificate = certificate;
     if (!wasComplete && willComplete) {
@@ -497,12 +553,16 @@ export default function LearnPage() {
       setCertificate(issuedCertificate);
       setShowCompletionModal(true);
     }
-    await persistLearningProgress(updated, issuedCertificate || undefined);
-    setIsPracticing(false);
-    setShowPracticeDetails(false);
+    await persistLearningProgress(updated, updatedPracticeCounts, issuedCertificate || undefined);
+    setIsPracticing(true);
+    setShowPracticeDetails(true);
+    setStartTime(Date.now());
+    setErrors(0);
+    setTotalKeystrokes(0);
     setTyped('');
     setCurrentLineIndex(0);
     setActiveKey('');
+    setTimeout(() => inputRef.current?.focus(), 100);
   };
 
   const handleCertificateCopy = async () => {
@@ -542,11 +602,12 @@ export default function LearnPage() {
     setCurrentLineIndex(0);
     setStartTime(null);
     setErrors(0);
+    setTotalKeystrokes(0);
     setActiveKey('');
   };
 
-  const accuracy = typed.length > 0 
-    ? Math.round(((typed.length - errors) / typed.length) * 100) 
+  const accuracy = totalKeystrokes > 0
+    ? Math.max(0, Math.round(((totalKeystrokes - errors) / totalKeystrokes) * 100))
     : 100;
 
   const bgClass = theme === 'dark' ? 'bg-gray-950 text-gray-100' : 'bg-gray-50 text-gray-900';
@@ -608,6 +669,9 @@ export default function LearnPage() {
                 }
               `}</style>
             <h2 className="text-xl font-bold mb-4">Course Progress</h2>
+            <p className={`text-xs mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+              Each lesson requires {REQUIRED_PRACTICE_REPETITIONS} completed practices.
+            </p>
             
             {/* Progress Bar */}
             <div className="mb-6">
@@ -668,6 +732,15 @@ export default function LearnPage() {
                 {phase1.map(lesson => {
                   const isSelected = selectedLesson === lesson.id;
                   const isCompleted = completedLessons.has(lesson.id);
+                  const practiceCount = lessonPracticeCounts[lesson.id] || 0;
+                  const remainingCount = Math.max(0, REQUIRED_PRACTICE_REPETITIONS - practiceCount);
+                  const requirementTextClass = isSelected
+                    ? theme === 'dark'
+                      ? 'text-slate-800/80'
+                      : 'text-sky-800'
+                    : theme === 'dark'
+                    ? 'text-gray-400'
+                    : 'text-gray-500';
                   return (
                     <button
                       key={lesson.id}
@@ -689,6 +762,9 @@ export default function LearnPage() {
                         </div>
                         {isCompleted && <CheckCircle className="w-4 h-4 text-green-500" />}
                       </div>
+                      <p className={`mt-1 text-xs ${requirementTextClass}`}>
+                        Practice {practiceCount}/{REQUIRED_PRACTICE_REPETITIONS} {remainingCount > 0 ? `• ${remainingCount} left` : '• done'}
+                      </p>
                     </button>
                   );
                 })}
@@ -704,6 +780,15 @@ export default function LearnPage() {
                 {phase2.map(lesson => {
                   const isSelected = selectedLesson === lesson.id;
                   const isCompleted = completedLessons.has(lesson.id);
+                  const practiceCount = lessonPracticeCounts[lesson.id] || 0;
+                  const remainingCount = Math.max(0, REQUIRED_PRACTICE_REPETITIONS - practiceCount);
+                  const requirementTextClass = isSelected
+                    ? theme === 'dark'
+                      ? 'text-slate-800/80'
+                      : 'text-sky-800'
+                    : theme === 'dark'
+                    ? 'text-gray-400'
+                    : 'text-gray-500';
                   return (
                     <button
                       key={lesson.id}
@@ -725,6 +810,9 @@ export default function LearnPage() {
                         </div>
                         {isCompleted && <CheckCircle className="w-4 h-4 text-green-500" />}
                       </div>
+                      <p className={`mt-1 text-xs ${requirementTextClass}`}>
+                        Practice {practiceCount}/{REQUIRED_PRACTICE_REPETITIONS} {remainingCount > 0 ? `• ${remainingCount} left` : '• done'}
+                      </p>
                     </button>
                   );
                 })}
@@ -740,6 +828,15 @@ export default function LearnPage() {
                 {phase3.map(lesson => {
                   const isSelected = selectedLesson === lesson.id;
                   const isCompleted = completedLessons.has(lesson.id);
+                  const practiceCount = lessonPracticeCounts[lesson.id] || 0;
+                  const remainingCount = Math.max(0, REQUIRED_PRACTICE_REPETITIONS - practiceCount);
+                  const requirementTextClass = isSelected
+                    ? theme === 'dark'
+                      ? 'text-slate-800/80'
+                      : 'text-sky-800'
+                    : theme === 'dark'
+                    ? 'text-gray-400'
+                    : 'text-gray-500';
                   return (
                     <button
                       key={lesson.id}
@@ -761,6 +858,9 @@ export default function LearnPage() {
                         </div>
                         {isCompleted && <CheckCircle className="w-4 h-4 text-green-500" />}
                       </div>
+                      <p className={`mt-1 text-xs ${requirementTextClass}`}>
+                        Practice {practiceCount}/{REQUIRED_PRACTICE_REPETITIONS} {remainingCount > 0 ? `• ${remainingCount} left` : '• done'}
+                      </p>
                     </button>
                   );
                 })}
@@ -788,6 +888,18 @@ export default function LearnPage() {
                   <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     {currentLesson.description}
                   </p>
+                  {currentLesson.id > 0 && (
+                    <div className={`mt-3 inline-flex items-center rounded-lg px-3 py-2 text-sm font-semibold ${
+                      theme === 'dark'
+                        ? 'bg-gray-800 text-cyan-200 border border-gray-700'
+                        : 'bg-sky-50 text-sky-700 border border-sky-200'
+                    }`}>
+                      Practice completion: {selectedLessonPracticeCount}/{REQUIRED_PRACTICE_REPETITIONS}
+                      {selectedLessonRemainingCount > 0
+                        ? ` (${selectedLessonRemainingCount} left)`
+                        : ' (Completed)'}
+                    </div>
+                  )}
                 </div>
 
                 {/* Getting Started Content */}
@@ -929,7 +1041,7 @@ export default function LearnPage() {
                       }`}
                     >
                       <Play className="w-6 h-6" />
-                      Start Practice
+                      Start Practice ({selectedLessonRemainingCount > 0 ? `${selectedLessonRemainingCount} left` : 'completed'})
                     </button>
                   </>
                 )}
@@ -947,7 +1059,7 @@ export default function LearnPage() {
                           const updated = new Set(completedLessons);
                           updated.add(0);
                           setCompletedLessons(updated);
-                          persistLearningProgress(updated, certificate || undefined);
+                          persistLearningProgress(updated, lessonPracticeCounts, certificate || undefined);
                         }
                         handleLessonSelect(1);
                       }}
@@ -1072,6 +1184,20 @@ export default function LearnPage() {
                     <span className="text-sm font-medium">Exercise {currentLineIndex + 1} of {currentLesson.content.length}</span>
                     <span className="text-sm font-medium">Accuracy: {accuracy}%</span>
                   </div>
+                  {(lessonPracticeCounts[currentLesson.id] || 0) < REQUIRED_PRACTICE_REPETITIONS ? (
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium">
+                        Practice Attempts: {(lessonPracticeCounts[currentLesson.id] || 0) + 1}/{REQUIRED_PRACTICE_REPETITIONS}
+                      </span>
+                      <span className="text-sm font-medium">
+                        Remaining: {Math.max(0, REQUIRED_PRACTICE_REPETITIONS - ((lessonPracticeCounts[currentLesson.id] || 0) + 1))}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="mb-2 text-sm font-medium text-emerald-500">
+                      Practice requirement completed ({REQUIRED_PRACTICE_REPETITIONS}/{REQUIRED_PRACTICE_REPETITIONS}). Extra practice is not counted.
+                    </div>
+                  )}
                   <div className={`w-full h-2 rounded-full overflow-hidden ${progressBarBgClass}`}>
                     <div
                       className="h-full bg-gradient-to-r from-emerald-400 to-sky-500 transition-all duration-300"
@@ -1139,7 +1265,7 @@ export default function LearnPage() {
                   <div className={`p-4 rounded-lg text-center ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
                     <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Error Rate</div>
                     <div className={`text-2xl font-bold ${errors === 0 ? 'text-green-500' : errors <= 2 ? 'text-yellow-500' : 'text-red-500'}`}>
-                      {typed.length > 0 ? ((errors / typed.length) * 100).toFixed(1) : 0}%
+                      {totalKeystrokes > 0 ? ((errors / totalKeystrokes) * 100).toFixed(1) : 0}%
                     </div>
                   </div>
                 </div>
