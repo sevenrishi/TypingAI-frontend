@@ -12,7 +12,7 @@ export const siteMeta = {
   description:
     'TypingAI is an AI-powered typing trainer with typing tests, personalized typing practice drills, live WPM and accuracy feedback, and multiplayer races.',
   locale: 'en_US',
-  defaultImage: '/og-image.svg',
+  defaultImage: '/og-image.png',
   fallbackUrl: 'https://typingai.app',
 };
 
