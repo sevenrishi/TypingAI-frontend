@@ -1,10 +1,13 @@
 {
   "name": "TypingAI",
   "short_name": "TypingAI",
+  "description": "AI-powered typing tests, typing practice drills, and touch typing lessons.",
+  "lang": "en-US",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0b1220",
   "theme_color": "#0ea5e9",
+  "categories": ["education", "productivity", "games"],
   "icons": [
     {
       "src": "/favicon.svg",

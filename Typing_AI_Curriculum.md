@@ -121,7 +121,7 @@ space timing builds typing rhythm
 ```
 saptarshi.mondal@gmail.com
 T@yping2026!
-https://typingai.app
+https://typingai.live
 project_report_v2_final.docx
 ```
 

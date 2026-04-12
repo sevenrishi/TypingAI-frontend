@@ -135,21 +135,20 @@ export default function HomePage() {
               style={{ fontFamily: "'JetBrains Mono', monospace" }}
             >
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              AI Typing Lab
+              AI Typing Tutor
             </div>
             <h1
               className="text-4xl md:text-6xl font-black leading-tight"
               style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
             >
-              Type faster with{' '}
+              AI typing tutor, typing test, and{' '}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400">
-                precision coaching
+                touch typing lessons
               </span>{' '}
               that adapts to you.
             </h1>
             <p className={`text-lg ${mutedText}`}>
-              Build real speed with AI-generated drills, live accuracy feedback, and competitive sessions
-              that keep your focus locked in.
+              Improve typing speed, WPM, and accuracy with AI-generated drills, guided lessons, multiplayer typing races, and personalized typing analysis that helps you learn smarter.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
@@ -246,7 +245,7 @@ export default function HomePage() {
               className="text-3xl md:text-4xl font-bold"
               style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
             >
-              A modern typing gym with real momentum.
+              An AI typing tutor built for WPM, accuracy, and touch typing.
             </h2>
           </div>
           <Link
@@ -350,7 +349,7 @@ export default function HomePage() {
               className="text-3xl md:text-4xl font-bold"
               style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
             >
-              Train, learn, and battle in one flow.
+              Typing practice, touch typing lessons, and live typing races.
             </h2>
           </div>
         </div>
@@ -358,21 +357,21 @@ export default function HomePage() {
         <div className="grid gap-6 md:grid-cols-3">
           <ModeCard
             title="Practice"
-            description="Laser-focused drills for speed and accuracy gains."
+            description="Typing exercises and drills for speed and accuracy gains."
             href="/practice"
             icon={<Target className="w-5 h-5" />}
             delayClass="animate-rise-delay-1"
           />
           <ModeCard
             title="Learn"
-            description="Guided lessons that build muscle memory and rhythm."
+            description="Touch typing lessons that build muscle memory and rhythm."
             href="/learn"
             icon={<BookOpen className="w-5 h-5" />}
             delayClass="animate-rise-delay-2"
           />
           <ModeCard
             title="Battleground"
-            description="Live multiplayer races with global leaderboards."
+            description="Multiplayer typing races with global leaderboards."
             href="/battleground"
             icon={<Swords className="w-5 h-5" />}
             delayClass="animate-rise-delay-3"
@@ -415,7 +414,7 @@ export default function HomePage() {
             Ready to set a new personal best?
           </h3>
           <p className={`text-lg ${mutedText}`}>
-            Jump in with a 60-second sprint or craft a training plan that fits your goals.
+            Start with a 1-minute AI typing test or build a free AI typing practice plan that fits your goals.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link

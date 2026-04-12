@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../providers/ThemeProvider';
+import { helpCenterFaqs } from '../seo/seoConfig';
 import { BookOpen, MessageCircle, Search, Sparkles, Swords, Target } from 'lucide-react';
 
 export default function HelpCenterPage() {
@@ -19,50 +20,27 @@ export default function HelpCenterPage() {
   const helpCards = [
     {
       title: 'Getting started',
-      description: 'Set up your first test and build a routine.',
+      description: 'Start your first typing test and build a daily practice routine.',
       icon: <Sparkles className="h-5 w-5" />,
       href: '/learn',
     },
     {
       title: 'Practice plans',
-      description: 'Create drills that target speed and accuracy.',
+      description: 'Create typing drills that improve speed, rhythm, and accuracy.',
       icon: <Target className="h-5 w-5" />,
       href: '/practice',
     },
     {
       title: 'Battleground',
-      description: 'Join races, climb ranks, and review match stats.',
+      description: 'Join multiplayer typing races, climb ranks, and review match stats.',
       icon: <Swords className="h-5 w-5" />,
       href: '/battleground',
     },
     {
       title: 'Account help',
-      description: 'Update your profile, password, and preferences.',
+      description: 'Update your profile, password, and training preferences.',
       icon: <BookOpen className="h-5 w-5" />,
       href: '/account',
-    },
-  ];
-
-  const faqs = [
-    {
-      question: 'How is WPM calculated?',
-      answer:
-        'TypingAI measures words per minute by counting characters typed, dividing by five, then scaling by time.',
-    },
-    {
-      question: 'Why do my accuracy numbers change between modes?',
-      answer:
-        'Practice drills, tests, and battles score errors differently to match the goal of each mode.',
-    },
-    {
-      question: 'Can I recover a deleted session?',
-      answer:
-        'Session history is stored in your profile. If you clear local data, contact support for recovery options.',
-    },
-    {
-      question: 'How do I change my avatar?',
-      answer:
-        'Open your profile, click the avatar circle, and pick a new style from the grid.',
     },
   ];
 
@@ -89,16 +67,16 @@ export default function HelpCenterPage() {
             className="text-3xl md:text-4xl font-bold"
             style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
           >
-            Help center
+            AI typing tutor help center
           </h1>
           <p className={`text-lg ${mutedText}`}>
-            Find the fastest path to better typing sessions, answers, and resources.
+            Find answers about AI typing tests, free AI typing practice, typing accuracy, touch typing lessons, personalized typing analysis, and account support.
           </p>
           <div className={`flex items-center gap-3 rounded-2xl border px-4 py-3 ${surfaceSoft}`}>
             <Search className={`h-4 w-4 ${accentText}`} />
             <input
               type="search"
-              placeholder="Search drills, guides, or account topics"
+              placeholder="Search typing FAQs, guides, or account topics"
               className={`w-full bg-transparent text-sm outline-none ${isDark ? 'placeholder:text-slate-500' : 'placeholder:text-slate-400'}`}
             />
           </div>
@@ -140,9 +118,9 @@ export default function HelpCenterPage() {
 
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <div className={`rounded-3xl border p-6 ${surface}`}>
-          <h2 className="text-xl font-semibold">Frequently asked</h2>
+          <h2 className="text-xl font-semibold">Frequently asked typing questions</h2>
           <div className="mt-6 space-y-4">
-            {faqs.map((faq) => (
+            {helpCenterFaqs.map((faq) => (
               <div key={faq.question} className={`rounded-2xl border p-4 ${surfaceSoft}`}>
                 <div className="text-sm font-semibold">{faq.question}</div>
                 <p className={`mt-2 text-sm ${mutedText}`}>{faq.answer}</p>
@@ -156,7 +134,7 @@ export default function HelpCenterPage() {
             <div>
               <h2 className="text-xl font-semibold">Need more help?</h2>
               <p className={`mt-2 ${mutedText}`}>
-                Our support team can help you recover sessions, fix account issues, or plan training.
+                Our support team can help you recover sessions, fix account issues, or choose the best AI typing practice flow for your training.
               </p>
             </div>
             <span className={accentText}>

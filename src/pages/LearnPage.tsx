@@ -226,7 +226,7 @@ const lessons: Lesson[] = [
     content: [
       'saptarshi.mondal@gmail.com',
       'T@yping2026!',
-      'https://typingai.app',
+      'https://typingai.live',
       'project_report_v2_final.docx'
     ],
     completed: false
@@ -614,7 +614,7 @@ export default function LearnPage() {
   const sidebarClass = theme === 'dark' ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200';
   const contentClass = theme === 'dark' ? 'bg-gray-900 border border-gray-800' : 'bg-white border border-gray-200';
   const progressBarBgClass = theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200';
-  const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://typingai.app';
+  const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://typingai.live';
   const certificateShareText = certificate ? getCertificateShareText(certificate) : '';
   const certificateShareTextForClipboard = certificate
     ? [certificateShareText, shareUrl].filter(Boolean).join(' ')
