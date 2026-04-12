@@ -13,7 +13,7 @@ export const siteMeta = {
     'TypingAI is an AI-powered typing trainer with typing tests, personalized typing practice drills, live WPM and accuracy feedback, and multiplayer races.',
   locale: 'en_US',
   defaultImage: '/og-image.png',
-  fallbackUrl: 'https://typingai.app',
+  fallbackUrl: 'https://typingai.live',
 };
 
 export const routeSeo: Record<string, RouteSeo> = {

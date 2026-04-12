@@ -159,7 +159,7 @@ export default function ProfilePage({ onClose }: { onClose: () => void }) {
   const currentStreak = streakSnapshot.currentStreak;
   const longestStreak = streakSnapshot.longestStreak;
   const lastActiveLabel = formatDateKey(streakSnapshot.lastActiveDate);
-  const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://typingai.app';
+  const shareUrl = typeof window !== 'undefined' ? window.location.origin : 'https://typingai.live';
   const streakHeadline = currentStreak > 0
     ? `I'm on a ${currentStreak}-day typing streak on TypingAI`
     : `I'm training on TypingAI`;

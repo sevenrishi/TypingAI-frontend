@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://typingai.app/sitemap.xml
+Sitemap: https://typingai.live/sitemap.xml
