@@ -199,6 +199,19 @@ export const routeSeo: Record<string, RouteSeo> = {
     ],
     schemaType: 'WebPage',
   },
+  '/terms': {
+    title: 'Terms of Service | TypingAI',
+    description:
+      'Read the TypingAI Terms of Service covering accounts, acceptable use, AI-generated content, multiplayer rules, disclaimers, and service changes.',
+    keywords: [
+      ...sharedKeywords,
+      'terms of service',
+      'terms of use',
+      'user agreement',
+      'acceptable use',
+    ],
+    schemaType: 'WebPage',
+  },
   '/login': {
     title: 'Sign In | TypingAI',
     description: 'Access your TypingAI dashboard, sessions, and personalized coaching.',

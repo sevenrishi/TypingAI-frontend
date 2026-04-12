@@ -169,6 +169,16 @@ export default function HelpCenterPage() {
           >
             Read privacy policy
           </Link>
+          <Link
+            to="/terms"
+            className={`mt-3 inline-flex items-center gap-2 rounded-xl border px-5 py-2 text-sm font-semibold transition-all duration-300 ${
+              isDark
+                ? 'border-slate-700 bg-slate-900/60 text-slate-200 hover:border-cyan-400/60 hover:text-cyan-200'
+                : 'border-slate-200 bg-white text-slate-700 hover:border-sky-300 hover:text-sky-700'
+            }`}
+          >
+            Read terms of service
+          </Link>
         </div>
       </section>
     </div>
