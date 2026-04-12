@@ -7,6 +7,7 @@ import TypingPage from './pages/TypingPage';
 import BattlegroundPage from './pages/BattlegroundPage';
 import PracticePage from './pages/PracticePage';
 import LearnPage from './pages/LearnPage';
+import PrivacyPage from './pages/PrivacyPage';
 import UserProfilePage from './pages/UserProfilePage';
 import AccountSettingsPage from './pages/AccountSettingsPage';
 import HelpCenterPage from './pages/HelpCenterPage';
@@ -666,6 +667,7 @@ export default function App() {
             <Route path="/profile" element={<ProtectedRoute element={<UserProfilePage />} onShowSignIn={openSignIn} />} />
             <Route path="/account" element={<ProtectedRoute element={<AccountSettingsPage />} onShowSignIn={openSignIn} />} />
             <Route path="/help" element={<HelpCenterPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/activate" element={<ActivationPage />} />
           </Routes>
