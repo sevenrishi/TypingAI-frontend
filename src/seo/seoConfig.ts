@@ -186,6 +186,19 @@ export const routeSeo: Record<string, RouteSeo> = {
     schemaType: 'FAQPage',
     faqs: helpCenterFaqs,
   },
+  '/privacy': {
+    title: 'Privacy Policy | TypingAI',
+    description:
+      'Read how TypingAI collects, uses, stores, and protects account data, typing session history, analytics, and AI practice information.',
+    keywords: [
+      ...sharedKeywords,
+      'privacy policy',
+      'data collection',
+      'account security',
+      'typing session history',
+    ],
+    schemaType: 'WebPage',
+  },
   '/login': {
     title: 'Sign In | TypingAI',
     description: 'Access your TypingAI dashboard, sessions, and personalized coaching.',
