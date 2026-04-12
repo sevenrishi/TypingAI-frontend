@@ -674,6 +674,67 @@ export default function App() {
             <Route path="/activate" element={<ActivationPage />} />
           </Routes>
         </main>
+
+        <footer className={`border-t ${theme === 'dark' ? 'border-slate-800 bg-slate-950/50' : 'border-slate-200 bg-white/70'}`}>
+          <div className="app-shell py-6 flex flex-col items-center gap-4 text-center md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:text-left">
+            <div className="md:justify-self-start">
+              <Link to="/" className="flex items-end justify-center gap-1 hover:opacity-80 transition-opacity md:justify-start">
+                <span
+                  className={`text-3xl font-medium tracking-tight ${
+                    theme === 'dark' ? 'text-slate-100' : 'text-slate-900'
+                  } max-sm:text-2xl`}
+                  style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
+                >
+                  Typing
+                </span>
+                <span
+                  className="text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 max-sm:text-2xl"
+                  style={{ fontFamily: "'Space Grotesk', 'Segoe UI', sans-serif" }}
+                >
+                  AI
+                </span>
+              </Link>
+            </div>
+            <div className={theme === 'dark' ? 'text-xs text-slate-500 md:justify-self-center' : 'text-xs text-slate-500 md:justify-self-center'}>
+              Copyright © 2026 TypingAI. All rights reserved.
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-3 md:justify-self-end">
+              
+              <Link
+                to="/privacy"
+                className={`text-sm font-semibold transition-colors ${
+                  theme === 'dark'
+                    ? 'text-slate-300 hover:text-cyan-200'
+                    : 'text-slate-700 hover:text-sky-700'
+                }`}
+              >
+                Privacy Policy
+              </Link>
+              <span className={theme === 'dark' ? 'text-slate-600' : 'text-slate-300'}>|</span>
+              <Link
+                to="/terms"
+                className={`text-sm font-semibold transition-colors ${
+                  theme === 'dark'
+                    ? 'text-slate-300 hover:text-cyan-200'
+                    : 'text-slate-700 hover:text-sky-700'
+                }`}
+              >
+                Terms of Service
+              </Link>
+              <span className={theme === 'dark' ? 'text-slate-600' : 'text-slate-300'}>|</span>
+              <Link
+                to="/help"
+                className={`text-sm font-semibold transition-colors ${
+                  theme === 'dark'
+                    ? 'text-slate-300 hover:text-cyan-200'
+                    : 'text-slate-700 hover:text-sky-700'
+                }`}
+              >
+                Help Center
+              </Link>
+            </div>
+          </div>
+        </footer>
       </div>
       <ToastHost />
       {showSignIn && <SignIn onClose={() => setShowSignIn(false)} onSwitch={() => { setShowSignIn(false); setShowSignUp(true); }} />}
