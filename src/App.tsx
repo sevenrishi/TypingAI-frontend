@@ -147,7 +147,7 @@ export default function App() {
     <div>
       <Seo />
       <TypingLoader isLoading={isLoading} duration={2500} />
-      <div className={`min-h-screen transition-colors duration-300 ${
+      <div className={`min-h-screen flex flex-col transition-colors duration-300 ${
         theme === 'dark' 
           ? 'bg-gradient-to-b from-gray-900 to-gray-800 text-gray-100' 
           : 'bg-gradient-to-b from-slate-50 via-white to-slate-100 text-slate-900'
@@ -565,7 +565,7 @@ export default function App() {
           )}
         </header>
 
-        <main className="app-shell py-6">
+        <main className="app-shell py-6 flex-1">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
