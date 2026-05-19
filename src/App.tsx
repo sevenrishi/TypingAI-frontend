@@ -12,6 +12,7 @@ import TermsPage from './pages/TermsPage';
 import UserProfilePage from './pages/UserProfilePage';
 import AccountSettingsPage from './pages/AccountSettingsPage';
 import HelpCenterPage from './pages/HelpCenterPage';
+import BlogPage from './pages/BlogPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import ActivationPage from './pages/ActivationPage';
 import SignIn from './features/auth/components/SignIn';
@@ -668,6 +669,7 @@ export default function App() {
             <Route path="/profile" element={<ProtectedRoute element={<UserProfilePage />} onShowSignIn={openSignIn} />} />
             <Route path="/account" element={<ProtectedRoute element={<AccountSettingsPage />} onShowSignIn={openSignIn} />} />
             <Route path="/help" element={<HelpCenterPage />} />
+            <Route path="/blog/:slug" element={<BlogPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
@@ -676,7 +678,7 @@ export default function App() {
         </main>
 
         <footer className={`border-t ${theme === 'dark' ? 'border-slate-800 bg-slate-950/50' : 'border-slate-200 bg-white/70'}`}>
-          <div className="app-shell py-6 flex flex-col items-center gap-4 text-center md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:text-left">
+          <div className="w-full px-3 sm:px-4 md:px-5 lg:px-6 py-12 md:py-16 flex flex-col items-center gap-4 text-center md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:text-left">
             <div className="md:justify-self-start">
               <Link to="/" className="flex items-end justify-center gap-1 hover:opacity-80 transition-opacity md:justify-start">
                 <span
