@@ -45,7 +45,7 @@ export default function ToastHost() {
   if (!toasts.length) return null;
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-3 max-w-[90vw]">
+    <div className="fixed bottom-14 left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-3 max-w-[90vw]">
       {toasts.map((toast) => {
         const style = toneStyles[toast.tone];
         return (

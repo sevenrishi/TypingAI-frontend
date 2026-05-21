@@ -7,6 +7,7 @@ import { loadText as loadTextAction, reset as resetTyping } from '../features/ty
 import { useSocket } from '../features/multiplayer/hooks/useSocket';
 import { useSaveSession } from '../hooks/useSaveSession';
 import { calcAccuracy, calcCPM, calcWPM } from '../utils/metrics';
+import { showToast } from '../utils/toast';
 
 // Components
 import NameEntry from '../features/multiplayer/components/NameEntry';
@@ -91,6 +92,31 @@ export default function BattlegroundPage() {
     },
     handleRoomClosed
   );
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleRaceReset = (payload: { room?: string }) => {
+      if (!payload?.room || payload.room !== room.roomId) return;
+      dispatch(resetTyping());
+      dispatch(resetBattleState());
+      dispatch(setWorkflowStage('room-waiting'));
+    };
+
+    const handlePlayerLeft = (payload: { room?: string; name?: string }) => {
+      if (!payload?.room || payload.room !== room.roomId) return;
+      const rawName = payload?.name?.trim();
+      const label = rawName ? `Player ${rawName}` : 'A player';
+      showToast({ message: `${label} left the battle.`, tone: 'info' });
+    };
+
+    socket.on('race:reset', handleRaceReset);
+    socket.on('room:playerLeft', handlePlayerLeft);
+    return () => {
+      socket.off('race:reset', handleRaceReset);
+      socket.off('room:playerLeft', handlePlayerLeft);
+    };
+  }, [socket, room.roomId, dispatch]);
 
   const isCurrentHost = !!room.host && !!socket?.id
     ? room.host === socket.id
